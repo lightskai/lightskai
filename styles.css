@@ -4,11 +4,61 @@
     box-sizing: border-box;
 }
 
+/* CSS Variables for Light Theme (Default) */
+:root, .light-theme {
+    --bg-primary: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+    --bg-secondary: rgba(255, 255, 255, 0.95);
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --bg-overlay: rgba(255, 255, 255, 0.95);
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border-color: rgba(226, 232, 240, 0.8);
+    --border-light: #e0e7ff;
+    --shadow-light: rgba(0, 0, 0, 0.06);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+    --input-bg: white;
+    --success-bg: rgba(209, 250, 229, 0.8);
+    --success-text: #059669;
+    --success-border: #6ee7b7;
+    --error-bg: rgba(254, 226, 226, 0.8);
+    --error-text: #dc2626;
+    --error-border: #fca5a5;
+    --file-info-bg: #f1f5f9;
+    --user-info-bg: #f1f5f9;
+}
+
+/* CSS Variables for Dark Theme */
+.dark-theme {
+    --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --bg-secondary: rgba(15, 23, 42, 0.95);
+    --bg-card: rgba(30, 41, 59, 0.95);
+    --bg-overlay: rgba(15, 23, 42, 0.95);
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: rgba(71, 85, 105, 0.3);
+    --border-light: #334155;
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.4);
+    --input-bg: #1e293b;
+    --success-bg: rgba(6, 78, 59, 0.3);
+    --success-text: #34d399;
+    --success-border: #059669;
+    --error-bg: rgba(127, 29, 29, 0.3);
+    --error-text: #f87171;
+    --error-border: #dc2626;
+    --file-info-bg: #334155;
+    --user-info-bg: #334155;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+    background: var(--bg-primary);
     min-height: 100vh;
     position: relative;
+    color: var(--text-primary);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 body::before {
@@ -23,6 +73,11 @@ body::before {
         radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dark-theme body::before {
+    opacity: 0.3;
 }
 
 .content-wrapper {
@@ -31,14 +86,15 @@ body::before {
 }
 
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--bg-secondary);
     backdrop-filter: blur(20px);
     padding: 20px 40px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 24px var(--shadow-light);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .logo-section {
@@ -64,7 +120,7 @@ body::before {
 .brand-name {
     font-size: 26px;
     font-weight: 800;
-    background: linear-gradient(135deg, #1e293b 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--text-primary) 0%, #6366f1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -82,13 +138,14 @@ body::before {
     align-items: center;
     gap: 12px;
     padding: 8px 16px;
-    background: #f1f5f9;
+    background: var(--user-info-bg);
     border-radius: 8px;
+    transition: background 0.3s ease;
 }
 
 .user-email {
     font-size: 14px;
-    color: #475569;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
@@ -229,16 +286,17 @@ body::before {
 .form-label {
     font-size: 14px;
     font-weight: 600;
-    color: #475569;
+    color: var(--text-secondary);
 }
 
 .form-input {
     padding: 14px 16px;
-    border: 2px solid #e0e7ff;
+    border: 2px solid var(--border-light);
     border-radius: 10px;
     font-size: 15px;
     transition: all 0.3s ease;
-    background: white;
+    background: var(--input-bg);
+    color: var(--text-primary);
 }
 
 .form-input:focus {
@@ -398,15 +456,15 @@ body::before {
 }
 
 .auth-message.error {
-    background: rgba(254, 226, 226, 0.8);
-    color: #dc2626;
-    border: 1px solid #fca5a5;
+    background: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
 }
 
 .auth-message.success {
-    background: rgba(209, 250, 229, 0.8);
-    color: #059669;
-    border: 1px solid #6ee7b7;
+    background: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid var(--success-border);
 }
 
 /* Main App Styles */
@@ -431,6 +489,11 @@ body::before {
     z-index: 1000;
     overflow-y: auto;
     padding: 40px 20px;
+    transition: background 0.3s ease;
+}
+
+.dark-theme .admin-panel {
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .admin-panel.active {
