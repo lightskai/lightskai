@@ -6,9 +6,13 @@ export const CONFIG = {
     PRODUCTION_URL: 'https://lightskai.com',
     getRedirectUrl() {
         // Use local development URL if running on localhost
-        return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? window.location.origin + window.location.pathname 
-            : this.PRODUCTION_URL;
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            const origin = window.location.origin;
+            const pathname = window.location.pathname;
+            // Normalize index.html to root path for cleaner URLs
+            return pathname === '/index.html' ? origin + '/' : origin + pathname;
+        }
+        return this.PRODUCTION_URL;
     }
 };
 
