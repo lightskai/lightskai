@@ -12,9 +12,13 @@ const CONFIG = {
     }
 };
 
-// Initialize Supabase client
-const { createClient } = supabase;
-const supabaseClient = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+// Initialize Supabase client - will be set after libraries load
+let supabaseClient = null;
+
+function initSupabase() {
+    const { createClient } = supabase;
+    supabaseClient = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+}
 
 // State Management
 const state = {
@@ -1805,6 +1809,7 @@ const ThemeManager = {
 // Initialize Application
 async function initApp() {
     console.log('Meeting Intelligence Platform initializing...');
+    initSupabase(); // Initialize Supabase client
     initElements(); // Initialize DOM elements first
     ThemeManager.init();
     EventListeners.init();
