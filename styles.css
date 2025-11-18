@@ -26,8 +26,9 @@
     --error-border: #f5c6cb;
     --file-info-bg: #f8f9fa;
     --user-info-bg: #f8f9fa;
-    --accent-primary: #4a90e2;
-    --accent-hover: #357abd;
+    --accent-primary: #8b5cf6;
+    --accent-hover: #7c3aed;
+    --accent-light: #ede9fe;
 }
 
 /* CSS Variables for Dark Theme */
@@ -52,8 +53,9 @@
     --error-border: rgba(220, 53, 69, 0.3);
     --file-info-bg: #2a2e36;
     --user-info-bg: #2a2e36;
-    --accent-primary: #5fa3e8;
-    --accent-hover: #7ab5ed;
+    --accent-primary: #a78bfa;
+    --accent-hover: #c4b5fd;
+    --accent-light: #4c1d95;
 }
 
 body {
@@ -254,7 +256,7 @@ body {
 .form-input:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 .auth-btn {
@@ -454,7 +456,7 @@ body {
 .card-content input[type="file"]:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 /* Report Options Container */
@@ -697,7 +699,7 @@ body {
 .prompt-textarea:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 .prompt-select {
@@ -714,7 +716,7 @@ body {
 .prompt-select:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 /* Checkbox Styles */
