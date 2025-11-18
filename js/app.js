@@ -43,63 +43,68 @@ const state = {
     }
 };
 
-// DOM Elements
-const elements = {
-    authContainer: document.getElementById('authContainer'),
-    authForm: document.getElementById('authForm'),
-    authTitle: document.getElementById('authTitle'),
-    authSubtitle: document.getElementById('authSubtitle'),
-    authSubmitBtn: document.getElementById('authSubmitBtn'),
-    authToggleText: document.getElementById('authToggleText'),
-    authToggleLink: document.getElementById('authToggleLink'),
-    authMessage: document.getElementById('authMessage'),
-    emailInput: document.getElementById('emailInput'),
-    passwordInput: document.getElementById('passwordInput'),
-    magicLinkToggle: document.getElementById('magicLinkToggle'),
-    magicLinkToggleText: document.getElementById('magicLinkToggleText'),
-    passwordGroup: document.getElementById('passwordGroup'),
-    forgotPasswordLink: document.getElementById('forgotPasswordLink'),
-    authBackLink: document.getElementById('authBackLink'),
-    appContainer: document.getElementById('appContainer'),
-    userEmail: document.getElementById('userEmail'),
-    logoutBtn: document.getElementById('logoutBtn'),
-    settingsBtn: document.getElementById('settingsBtn'),
-    uploadArea: document.getElementById('uploadArea'),
-    fileInput: document.getElementById('fileInput'),
-    fileInfo: document.getElementById('fileInfo'),
-    fileName: document.getElementById('fileName'),
-    fileSize: document.getElementById('fileSize'),
-    removeFile: document.getElementById('removeFile'),
-    runBtn: document.getElementById('runBtn'),
-    reportOptionsContainer: document.getElementById('reportOptionsContainer'),
-    meetingTypeSelect: document.getElementById('meetingTypeSelect'),
-    methodologySelect: document.getElementById('methodologySelect'),
-    industrySelect: document.getElementById('industrySelect'),
-    optionsError: document.getElementById('optionsError'),
-    selectorsError: document.getElementById('selectorsError'),
-    aiPromptDisplay: document.getElementById('aiPromptDisplay'),
-    copyPromptBtn: document.getElementById('copyPromptBtn'),
-    runAIBtn: document.getElementById('runAIBtn'),
-    aiResultsDisplay: document.getElementById('aiResultsDisplay'),
-    copyResultsBtn: document.getElementById('copyResultsBtn'),
-    adminPanel: document.getElementById('adminPanel'),
-    adminClose: document.getElementById('adminClose'),
-    adminMeetingType: document.getElementById('adminMeetingType'),
-    adminMethodology: document.getElementById('adminMethodology'),
-    adminIndustry: document.getElementById('adminIndustry'),
-    themeSelect: document.getElementById('themeSelect'),
-    applyThemeBtn: document.getElementById('applyThemeBtn'),
-    adminSaveBtn: document.getElementById('adminSaveBtn'),
-    adminCancelBtn: document.getElementById('adminCancelBtn'),
-    adminResetBtn: document.getElementById('adminResetBtn'),
-    adminSuccessMessage: document.getElementById('adminSuccessMessage'),
-    adminSuccessCloseBtn: document.getElementById('adminSuccessCloseBtn'),
-    adminNewPassword: document.getElementById('adminNewPassword'),
-    adminConfirmPassword: document.getElementById('adminConfirmPassword'),
-    adminChangePasswordBtn: document.getElementById('adminChangePasswordBtn'),
-    passwordStrengthBar: document.getElementById('passwordStrengthBar'),
-    passwordRequirements: document.querySelectorAll('.password-requirement')
-};
+// DOM Elements - will be initialized after DOM is ready
+let elements = {};
+
+// Initialize DOM elements
+function initElements() {
+    elements = {
+        authContainer: document.getElementById('authContainer'),
+        authForm: document.getElementById('authForm'),
+        authTitle: document.getElementById('authTitle'),
+        authSubtitle: document.getElementById('authSubtitle'),
+        authSubmitBtn: document.getElementById('authSubmitBtn'),
+        authToggleText: document.getElementById('authToggleText'),
+        authToggleLink: document.getElementById('authToggleLink'),
+        authMessage: document.getElementById('authMessage'),
+        emailInput: document.getElementById('emailInput'),
+        passwordInput: document.getElementById('passwordInput'),
+        magicLinkToggle: document.getElementById('magicLinkToggle'),
+        magicLinkToggleText: document.getElementById('magicLinkToggleText'),
+        passwordGroup: document.getElementById('passwordGroup'),
+        forgotPasswordLink: document.getElementById('forgotPasswordLink'),
+        authBackLink: document.getElementById('authBackLink'),
+        appContainer: document.getElementById('appContainer'),
+        userEmail: document.getElementById('userEmail'),
+        logoutBtn: document.getElementById('logoutBtn'),
+        settingsBtn: document.getElementById('settingsBtn'),
+        uploadArea: document.getElementById('uploadArea'),
+        fileInput: document.getElementById('fileInput'),
+        fileInfo: document.getElementById('fileInfo'),
+        fileName: document.getElementById('fileName'),
+        fileSize: document.getElementById('fileSize'),
+        removeFile: document.getElementById('removeFile'),
+        runBtn: document.getElementById('runBtn'),
+        reportOptionsContainer: document.getElementById('reportOptionsContainer'),
+        meetingTypeSelect: document.getElementById('meetingTypeSelect'),
+        methodologySelect: document.getElementById('methodologySelect'),
+        industrySelect: document.getElementById('industrySelect'),
+        optionsError: document.getElementById('optionsError'),
+        selectorsError: document.getElementById('selectorsError'),
+        aiPromptDisplay: document.getElementById('aiPromptDisplay'),
+        copyPromptBtn: document.getElementById('copyPromptBtn'),
+        runAIBtn: document.getElementById('runAIBtn'),
+        aiResultsDisplay: document.getElementById('aiResultsDisplay'),
+        copyResultsBtn: document.getElementById('copyResultsBtn'),
+        adminPanel: document.getElementById('adminPanel'),
+        adminClose: document.getElementById('adminClose'),
+        adminMeetingType: document.getElementById('adminMeetingType'),
+        adminMethodology: document.getElementById('adminMethodology'),
+        adminIndustry: document.getElementById('adminIndustry'),
+        themeSelect: document.getElementById('themeSelect'),
+        applyThemeBtn: document.getElementById('applyThemeBtn'),
+        adminSaveBtn: document.getElementById('adminSaveBtn'),
+        adminCancelBtn: document.getElementById('adminCancelBtn'),
+        adminResetBtn: document.getElementById('adminResetBtn'),
+        adminSuccessMessage: document.getElementById('adminSuccessMessage'),
+        adminSuccessCloseBtn: document.getElementById('adminSuccessCloseBtn'),
+        adminNewPassword: document.getElementById('adminNewPassword'),
+        adminConfirmPassword: document.getElementById('adminConfirmPassword'),
+        adminChangePasswordBtn: document.getElementById('adminChangePasswordBtn'),
+        passwordStrengthBar: document.getElementById('passwordStrengthBar'),
+        passwordRequirements: document.querySelectorAll('.password-requirement')
+    };
+}
 
 // User Preferences Storage
 const UserPreferences = {
@@ -1800,6 +1805,7 @@ const ThemeManager = {
 // Initialize Application
 async function initApp() {
     console.log('Meeting Intelligence Platform initializing...');
+    initElements(); // Initialize DOM elements first
     ThemeManager.init();
     EventListeners.init();
     await Auth.checkSession();
