@@ -483,6 +483,70 @@ body::before {
     box-shadow: none;
 }
 
+/* Enhanced Auth/Login Button - Modern Appearance */
+.auth-btn {
+    padding: 16px 40px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+    border-radius: var(--border-radius-lg) !important;
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 20px rgba(99, 102, 241, 0.35),
+        0 1px 3px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: all var(--transition-spring);
+}
+
+.auth-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.2) 0%, 
+        rgba(255, 255, 255, 0) 50%,
+        rgba(0, 0, 0, 0.1) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.auth-btn:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 8px 30px rgba(99, 102, 241, 0.45),
+        0 3px 8px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.auth-btn:hover:not(:disabled)::before {
+    opacity: 1;
+}
+
+.auth-btn:active:not(:disabled) {
+    transform: translateY(-1px) scale(1);
+    box-shadow: 
+        0 4px 16px rgba(99, 102, 241, 0.4),
+        0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Add icon support for auth button */
+.auth-btn svg,
+.auth-btn i {
+    font-size: 18px;
+    transition: transform var(--transition-base);
+}
+
+.auth-btn:hover:not(:disabled) svg,
+.auth-btn:hover:not(:disabled) i {
+    transform: translateX(2px);
+}
+
 /* Secondary button */
 .btn-secondary,
 .settings-btn,
@@ -801,14 +865,25 @@ body::before {
 }
 
 .form-input {
-    padding: 14px var(--space-lg);
+    padding: 16px var(--space-lg);
     border: 2px solid var(--border-light);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-lg);
     font-size: 15px;
     transition: all var(--transition-base);
     background: var(--bg-input);
     color: var(--text-primary);
     font-family: inherit;
+    min-height: 52px;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        inset 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.form-input:hover {
+    border-color: var(--border-medium);
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.08),
+        inset 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .form-input:focus {
