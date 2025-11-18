@@ -378,19 +378,42 @@ body::before {
 
 /* Outline button */
 .btn-outline,
-.copy-prompt-btn,
-.browse-btn {
+.copy-prompt-btn {
     background: var(--bg-input);
     border: 2px solid var(--color-primary);
     color: var(--color-primary);
 }
 
 .btn-outline:hover:not(:disabled),
-.copy-prompt-btn:hover:not(:disabled),
-.browse-btn:hover:not(:disabled) {
+.copy-prompt-btn:hover:not(:disabled) {
     background: var(--color-primary);
     color: var(--text-inverse);
     transform: translateY(-1px);
+}
+
+/* Browse button - Primary style */
+.browse-btn {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: var(--text-inverse);
+    padding: 12px 32px;
+    border-radius: var(--border-radius-md);
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    transition: all var(--transition-slow);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+    position: relative;
+    z-index: 10;
+}
+
+.browse-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.browse-btn:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 /* Magic link button */
@@ -775,12 +798,50 @@ body::before {
     background: var(--bg-hover);
     border-radius: var(--border-radius-sm);
     transition: all var(--transition-fast);
-    cursor: pointer;
+    cursor: move; /* Changed from pointer to indicate draggable */
+    position: relative;
 }
 
 .checkbox-item:hover {
     background: var(--bg-input);
     transform: translateX(4px);
+}
+
+/* Drag and Drop States */
+.checkbox-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+}
+
+.checkbox-item.drag-over {
+    border: 2px dashed var(--color-primary);
+    background: rgba(99, 102, 241, 0.1);
+    transform: scale(1.02);
+}
+
+.checkbox-item.drop-above {
+    border-top: 3px solid var(--color-primary);
+}
+
+.checkbox-item.drop-below {
+    border-bottom: 3px solid var(--color-primary);
+}
+
+/* Drag handle icon (optional visual indicator) */
+.checkbox-item::before {
+    content: '⋮⋮';
+    color: var(--text-muted);
+    font-size: 16px;
+    letter-spacing: -2px;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.checkbox-item:hover::before {
+    opacity: 0.5;
 }
 
 .checkbox-item input[type="radio"],
