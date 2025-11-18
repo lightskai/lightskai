@@ -487,8 +487,8 @@ body::before {
 .btn-secondary,
 .settings-btn,
 .help-btn {
-    background: var(--bg-input);
-    border: 2px solid var(--border-light);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border: 2px solid transparent;
     color: var(--color-primary);
     box-shadow: var(--shadow-sm);
     position: relative;
@@ -500,27 +500,27 @@ body::before {
 .help-btn::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-    transition: left var(--transition-slow);
+    inset: 0;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    border-radius: inherit;
 }
 
 .btn-secondary:hover:not(:disabled),
 .settings-btn:hover:not(:disabled),
 .help-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-    border-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: var(--text-inverse);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    border-color: transparent;
 }
 
 .btn-secondary:hover:not(:disabled)::before,
 .settings-btn:hover:not(:disabled)::before,
 .help-btn:hover:not(:disabled)::before {
-    left: 100%;
+    opacity: 1;
 }
 
 .btn-secondary:active:not(:disabled),
@@ -530,11 +530,18 @@ body::before {
     box-shadow: var(--shadow-sm);
 }
 
+/* Dark theme adjustments */
+.dark-theme .settings-btn,
+.dark-theme .help-btn {
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(167, 139, 250, 0.15) 100%);
+    color: var(--color-primary);
+}
+
 /* Danger button */
 .btn-danger,
 .logout-btn {
-    background: var(--bg-input);
-    border: 2px solid var(--color-error-border);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+    border: 2px solid transparent;
     color: var(--color-error);
     box-shadow: var(--shadow-sm);
     position: relative;
@@ -545,32 +552,37 @@ body::before {
 .logout-btn::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent);
-    transition: left var(--transition-slow);
+    inset: 0;
+    background: linear-gradient(135deg, var(--color-error) 0%, #dc2626 100%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    border-radius: inherit;
 }
 
 .btn-danger:hover:not(:disabled),
 .logout-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.08) 100%);
-    border-color: var(--color-error);
+    background: linear-gradient(135deg, var(--color-error) 0%, #dc2626 100%);
+    color: var(--text-inverse);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
-    color: #dc2626;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+    border-color: transparent;
 }
 
 .btn-danger:hover:not(:disabled)::before,
 .logout-btn:hover:not(:disabled)::before {
-    left: 100%;
+    opacity: 1;
 }
 
 .btn-danger:active:not(:disabled),
 .logout-btn:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: var(--shadow-sm);
+}
+
+/* Dark theme adjustments */
+.dark-theme .logout-btn {
+    background: linear-gradient(135deg, rgba(248, 113, 113, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%);
+    color: #f87171;
 }
 
 /* Enhanced focus states for navigation buttons */
@@ -592,6 +604,8 @@ body::before {
 .help-btn svg,
 .logout-btn svg {
     transition: transform var(--transition-base);
+    position: relative;
+    z-index: 1;
 }
 
 .settings-btn:hover:not(:disabled) svg {
@@ -599,11 +613,11 @@ body::before {
 }
 
 .help-btn:hover:not(:disabled) svg {
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
 .logout-btn:hover:not(:disabled) svg {
-    transform: translateX(2px);
+    transform: translateX(3px);
 }
 
 /* Outline button */
