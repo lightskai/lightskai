@@ -16,8 +16,12 @@ const CONFIG = {
 let supabaseClient = null;
 
 function initSupabase() {
+    if (typeof supabase === 'undefined') {
+        throw new Error('Supabase library not loaded. Please refresh the page.');
+    }
     const { createClient } = supabase;
     supabaseClient = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+    console.log('Supabase client initialized successfully');
 }
 
 // State Management
@@ -1808,12 +1812,23 @@ const ThemeManager = {
 
 // Initialize Application
 async function initApp() {
-    console.log('Meeting Intelligence Platform initializing...');
-    initSupabase(); // Initialize Supabase client
-    initElements(); // Initialize DOM elements first
-    ThemeManager.init();
-    EventListeners.init();
-    await Auth.checkSession();
+    try {
+        console.log('Meeting Intelligence Platform initializing...');
+        console.log('Step 1: Initializing Supabase...');
+        initSupabase(); // Initialize Supabase client
+        console.log('Step 2: Initializing DOM elements...');
+        initElements(); // Initialize DOM elements first
+        console.log('Step 3: Initializing Theme Manager...');
+        ThemeManager.init();
+        console.log('Step 4: Initializing Event Listeners...');
+        EventListeners.init();
+        console.log('Step 5: Checking authentication session...');
+        await Auth.checkSession();
+        console.log('Initialization complete!');
+    } catch (error) {
+        console.error('Initialization error:', error);
+        alert('Failed to initialize application: ' + error.message);
+    }
 }
 
 if (document.readyState === 'loading') {
