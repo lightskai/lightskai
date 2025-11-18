@@ -557,9 +557,7 @@ body::before {
 }
 
 /* Secondary button */
-.btn-secondary,
-.settings-btn,
-.help-btn {
+.btn-secondary {
     background: var(--bg-input);
     border: 2px solid var(--border-light);
     color: var(--text-primary);
@@ -569,9 +567,7 @@ body::before {
     font-weight: 600;
 }
 
-.btn-secondary::before,
-.settings-btn::before,
-.help-btn::before {
+.btn-secondary::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -582,48 +578,80 @@ body::before {
 }
 
 .btn-secondary span,
-.btn-secondary svg,
-.settings-btn span,
-.settings-btn svg,
-.help-btn span,
-.help-btn svg {
+.btn-secondary svg {
     position: relative;
     z-index: 1;
 }
 
-.btn-secondary:hover:not(:disabled),
-.settings-btn:hover:not(:disabled),
-.help-btn:hover:not(:disabled) {
+.btn-secondary:hover:not(:disabled) {
     color: var(--text-inverse);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
     border-color: var(--color-primary);
 }
 
-.btn-secondary:hover:not(:disabled)::before,
-.settings-btn:hover:not(:disabled)::before,
-.help-btn:hover:not(:disabled)::before {
+.btn-secondary:hover:not(:disabled)::before {
     opacity: 1;
 }
 
-.btn-secondary:active:not(:disabled),
-.settings-btn:active:not(:disabled),
-.help-btn:active:not(:disabled) {
+.btn-secondary:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: var(--shadow-sm);
+}
+
+/* Navigation Text Links - Settings, Help, Logout */
+.settings-btn,
+.help-btn {
+    background: transparent;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    box-shadow: none;
+}
+
+.settings-btn:hover:not(:disabled),
+.help-btn:hover:not(:disabled) {
+    color: var(--color-primary);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+}
+
+.settings-btn svg,
+.help-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--transition-base);
+}
+
+.settings-btn:hover:not(:disabled) svg {
+    transform: rotate(90deg);
+}
+
+.help-btn:hover:not(:disabled) svg {
+    transform: scale(1.1);
 }
 
 /* Dark theme adjustments */
 .dark-theme .settings-btn,
 .dark-theme .help-btn {
-    background: var(--bg-input);
-    color: var(--text-primary);
-    border-color: var(--border-medium);
+    color: var(--text-secondary);
+}
+
+.dark-theme .settings-btn:hover,
+.dark-theme .help-btn:hover {
+    color: var(--color-primary);
 }
 
 /* Danger button */
-.btn-danger,
-.logout-btn {
+.btn-danger {
     background: var(--bg-input);
     border: 2px solid var(--color-error-border);
     color: var(--color-error);
@@ -633,8 +661,7 @@ body::before {
     font-weight: 600;
 }
 
-.btn-danger::before,
-.logout-btn::before {
+.btn-danger::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -645,72 +672,87 @@ body::before {
 }
 
 .btn-danger span,
-.btn-danger svg,
-.logout-btn span,
-.logout-btn svg {
+.btn-danger svg {
     position: relative;
     z-index: 1;
 }
 
-.btn-danger:hover:not(:disabled),
-.logout-btn:hover:not(:disabled) {
+.btn-danger:hover:not(:disabled) {
     color: var(--text-inverse);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
     border-color: var(--color-error);
 }
 
-.btn-danger:hover:not(:disabled)::before,
-.logout-btn:hover:not(:disabled)::before {
+.btn-danger:hover:not(:disabled)::before {
     opacity: 1;
 }
 
-.btn-danger:active:not(:disabled),
-.logout-btn:active:not(:disabled) {
+.btn-danger:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: var(--shadow-sm);
 }
 
-/* Dark theme adjustments */
-.dark-theme .logout-btn {
-    background: var(--bg-input);
-    color: #f87171;
-    border-color: rgba(248, 113, 113, 0.3);
+/* Navigation Text Link - Logout */
+.logout-btn {
+    background: transparent;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    box-shadow: none;
 }
 
-/* Enhanced focus states for navigation buttons */
-.settings-btn:focus-visible,
-.help-btn:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+.logout-btn:hover:not(:disabled) {
+    color: var(--color-error);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
 }
 
-.logout-btn:focus-visible {
-    outline: 2px solid var(--color-error);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-}
-
-/* Button icon enhancements */
-.settings-btn svg,
-.help-btn svg,
 .logout-btn svg {
+    width: 18px;
+    height: 18px;
     transition: transform var(--transition-base);
-    position: relative;
-    z-index: 1;
-}
-
-.settings-btn:hover:not(:disabled) svg {
-    transform: rotate(90deg);
-}
-
-.help-btn:hover:not(:disabled) svg {
-    transform: scale(1.15);
 }
 
 .logout-btn:hover:not(:disabled) svg {
     transform: translateX(3px);
+}
+
+/* Dark theme adjustments */
+.dark-theme .logout-btn {
+    color: var(--text-secondary);
+}
+
+.dark-theme .logout-btn:hover {
+    color: #f87171;
+}
+
+/* Enhanced focus states for navigation links */
+.settings-btn:focus-visible,
+.help-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+.logout-btn:focus-visible {
+    outline: 2px solid var(--color-error);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* Button icon enhancements */
+.btn svg,
+.btn i {
+    transition: transform var(--transition-base);
 }
 
 /* Outline button */
@@ -1115,6 +1157,15 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: var(--space-xl);
+}
+
+/* Reorder AI sections - Results above Prompt */
+.main-content > .card:has(.ai-prompt-display) {
+    order: 2;
+}
+
+.main-content > .card:has(.ai-results-display) {
+    order: 1;
 }
 
 /* ========================================
