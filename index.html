@@ -5,318 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Light Skai - Meeting Intelligence Platform</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Begin two-column dashboard layout styles */
+        .dashboard-container {
+            display: flex;
+            min-height: 90vh;
+            background: #f9fafb;
+            gap: 0;
+        }
+        .sidebar {
+            flex: 0 0 320px;
+            background: #f6f8fa;
+            padding: 32px 20px 32px 32px;
+            border-right: 1px solid #d1d5db;
+            box-sizing: border-box;
+            min-width: 260px;
+        }
+        .main-content {
+            flex: 1 1 0;
+            padding: 40px 40px 40px 40px;
+            background: #fff;
+            min-width: 0;
+        }
+        @media (max-width: 900px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #d1d5db;
+                width: 100%;
+                min-width: 0;
+                padding: 26px 10px;
+            }
+            .main-content {
+                padding: 24px 8px;
+            }
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 40px;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            font-weight: bold;
+            background-color: #6366f1;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            margin-right: 12px;
+        }
+        .brand-name {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #312e81;
+            letter-spacing: 0.03em;
+        }
+        .nav-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .user-email {
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.98em;
+            margin-right: 4px;
+        }
+        .settings-btn, .logout-btn, .help-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 18px;
+            font-size: 1em;
+            color: #6366f1;
+            cursor: pointer;
+        }
+        .settings-btn:hover, .logout-btn:hover, .help-btn:hover {
+            text-decoration: underline;
+        }
+        .version {
+            color: #8c8fa8;
+            font-size: 0.98em;
+            margin-left: 10px;
+        }
+        /* Previous card stylings reused */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px 0 #0002;
+            margin-bottom: 24px;
+            padding: 0;
+            border: 1px solid #f1f5f9;
+        }
+        .card-header {
+            font-weight: 700;
+            padding: 17px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 1.1rem;
+            background: #f3f4f6;
+            letter-spacing: 0.01em;
+        }
+        .card-content {
+            padding: 20px;
+        }
+        .run-btn, .copy-prompt-btn {
+            border: none;
+            background: #6366f1;
+            color: #fff;
+            border-radius: 7px;
+            padding: 10px 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 18px;
+        }
+        .run-btn[disabled] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        /* Error message */
+        .error-message {
+            color: #ef4444;
+            padding: 12px 20px;
+            font-size: 1em;
+            min-height: 32px;
+        }
+        /* Additional UI tweaks as needed */
+    </style>
 </head>
 <body>
-    <div class="content-wrapper">
-        <!-- Authentication Screen -->
-        <div class="auth-container" id="authContainer">
-            <div class="auth-card">
-                <div class="auth-header">
-                    <div class="auth-logo">LS</div>
-                    <h1 class="auth-title" id="authTitle">Welcome Back</h1>
-                    <p class="auth-subtitle" id="authSubtitle">Sign in to access your meeting intelligence platform</p>
-                </div>
-
-                <div class="auth-message" id="authMessage"></div>
-
-                <a class="auth-back-link" id="authBackLink" style="display: none;">
-                    ← Back to Sign In
-                </a>
-
-                <button class="magic-link-btn" id="magicLinkToggle">
-                    <span class="magic-link-icon">✨</span>
-                    <span id="magicLinkToggleText">Sign in with Magic Link</span>
-                </button>
-
-                <div class="auth-divider">
-                    <div class="auth-divider-line"></div>
-                    <span class="auth-divider-text">Or</span>
-                    <div class="auth-divider-line"></div>
-                </div>
-
-                <form class="auth-form" id="authForm">
-                    <div class="form-group" id="emailGroup">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" id="emailInput" placeholder="your@email.com" required>
-                    </div>
-                    <div class="form-group" id="passwordGroup">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-input" id="passwordInput" placeholder="••••••••" required>
-                    </div>
-                    <div class="auth-forgot-password" id="forgotPasswordContainer">
-                        <a class="auth-forgot-link" id="forgotPasswordLink">Forgot password?</a>
-                    </div>
-                    <button type="submit" class="auth-btn" id="authSubmitBtn">Sign In</button>
-                </form>
-
-                <div class="auth-toggle">
-                    <span id="authToggleText">Don't have an account?</span>
-                    <a class="auth-toggle-link" id="authToggleLink">Sign Up</a>
-                </div>
+    <div class="app-container" id="appContainer">
+        <div class="navbar">
+            <div class="logo-section">
+                <div class="logo">LS</div>
+                <div class="brand-name">Light Skai</div>
+            </div>
+            <div class="nav-right">
+                <span class="user-email" id="userEmail"></span>
+                <button class="settings-btn" id="settingsBtn">⚙️ Settings</button>
+                <button class="help-btn" id="helpBtn">Help & Support</button>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+                <span class="version">v2.4.1</span>
             </div>
         </div>
-
-        <!-- Main App Container -->
-        <div class="app-container" id="appContainer">
-            <!-- Navigation -->
-            <nav class="navbar">
-                <div class="logo-section">
-                    <div class="logo">LS</div>
-                    <div class="brand-name">Light Skai</div>
-                </div>
-                
-                <div class="nav-right">
-                    <div class="user-info">
-                        <span class="user-email" id="userEmail"></span>
-                    </div>
-                    <button class="logout-btn" id="logoutBtn">Sign Out</button>
-                    <button class="admin-btn" id="adminBtn">⚙️</button>
-                </div>
-            </nav>
-
-            <div class="main-content">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="step-label">Step 1:</span> Upload File
-                    </div>
-                    <div class="upload-section">
-                        <div class="upload-area" id="uploadArea">
-                            <div class="upload-icon">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                </svg>
-                            </div>
-                            <div class="upload-text">Drag and drop your file here</div>
-                            <div class="upload-subtext">or click to browse</div>
-                            <input type="file" id="fileInput" accept=".txt,.pdf,.docx" style="display: none;">
-                        </div>
-
-                        <div class="file-info" id="fileInfo">
-                            <div class="file-details">
-                                <div class="file-name" id="fileName"></div>
-                                <div class="file-size" id="fileSize"></div>
-                            </div>
-                            <button class="remove-file" id="removeFile">×</button>
-                        </div>
-                        
-                        <div class="step-action" id="step1Container" style="display: none; margin-top: 20px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <span class="step-label">Step 2:</span>
-                                <button class="run-ai-btn" id="runAIBtn" style="margin-top: 0; flex: 1;" disabled>
-                                    🤖 Run AI Analysis
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="step-action" style="margin-top: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <span class="step-label">Step 3:</span>
-                                <button class="run-btn" id="runBtn" disabled style="flex: 1;">Generate Report</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+        <div class="dashboard-container">
+            <aside class="sidebar">
                 <div class="card">
                     <div class="card-header">Report Options</div>
                     <div class="error-message" id="optionsError"></div>
-                    <div class="report-options" id="reportOptionsContainer">
-                        <!-- Report options will be loaded here -->
-                    </div>
-                    <div class="copy-prompt-container">
+                    <div class="report-options" id="reportOptionsContainer"></div>
+                    <div class="copy-prompt-container" style="padding: 12px 20px;">
                         <button class="copy-prompt-btn" id="copyPromptBtn" style="display: none;">📋 Copy AI Prompt</button>
                     </div>
                 </div>
-
+                <div class="card">
+                    <div class="card-header">Meeting Configuration</div>
+                    <div class="card-content">
+                        <label for="meetingTypeSelect">Type</label>
+                        <select id="meetingTypeSelect" style="width: 100%; margin-bottom: 10px;"></select>
+                        <label for="methodologySelect">Methodology</label>
+                        <select id="methodologySelect" style="width: 100%; margin-bottom: 10px;"></select>
+                        <label for="industrySelect">Industry</label>
+                        <select id="industrySelect" style="width: 100%;"></select>
+                        <div class="error-message" id="selectorsError" style="padding: 4px 0; min-height: 24px;"></div>
+                    </div>
+                </div>
+            </aside>
+            <section class="main-content">
+                <div class="card">
+                    <div class="card-header">Upload File</div>
+                    <div class="card-content">
+                        <input type="file" id="fileInput" accept=".pdf,.txt,.docx" style="margin-bottom:16px;">
+                        <div id="fileInfo" style="display:none; margin-bottom:10px;">
+                            <span id="fileName"></span>
+                            <span id="fileSize"></span>
+                            <button id="removeFile" style="margin-left: 8px;">Remove</button>
+                        </div>
+                        <button class="run-btn" id="runBtn" disabled>Generate Report</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">AI Prompt</div>
+                    <div class="card-content">
+                        <div class="ai-prompt-display" id="aiPromptDisplay">
+                            <div class="ai-prompt-empty">
+                                Select report options above to see the AI prompt
+                            </div>
+                        </div>
+                        <button class="copy-prompt-btn" id="copyPromptBtn2" style="display: none;">
+                            📋 Copy Prompt
+                        </button>
+                    </div>
+                </div>
                 <div class="card">
                     <div class="card-header">AI Analysis Results</div>
-                    <div class="ai-results-container">
-                        <div class="ai-results-display" id="aiResultsDisplay">
-                            <div class="ai-placeholder">
-                                Upload a file and run AI analysis to see results here.
-                            </div>
-                        </div>
-                        <div class="copy-results-container">
-                            <button class="copy-results-btn" id="copyResultsBtn" style="display: none;">📋 Copy Results</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        Meeting Configuration
-                    </div>
-                    <div class="selectors-section">
-                        <div class="error-message" id="selectorsError"></div>
-                        <div class="selectors-grid">
-                            <div class="selector-group">
-                                <label class="selector-label">Meeting Type</label>
-                                <select class="industry-select" id="meetingTypeSelect">
-                                    <option value="">Select Meeting Type</option>
-                                </select>
-                            </div>
-                            <div class="selector-group">
-                                <label class="selector-label">Methodology</label>
-                                <select class="industry-select" id="methodologySelect">
-                                    <option value="">Select Methodology</option>
-                                </select>
-                            </div>
-                            <div class="selector-group">
-                                <label class="selector-label">Industry</label>
-                                <select class="industry-select" id="industrySelect">
-                                    <option value="">Select Industry</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Panel -->
-        <div class="admin-panel" id="adminPanel">
-            <div class="admin-panel-content">
-                <div class="admin-success-message" id="adminSuccessMessage">
-                    <div class="admin-success-content">
-                        <div class="admin-success-text">
-                            <span class="admin-success-icon">✓</span>
-                            <span>Default settings saved successfully!</span>
-                        </div>
-                        <button class="admin-success-close-btn" id="adminSuccessCloseBtn">Close Settings</button>
-                    </div>
-                </div>
-
-                <div class="admin-header">
-                    <h2 class="admin-title">User Settings</h2>
-                    <button class="admin-close" id="adminClose">×</button>
-                </div>
-
-                <!-- Change Password Section -->
-                <div class="admin-section collapsed">
-                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="admin-section-header-left">
-                            <div class="admin-section-icon">🔐</div>
-                            <div class="admin-section-title">Change Password</div>
-                        </div>
-                        <div class="admin-section-toggle">▼</div>
-                    </div>
-                    <div class="admin-section-content">
-                        <p class="admin-description">
-                            Update your account password. Make sure to use a strong, unique password.
-                        </p>
-                        <div class="password-input-group">
-                            <div class="form-group">
-                                <label class="form-label">New Password</label>
-                                <input type="password" class="form-input" id="adminNewPassword" placeholder="Enter new password">
-                                <div class="password-strength">
-                                    <div class="password-strength-bar" id="passwordStrengthBar"></div>
-                                </div>
-                                <div class="password-requirements">
-                                    <div class="password-requirement" data-requirement="length">
-                                        <span class="password-requirement-icon">○</span>
-                                        <span>At least 8 characters</span>
-                                    </div>
-                                    <div class="password-requirement" data-requirement="uppercase">
-                                        <span class="password-requirement-icon">○</span>
-                                        <span>One uppercase letter</span>
-                                    </div>
-                                    <div class="password-requirement" data-requirement="lowercase">
-                                        <span class="password-requirement-icon">○</span>
-                                        <span>One lowercase letter</span>
-                                    </div>
-                                    <div class="password-requirement" data-requirement="number">
-                                        <span class="password-requirement-icon">○</span>
-                                        <span>One number</span>
-                                    </div>
+                    <div class="card-content">
+                        <div class="ai-results-container">
+                            <div class="ai-results-display" id="aiResultsDisplay">
+                                <div class="ai-placeholder">
+                                    Upload a file and run AI analysis to see results here.
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-input" id="adminConfirmPassword" placeholder="Confirm new password">
-                            </div>
-                            <button class="admin-btn admin-btn-primary" id="adminChangePasswordBtn">Update Password</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Theme Preferences Section -->
-                <div class="admin-section collapsed">
-                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="admin-section-header-left">
-                            <div class="admin-section-icon">🎨</div>
-                            <div class="admin-section-title">Theme Preferences</div>
-                        </div>
-                        <div class="admin-section-toggle">▼</div>
-                    </div>
-                    <div class="admin-section-content">
-                        <p class="admin-description">
-                            Choose your preferred theme for the application interface.
-                        </p>
-                        <div class="admin-select-group">
-                            <div class="admin-select-item">
-                                <label class="admin-select-label">Theme</label>
-                                <select class="industry-select" id="themeSelect">
-                                    <option value="light">Light Mode</option>
-                                    <option value="dark">Dark Mode</option>
-                                    <option value="auto">Auto (System Preference)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button class="admin-btn admin-btn-primary" id="applyThemeBtn" style="margin-top: 16px;">Apply Theme</button>
-                    </div>
-                </div>
-
-                <!-- Default Meeting Configuration Section -->
-                <div class="admin-section collapsed">
-                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="admin-section-header-left">
-                            <div class="admin-section-icon">📁</div>
-                            <div class="admin-section-title">Default Meeting Configuration</div>
-                        </div>
-                        <div class="admin-section-toggle">▼</div>
-                    </div>
-                    <div class="admin-section-content">
-                        <p class="admin-description">
-                            Set your default selections for meeting type, methodology, and industry.
-                        </p>
-                        <div class="admin-select-group">
-                            <div class="admin-select-item">
-                                <label class="admin-select-label">Default Meeting Type</label>
-                                <select class="industry-select" id="adminMeetingType">
-                                    <option value="">None (User will select)</option>
-                                </select>
-                            </div>
-                            <div class="admin-select-item">
-                                <label class="admin-select-label">Default Methodology</label>
-                                <select class="industry-select" id="adminMethodology">
-                                    <option value="">None (User will select)</option>
-                                </select>
-                            </div>
-                            <div class="admin-select-item">
-                                <label class="admin-select-label">Default Industry</label>
-                                <select class="industry-select" id="adminIndustry">
-                                    <option value="">None (User will select)</option>
-                                </select>
+                            <div class="copy-results-container">
+                                <button class="copy-prompt-btn" id="copyResultsBtn" style="display: none;">
+                                    📋 Copy Results
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="admin-actions">
-                    <button class="admin-btn admin-btn-reset" id="adminResetBtn">Reset to System Defaults</button>
-                    <button class="admin-btn admin-btn-secondary" id="adminCancelBtn">Cancel</button>
-                    <button class="admin-btn admin-btn-primary" id="adminSaveBtn">Save Defaults</button>
-                </div>
-            </div>
+            </section>
         </div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Main Application Module -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
