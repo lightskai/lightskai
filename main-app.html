@@ -70,6 +70,7 @@
         }
         
         /* Secondary Buttons */
+        .settings-btn,
         .copy-prompt-btn,
         .copy-results-btn {
             background: white !important;
@@ -77,6 +78,7 @@
             border: 2px solid #0EA5E9 !important;
         }
         
+        .settings-btn:hover,
         .copy-prompt-btn:hover,
         .copy-results-btn:hover {
             background: #F0F9FF !important;
@@ -228,127 +230,6 @@
             background: #DBEAFE !important;
             color: #1E3A8A !important;
         }
-        
-        /* ===================================== */
-        /* ADDITIONAL SPECIFIC COLOR UPDATES */
-        /* ===================================== */
-        
-        /* Page Title - White */
-        .page-title {
-            color: #ffffff !important;
-        }
-        
-        /* Page Subtitle - White */
-        .page-subtitle {
-            color: #ffffff !important;
-            opacity: 0.9 !important;
-        }
-        
-        /* Report Options Radio Button - Active State */
-        .report-option-radio:checked + label,
-        .checkbox-item.active,
-        .report-option.active {
-            background: #0EA5E9 !important;
-            color: white !important;
-            border-color: #0EA5E9 !important;
-        }
-        
-        /* Remove blue bars from card headers */
-        .card-header {
-            background: transparent !important;
-            border-left: none !important;
-            border-bottom: 1px solid #e2e8f0 !important;
-        }
-        
-        /* Keep card header text dark for readability */
-        .card-header {
-            color: #1e293b !important;
-        }
-        
-        /* ===================================== */
-        /* NAVBAR LINKS - Simple Link Styling */
-        /* ===================================== */
-        
-        /* Make navbar buttons look like simple links */
-        .settings-btn,
-        .help-btn {
-            background: none !important;
-            border: none !important;
-            color: #0EA5E9 !important;
-            padding: 0 !important;
-            margin: 0 16px !important;
-            font-weight: 400 !important;
-            text-decoration: none !important;
-            box-shadow: none !important;
-            cursor: pointer !important;
-            font-size: 14px !important;
-        }
-        
-        .settings-btn:hover,
-        .help-btn:hover {
-            background: none !important;
-            color: #0284C7 !important;
-            text-decoration: underline !important;
-        }
-        
-        /* Logout button stays as button but cleaner */
-        .logout-btn {
-            background: #DC2626 !important;
-            border: none !important;
-            padding: 8px 16px !important;
-            border-radius: 6px !important;
-        }
-        
-        .logout-btn:hover {
-            background: #B91C1C !important;
-        }
-        
-        /* Remove outlines from navbar items */
-        .nav-right button {
-            outline: none !important;
-        }
-        
-        /* ===================================== */
-        /* BACKGROUND COLORS - Light Gray/Blue */
-        /* ===================================== */
-        
-        /* Main background - blue gradient matching index page */
-        body {
-            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%) !important;
-            min-height: 100vh !important;
-        }
-        
-        .app-container {
-            background: transparent !important;
-        }
-        
-        .content-wrapper {
-            background: transparent !important;
-        }
-        
-        /* Navbar background - clean white */
-        .navbar {
-            background: white !important;
-            border-bottom: 1px solid #e2e8f0 !important;
-        }
-        
-        /* Container background */
-        .container {
-            background: transparent !important;
-        }
-        
-        /* Cards - white background */
-        .card {
-            background: white !important;
-            border: 1px solid #e2e8f0 !important;
-        }
-        
-        /* Version badge - subtle blue tint */
-        .version {
-            background: #F0F9FF !important;
-            color: #0EA5E9 !important;
-            border: 1px solid #BAE6FD !important;
-        }
     </style>
 </head>
 <body>
@@ -456,53 +337,43 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                         </svg>
                                     </div>
-                                    <div class="upload-text">
-                                        <p class="upload-main-text">Drag & drop your file here</p>
-                                        <p class="upload-sub-text">or</p>
-                                    </div>
-                                    <button class="browse-btn" id="browseBtn">Browse Files</button>
-                                    <p class="upload-hint">Supported formats: PDF, DOCX, TXT, MP3, MP4, M4A</p>
-                                    <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.mp3,.mp4,.m4a" style="display: none;">
+                                    <div class="upload-text">Drag and drop your file here</div>
+                                    <div class="upload-subtext">Supported formats: PDF, TXT, DOCX • Max size: 1GB</div>
+                                    <button class="browse-btn" type="button" onclick="document.getElementById('fileInput').click()">
+                                        Browse Files
+                                    </button>
+                                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt,.docx">
                                 </div>
-                                <div class="file-info" id="fileInfo" style="display: none;">
+                                <div class="file-info" id="fileInfo">
                                     <div class="file-details">
                                         <span class="file-name" id="fileName"></span>
                                         <span class="file-size" id="fileSize"></span>
                                     </div>
-                                    <button class="remove-file-btn" id="removeFileBtn">×</button>
+                                    <button class="remove-file" id="removeFile">×</button>
                                 </div>
-                                <div class="error-message" id="fileError"></div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <span class="step-label">Step 2:</span> Process & Extract
-                            </div>
-                            <button class="run-btn" id="runBtn" disabled>
-                                <span class="btn-icon">▶</span>
-                                <span class="btn-text">Extract Text from File</span>
-                            </button>
-                            <div class="transcript-display" id="transcriptDisplay">
-                                <div class="transcript-empty">
-                                    Upload a file and click "Extract Text from File" to see the content here
+                                
+                                <div class="step-action" id="step1Container" style="display: none; margin-top: 20px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 2:</span>
+                                        <button class="run-ai-btn" id="runAIBtn" style="margin-top: 0; flex: 1;" disabled>
+                                            🤖 Run AI Analysis
+                                        </button>
+                                    </div>
                                 </div>
+                                
+                                <div class="step-action" style="margin-top: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 3:</span>
+                                        <button class="run-btn" id="runBtn" disabled style="flex: 1;">Generate Report</button>
+                                    </div>
+                                </div>
+                                <div class="error-message" id="errorMessage"></div>
                             </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <span class="step-label">Step 3:</span> Generate AI Report
-                            </div>
-                            <button class="run-ai-btn" id="runAiBtn" disabled>
-                                <span class="btn-icon">✨</span>
-                                <span class="btn-text">Run AI Analysis</span>
-                            </button>
                         </div>
 
                         <div class="card">
                             <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                                <span>AI Prompt Preview</span>
+                                <span>AI Prompt</span>
                                 <div class="card-header-toggle">▼</div>
                             </div>
                             
