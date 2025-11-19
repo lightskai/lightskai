@@ -100,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 localStorage.setItem('companyBranding', JSON.stringify(branding));
                 applyBranding(branding);
-                alert('Branding applied successfully!');
             } else {
                 // Save image logo
                 const file = logoImageInput.files[0];
@@ -119,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                     localStorage.setItem('companyBranding', JSON.stringify(branding));
                     applyBranding(branding);
-                    alert('Branding applied successfully!');
                 };
                 reader.readAsDataURL(file);
             }
@@ -146,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     companyName: 'Light Skai',
                     companyNameColor: '#1e293b'
                 });
-                alert('Branding reset to default!');
             }
         });
     }
@@ -193,7 +190,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update company name and color
         brandNameElement.textContent = branding.companyName || 'Light Skai';
-        brandNameElement.style.color = branding.companyNameColor || '#1e293b';
+        
+        // Apply color with !important to override gradient
+        const color = branding.companyNameColor || '#1e293b';
+        brandNameElement.style.setProperty('color', color, 'important');
+        brandNameElement.style.setProperty('background', 'none', 'important');
+        brandNameElement.style.setProperty('-webkit-text-fill-color', color, 'important');
+        brandNameElement.style.setProperty('background-clip', 'unset', 'important');
+        brandNameElement.style.setProperty('-webkit-background-clip', 'unset', 'important');
 
         // Remove any existing custom logo image
         const existingCustomLogo = logoSection.querySelector('.custom-logo-image');
