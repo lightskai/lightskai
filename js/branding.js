@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to apply branding to navbar
+    // Function to apply branding to navbar and page content
     function applyBranding(branding) {
         const logoElement = document.querySelector('.logo');
         const brandNameElement = document.querySelector('.brand-name');
@@ -282,6 +282,10 @@ document.addEventListener('DOMContentLoaded', function() {
             pageTitleElement.textContent = branding.pageTitle || 'Meeting Intelligence Platform';
             const titleColor = branding.pageTitleColor || '#1e293b';
             pageTitleElement.style.setProperty('color', titleColor, 'important');
+            pageTitleElement.style.setProperty('background', 'none', 'important');
+            pageTitleElement.style.setProperty('-webkit-text-fill-color', titleColor, 'important');
+            pageTitleElement.style.setProperty('background-clip', 'unset', 'important');
+            pageTitleElement.style.setProperty('-webkit-background-clip', 'unset', 'important');
         }
 
         // Update page subtitle and color
