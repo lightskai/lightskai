@@ -5,11 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Light Skai - Meeting Intelligence Platform</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Critical CSS to ensure inputs work */
+        .auth-container {
+            display: none;
+            position: relative;
+            z-index: 100;
+        }
+        .auth-container.active {
+            display: flex !important;
+        }
+        .app-container {
+            display: none;
+            position: relative;
+            z-index: 100;
+        }
+        .app-container.active {
+            display: block !important;
+        }
+        .admin-panel {
+            position: fixed;
+            z-index: 9999;
+        }
+        /* Ensure inputs are always interactive */
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            pointer-events: auto !important;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+    </style>
 </head>
 <body>
     <div class="content-wrapper">
         <!-- Authentication Screen -->
-        <div class="auth-container" id="authContainer">
+        <div class="auth-container active" id="authContainer">
             <div class="auth-card">
                 <div class="auth-header">
                     <div class="auth-logo">LS</div>
@@ -211,7 +242,7 @@
         </div>
 
         <!-- Admin Panel -->
-        <div class="admin-panel" id="adminPanel">
+        <div class="admin-panel" id="adminPanel" style="display: none; opacity: 0; pointer-events: none; visibility: hidden;">
             <div class="admin-panel-content">
                 <div class="admin-success-message" id="adminSuccessMessage">
                     <div class="admin-success-content">
