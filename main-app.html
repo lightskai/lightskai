@@ -1665,24 +1665,42 @@
             function applyBranding(branding) {
                 const logoElement = document.querySelector('.logo');
                 const brandNameElement = document.querySelector('.brand-name');
+                const logoSection = document.querySelector('.logo-section');
                 
-                if (!logoElement || !brandNameElement) return;
+                if (!logoElement || !brandNameElement || !logoSection) return;
 
                 // Update company name
                 brandNameElement.textContent = branding.companyName || 'Light Skai';
 
+                // Remove any existing custom logo image
+                const existingCustomLogo = logoSection.querySelector('.custom-logo-image');
+                if (existingCustomLogo) {
+                    existingCustomLogo.remove();
+                }
+
                 if (branding.type === 'text') {
-                    // Text logo
+                    // Text logo - show the original logo element
+                    logoElement.style.display = '';
                     logoElement.textContent = branding.logoText || 'LS';
                     logoElement.style.backgroundImage = '';
                     logoElement.style.fontSize = '';
                 } else {
-                    // Image logo
-                    logoElement.textContent = '';
-                    logoElement.style.backgroundImage = `url(${branding.logoImage})`;
-                    logoElement.style.backgroundSize = 'cover';
-                    logoElement.style.backgroundPosition = 'center';
-                    logoElement.style.backgroundRepeat = 'no-repeat';
+                    // Image logo - hide the original logo element and create img element
+                    logoElement.style.display = 'none';
+                    
+                    // Create and insert custom logo image
+                    const customLogoImg = document.createElement('img');
+                    customLogoImg.className = 'custom-logo-image';
+                    customLogoImg.src = branding.logoImage;
+                    customLogoImg.alt = 'Company Logo';
+                    customLogoImg.style.width = '40px';
+                    customLogoImg.style.height = '40px';
+                    customLogoImg.style.objectFit = 'contain';
+                    customLogoImg.style.marginRight = '12px';
+                    customLogoImg.style.borderRadius = '4px';
+                    
+                    // Insert before the brand name
+                    logoSection.insertBefore(customLogoImg, brandNameElement);
                 }
             }
         });
