@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Skai - Meeting Intelligence Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Auth check script - runs immediately -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Check if user is logged in - if not, redirect to login
+        (async function() {
+            const CONFIG = {
+                SUPABASE_URL: 'https://khhrkgevrhtdlwcdxvbs.supabase.co',
+                SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoaHJrZ2V2cmh0ZGx3Y2R4dmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzA5NTIsImV4cCI6MjA3ODQ0Njk1Mn0.wqd6Uds-7pEr0p1MCrZKRzLzqOPS7ziZO8eGNs_G59c'
+            };
+            
+            const { createClient } = supabase;
+            const client = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+            
+            const { data: { session } } = await client.auth.getSession();
+            
+            if (!session) {
+                console.log('Not logged in, redirecting to login page...');
+                window.location.href = 'index.html';
+            } else {
+                console.log('User authenticated:', session.user.email);
+            }
+        })();
+    </script>
+
+    <div class="content-wrapper">
+        <!-- Main Application -->
+        <div class="app-container active" id="appContainer">
+            <div class="navbar">
+                <div class="logo-section">
+                    <div class="logo">LS</div>
+                    <div class="brand-name">Light Skai</div>
+                </div>
+                <div class="nav-right">
+                    <div class="user-info">
+                        <span class="user-email" id="userEmail"></span>
+                    </div>
+                    <button class="settings-btn" id="settingsBtn">⚙️ Settings</button>
+                    <button class="help-btn">Help & Support</button>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                    <div class="version">v2.4.1</div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Meeting Intelligence Platform</h1>
+                    <p class="page-subtitle">Upload your meeting notes or transcriptions to generate a comprehensive report.</p>
+                </div>
+
+                <div class="main-grid">
+                    <div class="sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                Report Option
+                                <div class="info-icon" title="Select which section to include in your report">i</div>
+                            </div>
+                            <div class="checkbox-group" id="reportOptionsContainer">
+                                <div style="padding: 20px; text-align: center; color: #64748b;">Loading options...</div>
+                            </div>
+                            <div class="error-message" id="optionsError"></div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                Meeting Configuration
+                                <div class="info-icon" title="Select your meeting type, methodology, and industry">i</div>
+                            </div>
+                            
+                            <div class="selector-group">
+                                <label class="selector-label">Meeting Type</label>
+                                <select class="industry-select" id="meetingTypeSelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+
+                            <div class="selector-group">
+                                <label class="selector-label">Methodology</label>
+                                <select class="industry-select" id="methodologySelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+
+                            <div class="selector-group">
+                                <label class="selector-label">Industry</label>
+                                <select class="industry-select" id="industrySelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="selectorsError"></div>
+                        </div>
+                    </div>
+
+                    <div class="main-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="step-label">Step 1:</span> Upload File
+                            </div>
+                            <div class="upload-section">
+                                <div class="upload-area" id="uploadArea">
+                                    <div class="upload-icon">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="upload-text">Drag and drop your file here</div>
+                                    <div class="upload-subtext">Supported formats: PDF, TXT, DOCX • Max size: 1GB</div>
+                                    <button class="browse-btn" type="button" onclick="document.getElementById('fileInput').click()">
+                                        Browse Files
+                                    </button>
+                                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt,.docx">
+                                </div>
+                                <div class="file-info" id="fileInfo">
+                                    <div class="file-details">
+                                        <span class="file-name" id="fileName"></span>
+                                        <span class="file-size" id="fileSize"></span>
+                                    </div>
+                                    <button class="remove-file" id="removeFile">×</button>
+                                </div>
+                                
+                                <div class="step-action" id="step1Container" style="display: none; margin-top: 20px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 2:</span>
+                                        <button class="run-ai-btn" id="runAIBtn" style="margin-top: 0; flex: 1;" disabled>
+                                            🤖 Run AI Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-action" style="margin-top: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 3:</span>
+                                        <button class="run-btn" id="runBtn" disabled style="flex: 1;">Generate Report</button>
+                                    </div>
+                                </div>
+                                <div class="error-message" id="errorMessage"></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                <span>AI Prompt</span>
+                                <div class="card-header-toggle">▼</div>
+                            </div>
+                            
+                            <div class="card-content">
+                                <div class="ai-prompt-display" id="aiPromptDisplay">
+                                    <div class="ai-prompt-empty">
+                                        Select report options above to see the AI prompt
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                    <button class="copy-prompt-btn" id="copyPromptBtn" style="display: none;">
+                                        📋 Copy Prompt
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                <span>AI Results</span>
+                                <div class="card-header-toggle">▼</div>
+                            </div>
+                            
+                            <div class="card-content">
+                                <div class="ai-results-display" id="aiResultsDisplay">
+                                    <div class="ai-results-empty">
+                                        Click "Run AI Analysis" to see results here
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                    <button class="copy-results-btn" id="copyResultsBtn" style="display: none;">
+                                        📋 Copy Results
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings/Admin Panel -->
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <div class="admin-panel-content">
+                <div class="admin-header">
+                    <h2 class="admin-title">User Settings</h2>
+                    <button class="admin-close" id="adminClose">×</button>
+                </div>
+                <p style="padding: 20px;">Settings panel content here...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    
+    <script>
+        // Configure PDF.js worker
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        }
+    </script>
+    
+    <!-- Application Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
