@@ -190,13 +190,141 @@
         </div>
 
         <!-- Settings/Admin Panel -->
-        <div class="admin-panel" id="adminPanel" style="display: none;">
+        <div class="admin-panel" id="adminPanel">
             <div class="admin-panel-content">
+                <div class="admin-success-message" id="adminSuccessMessage">
+                    <div class="admin-success-content">
+                        <div class="admin-success-text">
+                            <span class="admin-success-icon">✓</span>
+                            <span>Default settings saved successfully!</span>
+                        </div>
+                        <button class="admin-success-close-btn" id="adminSuccessCloseBtn">Close Settings</button>
+                    </div>
+                </div>
+
                 <div class="admin-header">
                     <h2 class="admin-title">User Settings</h2>
                     <button class="admin-close" id="adminClose">×</button>
                 </div>
-                <p style="padding: 20px;">Settings panel content here...</p>
+
+                <!-- Change Password Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🔐</div>
+                            <div class="admin-section-title">Change Password</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Update your account password. Make sure to use a strong, unique password.
+                        </p>
+                        <div class="password-input-group">
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-input" id="adminNewPassword" placeholder="Enter new password">
+                                <div class="password-strength">
+                                    <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                </div>
+                                <div class="password-requirements">
+                                    <div class="password-requirement" data-requirement="length">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>At least 8 characters</span>
+                                    </div>
+                                    <div class="password-requirement" data-requirement="uppercase">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>One uppercase letter</span>
+                                    </div>
+                                    <div class="password-requirement" data-requirement="lowercase">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>One lowercase letter</span>
+                                    </div>
+                                    <div class="password-requirement" data-requirement="number">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>One number</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-input" id="adminConfirmPassword" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                        <button class="admin-btn admin-btn-primary" id="adminChangePasswordBtn">Change Password</button>
+                    </div>
+                </div>
+
+                <!-- Theme Selection Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🎨</div>
+                            <div class="admin-section-title">Theme Preferences</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Choose your preferred color theme for the application.
+                        </p>
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <select class="form-input" id="themeSelect">
+                                <option value="light">Light Mode</option>
+                                <option value="dark">Dark Mode</option>
+                                <option value="auto">Auto (System Preference)</option>
+                            </select>
+                        </div>
+                        <button class="admin-btn admin-btn-primary" id="applyThemeBtn" style="margin-top: 16px;">Apply Theme</button>
+                    </div>
+                </div>
+
+                <!-- Default Meeting Configuration Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">📁</div>
+                            <div class="admin-section-title">Default Meeting Configuration</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Set your default selections for meeting type, methodology, and industry.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Default Meeting Type</label>
+                            <select class="form-input" id="adminMeetingType">
+                                <option value="">Select Meeting Type</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Default Methodology</label>
+                            <select class="form-input" id="adminMethodology">
+                                <option value="">Select Methodology</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Default Industry</label>
+                            <select class="form-input" id="adminIndustry">
+                                <option value="">Select Industry</option>
+                            </select>
+                        </div>
+
+                        <div class="admin-actions">
+                            <button class="admin-btn admin-btn-secondary" id="adminResetBtn">Reset to System Defaults</button>
+                            <button class="admin-btn admin-btn-primary" id="adminSaveBtn">Save as My Defaults</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-footer">
+                    <button class="admin-btn admin-btn-secondary" id="adminCancelBtn">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
