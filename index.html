@@ -69,6 +69,33 @@
         }
     </style>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* CRITICAL: These styles MUST load AFTER styles.css to override it */
+        /* Using maximum specificity to force auth-container to display */
+        html body div.content-wrapper div.auth-container.active#authContainer {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+        }
+        
+        html body div.content-wrapper div.auth-container.active#authContainer * {
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Force all inputs to be interactive */
+        html body input#emailInput,
+        html body input#passwordInput {
+            display: block !important;
+            pointer-events: auto !important;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            cursor: text !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
 </head>
 <body>
     <div class="content-wrapper">
