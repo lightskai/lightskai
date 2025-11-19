@@ -6,6 +6,197 @@
     <title>Light Skai - Meeting Intelligence Platform</title>
     <style>
         /* Critical CSS to ensure inputs work - HIGHEST PRIORITY */
+        
+        /* Complete auth styling - independent of styles.css */
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+        
+        .content-wrapper {
+            min-height: 100vh;
+            pointer-events: auto !important;
+        }
+        
+        .auth-container {
+            display: none;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .auth-container.active {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 420px;
+            pointer-events: auto !important;
+        }
+        
+        .auth-logo {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .auth-title {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .auth-subtitle {
+            color: #666;
+            margin: 0 0 30px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            pointer-events: auto !important;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .form-input,
+        input#emailInput,
+        input#passwordInput {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            pointer-events: auto !important;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            cursor: text !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .form-input:focus,
+        input#emailInput:focus,
+        input#passwordInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .auth-btn:hover {
+            background: #5568d3;
+        }
+        
+        .magic-link-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #999;
+        }
+        
+        .auth-divider-line {
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .auth-divider-text {
+            padding: 0 10px;
+            font-size: 14px;
+        }
+        
+        .auth-toggle {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .auth-toggle-link {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .auth-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .auth-forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .auth-forgot-link {
+            color: #667eea;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .auth-back-link {
+            display: block;
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
         body .content-wrapper .auth-container.active {
             display: flex !important;
             visibility: visible !important;
@@ -68,7 +259,8 @@
             pointer-events: auto !important;
         }
     </style>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'; this.onload=null;">
+    <noscript><link rel="stylesheet" href="styles.css"></noscript>
     <style>
         /* CRITICAL: These styles MUST load AFTER styles.css to override it */
         /* Using maximum specificity to force auth-container to display */
@@ -438,6 +630,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Emergency fix: Disable styles.css until page is ready -->
+    <script>
+        // Find and temporarily disable the problematic CSS
+        (function() {
+            const styleSheets = document.styleSheets;
+            for (let i = 0; i < styleSheets.length; i++) {
+                try {
+                    if (styleSheets[i].href && styleSheets[i].href.includes('styles.css')) {
+                        console.log('Found styles.css, temporarily disabling for auth...');
+                        styleSheets[i].disabled = true;
+                        
+                        // Re-enable after auth container is shown
+                        setTimeout(function() {
+                            const authContainer = document.getElementById('authContainer');
+                            if (authContainer && authContainer.classList.contains('active')) {
+                                console.log('Auth container active, re-enabling styles.css');
+                                styleSheets[i].disabled = false;
+                            }
+                        }, 100);
+                    }
+                } catch (e) {
+                    // Cross-origin stylesheets will throw errors, ignore them
+                }
+            }
+        })();
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
