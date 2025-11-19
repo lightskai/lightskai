@@ -1303,6 +1303,17 @@
                             <input type="text" class="form-input" id="companyNameInput" placeholder="Light Skai" value="Light Skai">
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">Company Name Color</label>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <input type="color" class="form-input" id="companyNameColorInput" value="#1e293b" style="width: 80px; height: 42px; padding: 4px; cursor: pointer;">
+                                <input type="text" class="form-input" id="companyNameColorText" value="#1e293b" placeholder="#1e293b" maxlength="7" style="flex: 1; font-family: monospace;">
+                            </div>
+                            <small style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">
+                                Choose a color for the company name text in the navigation bar.
+                            </small>
+                        </div>
+
                         <div class="form-group" id="logoImageGroup" style="display: none;">
                             <label class="form-label">Upload Logo Image</label>
                             <input type="file" class="form-input" id="logoImageInput" accept="image/png,image/jpeg,image/jpg,image/svg+xml">
@@ -1520,6 +1531,8 @@
             const logoImageGroup = document.getElementById('logoImageGroup');
             const logoTextInput = document.getElementById('logoTextInput');
             const companyNameInput = document.getElementById('companyNameInput');
+            const companyNameColorInput = document.getElementById('companyNameColorInput');
+            const companyNameColorText = document.getElementById('companyNameColorText');
             const logoImageInput = document.getElementById('logoImageInput');
             const applyLogoBtn = document.getElementById('applyLogoBtn');
             const resetLogoBtn = document.getElementById('resetLogoBtn');
@@ -1528,6 +1541,33 @@
 
             // Load saved branding
             loadBranding();
+
+            // Color picker sync - update text input when color picker changes
+            if (companyNameColorInput) {
+                companyNameColorInput.addEventListener('input', function() {
+                    companyNameColorText.value = this.value;
+                });
+            }
+
+            // Text input sync - update color picker when text input changes
+            if (companyNameColorText) {
+                companyNameColorText.addEventListener('input', function() {
+                    const color = this.value.trim();
+                    // Validate hex color format
+                    if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                        companyNameColorInput.value = color;
+                    }
+                });
+
+                // Also handle on blur to correct invalid values
+                companyNameColorText.addEventListener('blur', function() {
+                    const color = this.value.trim();
+                    if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                        // Reset to color picker value if invalid
+                        this.value = companyNameColorInput.value;
+                    }
+                });
+            }
 
             // Logo type selector handler
             if (logoTypeSelect) {
@@ -1574,13 +1614,15 @@
                     const logoType = logoTypeSelect.value;
                     const logoText = logoTextInput.value.trim() || 'LS';
                     const companyName = companyNameInput.value.trim() || 'Light Skai';
+                    const companyNameColor = companyNameColorInput.value;
 
                     if (logoType === 'text') {
                         // Save text logo
                         const branding = {
                             type: 'text',
                             logoText: logoText,
-                            companyName: companyName
+                            companyName: companyName,
+                            companyNameColor: companyNameColor
                         };
                         localStorage.setItem('companyBranding', JSON.stringify(branding));
                         applyBranding(branding);
@@ -1598,7 +1640,8 @@
                             const branding = {
                                 type: 'image',
                                 logoImage: event.target.result,
-                                companyName: companyName
+                                companyName: companyName,
+                                companyNameColor: companyNameColor
                             };
                             localStorage.setItem('companyBranding', JSON.stringify(branding));
                             applyBranding(branding);
@@ -1617,6 +1660,8 @@
                         logoTypeSelect.value = 'text';
                         logoTextInput.value = 'LS';
                         companyNameInput.value = 'Light Skai';
+                        companyNameColorInput.value = '#1e293b';
+                        companyNameColorText.value = '#1e293b';
                         logoTextGroup.style.display = 'block';
                         logoImageGroup.style.display = 'none';
                         logoPreview.style.display = 'none';
@@ -1624,7 +1669,8 @@
                         applyBranding({
                             type: 'text',
                             logoText: 'LS',
-                            companyName: 'Light Skai'
+                            companyName: 'Light Skai',
+                            companyNameColor: '#1e293b'
                         });
                         alert('Branding reset to default!');
                     }
@@ -1641,6 +1687,8 @@
                         // Update form fields
                         logoTypeSelect.value = branding.type;
                         companyNameInput.value = branding.companyName || 'Light Skai';
+                        companyNameColorInput.value = branding.companyNameColor || '#1e293b';
+                        companyNameColorText.value = branding.companyNameColor || '#1e293b';
                         
                         if (branding.type === 'text') {
                             logoTextInput.value = branding.logoText || 'LS';
@@ -1669,8 +1717,9 @@
                 
                 if (!logoElement || !brandNameElement || !logoSection) return;
 
-                // Update company name
+                // Update company name and color
                 brandNameElement.textContent = branding.companyName || 'Light Skai';
+                brandNameElement.style.color = branding.companyNameColor || '#1e293b';
 
                 // Remove any existing custom logo image
                 const existingCustomLogo = logoSection.querySelector('.custom-logo-image');
