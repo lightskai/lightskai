@@ -320,21 +320,17 @@
             transform: scale(1) rotate(0deg) !important;
         }
         
-        /* Help Button - Circle with Question Mark */
+        /* Help Button - Simple Question Mark */
         .help-btn {
-            font-size: 16px !important;
+            font-size: 20px !important;
             color: #1e293b !important;
-            padding: 6px !important;
-            width: 32px !important;
-            height: 32px !important;
-            border-radius: 50% !important;
-            border: 2px solid #1e293b !important;
+            padding: 8px !important;
             background: transparent !important;
+            border: none !important;
         }
         
         .help-btn:hover {
-            background: #1e293b !important;
-            color: white !important;
+            color: #0EA5E9 !important;
             transform: scale(1.1) !important;
         }
         
@@ -396,6 +392,23 @@
             color: #94a3b8 !important;
             font-weight: 500 !important;
             text-align: center !important;
+        }
+        
+        /* Admin Actions Spacing */
+        .admin-actions {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+            margin-top: 20px !important;
+        }
+        
+        .admin-actions button {
+            width: 100% !important;
+        }
+        
+        #adminResetBtn {
+            margin-top: 8px !important;
+            margin-bottom: 8px !important;
         }
         
         /* Secondary Buttons (Copy buttons) */
@@ -531,6 +544,37 @@
         
         .admin-success-icon {
             color: #0EA5E9 !important;
+        }
+        
+        /* AI Analysis Complete Messages - Blue instead of Green */
+        .ai-results-display .success,
+        .ai-results-display .complete,
+        .ai-results-display .analysis-complete,
+        .ai-results-display [class*="success"],
+        .ai-results-display [class*="complete"] {
+            background: #DBEAFE !important;
+            border-color: #0EA5E9 !important;
+            color: #0369a1 !important;
+        }
+        
+        .ai-prompt-display .success,
+        .ai-prompt-display .complete,
+        .ai-prompt-display .analysis-complete,
+        .ai-prompt-display [class*="success"],
+        .ai-prompt-display [class*="complete"] {
+            background: #DBEAFE !important;
+            border-color: #0EA5E9 !important;
+            color: #0369a1 !important;
+        }
+        
+        /* Override any green success colors in AI sections */
+        #aiResultsDisplay .success,
+        #aiResultsDisplay .complete,
+        #aiPromptDisplay .success,
+        #aiPromptDisplay .complete {
+            background-color: #DBEAFE !important;
+            color: #0369a1 !important;
+            border-color: #0EA5E9 !important;
         }
         
         /* Password Strength */
@@ -699,6 +743,31 @@
         .processing * {
             color: #0EA5E9 !important;
             border-color: #0EA5E9 !important;
+        }
+        
+        /* Override any green success colors globally to blue */
+        .success-message,
+        .success-notification,
+        .complete-message,
+        [style*="background-color: rgb(209, 250, 229)"],
+        [style*="background-color: #d1fae5"],
+        [style*="background: rgb(209, 250, 229)"],
+        [style*="background: #d1fae5"],
+        [style*="background-color: rgb(187, 247, 208)"],
+        [style*="background-color: #bbf7d0"] {
+            background-color: #DBEAFE !important;
+            color: #0369a1 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Override green text colors to blue */
+        [style*="color: rgb(5, 150, 105)"],
+        [style*="color: #059669"],
+        [style*="color: rgb(4, 120, 87)"],
+        [style*="color: #047857"],
+        [style*="color: rgb(6, 95, 70)"],
+        [style*="color: #065f46"] {
+            color: #0369a1 !important;
         }
         
         /* ===================================== */
@@ -871,14 +940,10 @@
         
         .dark-theme .help-btn {
             color: #cbd5e1 !important;
-            border-color: #cbd5e1 !important;
         }
         
         .dark-theme .help-btn:hover {
-            background: rgba(148, 163, 184, 0.15) !important;
-            color: #cbd5e1 !important;
-            background: #cbd5e1 !important;
-            color: #0f172a !important;
+            color: #38bdf8 !important;
         }
         
         .dark-theme .logout-btn {
@@ -1357,9 +1422,6 @@
                     const selectedTheme = themeSelect.value;
                     localStorage.setItem('theme', selectedTheme);
                     applyTheme(selectedTheme);
-                    
-                    // Show success message
-                    alert('Theme applied successfully!');
                 });
             }
             
