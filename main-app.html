@@ -123,6 +123,64 @@
             -webkit-backdrop-filter: blur(20px);
         }
         
+        /* Admin User Profile Section */
+        .admin-user-profile {
+            display: flex !important;
+            align-items: center !important;
+            gap: 16px !important;
+            padding: 20px !important;
+            margin: 0 20px 20px 20px !important;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(37, 99, 235, 0.05)) !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        .admin-user-avatar {
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #0EA5E9, #2563EB) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .admin-user-initial {
+            color: white !important;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+        }
+        
+        .admin-user-details {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+        
+        .admin-user-email {
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            color: #0EA5E9 !important;
+            margin-bottom: 4px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+        }
+        
+        .admin-user-status {
+            font-size: 13px !important;
+            color: #059669 !important;
+            font-weight: 500 !important;
+        }
+        
+        .admin-user-status::before {
+            content: "●" !important;
+            margin-right: 6px !important;
+            color: #10B981 !important;
+        }
+        
         /* Navbar Enhancement */
         .navbar {
             background: rgba(255, 255, 255, 0.95) !important;
@@ -309,21 +367,6 @@
             gap: 12px !important;
         }
         
-        .user-info {
-            display: flex !important;
-            align-items: center !important;
-            padding: 8px 16px !important;
-            background: rgba(14, 165, 233, 0.05) !important;
-            border-radius: 8px !important;
-            border: 1px solid rgba(14, 165, 233, 0.1) !important;
-        }
-        
-        .user-email {
-            color: #0284C7 !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-        }
-        
         /* Version Badge Enhancement */
         .version {
             padding: 4px 10px !important;
@@ -387,6 +430,26 @@
         input[type="radio"]:checked {
             background-color: #0EA5E9 !important;
             border-color: #0EA5E9 !important;
+            accent-color: #0EA5E9 !important;
+        }
+        
+        /* Force radio button dot/check to be blue */
+        input[type="radio"]:checked::before,
+        input[type="radio"]:checked::after {
+            background-color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Report Option Radio Buttons - Force Blue */
+        .report-option-radio:checked {
+            background-color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+            accent-color: #0EA5E9 !important;
+        }
+        
+        .report-option-radio:checked::before,
+        .report-option-radio:checked::after {
+            background-color: #0EA5E9 !important;
         }
         
         /* Card Headers */
@@ -490,8 +553,37 @@
         
         /* Progress/Loading States */
         .loading,
-        .progress-bar {
+        .progress-bar,
+        .spinner,
+        .processing,
+        .ai-processing,
+        .generating {
             background: #0EA5E9 !important;
+            color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Processing/Loading Text */
+        .processing-message,
+        .loading-message,
+        .ai-results-empty,
+        .ai-prompt-empty {
+            color: #64748b !important;
+        }
+        
+        /* Any element with 'processing' or 'loading' class text color */
+        [class*="processing"],
+        [class*="loading"],
+        [class*="spinner"] {
+            color: #0EA5E9 !important;
+        }
+        
+        /* Spinner animations */
+        .spinner::before,
+        .spinner::after,
+        .loading::before,
+        .loading::after {
+            border-color: #0EA5E9 transparent transparent transparent !important;
         }
         
         /* Scrollbar (Webkit browsers) */
@@ -536,6 +628,58 @@
         .card.collapsed .card-content {
             opacity: 0;
         }
+        
+        /* ===================================== */
+        /* PURPLE TO BLUE OVERRIDES - Catch All */
+        /* ===================================== */
+        
+        /* Override any purple colors from external CSS */
+        * {
+            accent-color: #0EA5E9 !important;
+        }
+        
+        /* Force all purple hex codes to blue */
+        [style*="#8B5CF6"],
+        [style*="#7C3AED"],
+        [style*="#A78BFA"],
+        [style*="#C4B5FD"],
+        [style*="rgb(139, 92, 246)"],
+        [style*="rgb(124, 58, 237)"] {
+            color: #0EA5E9 !important;
+            background-color: transparent !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Override external styles.css purple colors */
+        .checkbox-option input:checked,
+        .radio-option input:checked,
+        input[type="checkbox"]:checked,
+        input[type="radio"]:checked,
+        .report-option input:checked,
+        .report-option-radio:checked {
+            background-color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+            accent-color: #0EA5E9 !important;
+        }
+        
+        /* Ensure all spinners, loaders, and progress indicators are blue */
+        .spinner,
+        .loader,
+        .progress,
+        .processing,
+        [class*="spin"],
+        [class*="load"],
+        [class*="progress"] {
+            color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        .spinner *,
+        .loader *,
+        .processing * {
+            color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
     </style>
 </head>
 <body>
@@ -572,9 +716,6 @@
                     <div class="brand-name">Light Skai</div>
                 </div>
                 <div class="nav-right">
-                    <div class="user-info">
-                        <span class="user-email" id="userEmail"></span>
-                    </div>
                     <button class="settings-btn" id="settingsBtn">⚙️ Settings</button>
                     <button class="help-btn">Help & Support</button>
                     <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -739,6 +880,17 @@
                     <button class="admin-close" id="adminClose">×</button>
                 </div>
 
+                <!-- User Profile Section -->
+                <div class="admin-user-profile">
+                    <div class="admin-user-avatar">
+                        <span class="admin-user-initial" id="userInitial">U</span>
+                    </div>
+                    <div class="admin-user-details">
+                        <div class="admin-user-email" id="userEmailSettings"></div>
+                        <div class="admin-user-status">Active Account</div>
+                    </div>
+                </div>
+
                 <!-- Change Password Section -->
                 <div class="admin-section collapsed">
                     <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
@@ -871,6 +1023,90 @@
         if (window.pdfjsLib) {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
         }
+        
+        // Update user info in settings panel when email is set
+        // This intercepts when the auth.js sets the user email
+        (function() {
+            // Watch for when userEmail element gets populated
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                        const userEmailElement = document.getElementById('userEmail');
+                        if (userEmailElement && userEmailElement.textContent) {
+                            const email = userEmailElement.textContent.trim();
+                            
+                            // Update settings panel email
+                            const settingsEmail = document.getElementById('userEmailSettings');
+                            if (settingsEmail) {
+                                settingsEmail.textContent = email;
+                            }
+                            
+                            // Update avatar initial
+                            const userInitial = document.getElementById('userInitial');
+                            if (userInitial && email) {
+                                userInitial.textContent = email.charAt(0).toUpperCase();
+                            }
+                            
+                            // Stop observing once we've updated
+                            observer.disconnect();
+                        }
+                    }
+                });
+            });
+            
+            // Start observing when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    const userEmailElement = document.getElementById('userEmail');
+                    if (userEmailElement) {
+                        observer.observe(userEmailElement, {
+                            childList: true,
+                            characterData: true,
+                            subtree: true
+                        });
+                    }
+                });
+            } else {
+                const userEmailElement = document.getElementById('userEmail');
+                if (userEmailElement) {
+                    observer.observe(userEmailElement, {
+                        childList: true,
+                        characterData: true,
+                        subtree: true
+                    });
+                }
+            }
+            
+            // Also try to get from Supabase directly
+            setTimeout(async function() {
+                try {
+                    const { createClient } = supabase;
+                    const client = createClient(
+                        'https://khhrkgevrhtdlwcdxvbs.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoaHJrZ2V2cmh0ZGx3Y2R4dmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzA5NTIsImV4cCI6MjA3ODQ0Njk1Mn0.wqd6Uds-7pEr0p1MCrZKRzLzqOPS7ziZO8eGNs_G59c'
+                    );
+                    
+                    const { data: { session } } = await client.auth.getSession();
+                    
+                    if (session && session.user && session.user.email) {
+                        const email = session.user.email;
+                        
+                        // Update settings panel
+                        const settingsEmail = document.getElementById('userEmailSettings');
+                        if (settingsEmail) {
+                            settingsEmail.textContent = email;
+                        }
+                        
+                        const userInitial = document.getElementById('userInitial');
+                        if (userInitial) {
+                            userInitial.textContent = email.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (error) {
+                    console.log('Could not fetch user from Supabase:', error);
+                }
+            }, 500);
+        })();
     </script>
     
     <!-- Application Scripts -->
