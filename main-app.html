@@ -291,9 +291,8 @@
         .settings-btn,
         .help-btn,
         .logout-btn {
-            padding: 10px 16px !important;
+            padding: 10px !important;
             border-radius: 8px !important;
-            font-size: 20px !important;
             font-weight: 500 !important;
             cursor: pointer !important;
             transition: all 0.2s ease !important;
@@ -301,69 +300,66 @@
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            gap: 6px !important;
             min-width: 44px !important;
+            background: transparent !important;
         }
         
-        /* Settings Button - Icon Only */
+        /* Settings Button - Large Gear Icon */
         .settings-btn {
-            background: rgba(14, 165, 233, 0.1) !important;
-            color: #0EA5E9 !important;
-            border: 1px solid rgba(14, 165, 233, 0.3) !important;
-            font-size: 18px !important;
-            padding: 10px !important;
+            font-size: 24px !important;
+            color: #64748b !important;
+            padding: 8px !important;
         }
         
         .settings-btn:hover {
-            background: rgba(14, 165, 233, 0.15) !important;
-            border-color: rgba(14, 165, 233, 0.5) !important;
-            transform: translateY(-1px) scale(1.05) !important;
-            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2) !important;
+            color: #0EA5E9 !important;
+            transform: scale(1.1) rotate(30deg) !important;
         }
         
         .settings-btn:active {
-            transform: translateY(0) scale(1) !important;
-            background: rgba(14, 165, 233, 0.2) !important;
+            transform: scale(1) rotate(0deg) !important;
         }
         
-        /* Help Button - Icon Only */
+        /* Help Button - Circle with Question Mark */
         .help-btn {
+            font-size: 16px !important;
+            color: #1e293b !important;
+            padding: 6px !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            border: 2px solid #1e293b !important;
             background: transparent !important;
-            color: #64748b !important;
-            border: 1px solid transparent !important;
-            font-size: 18px !important;
-            padding: 10px !important;
         }
         
         .help-btn:hover {
-            background: rgba(100, 116, 139, 0.1) !important;
-            color: #475569 !important;
-            transform: translateY(-1px) scale(1.05) !important;
+            background: #1e293b !important;
+            color: white !important;
+            transform: scale(1.1) !important;
         }
         
         .help-btn:active {
-            transform: translateY(0) scale(1) !important;
-            background: rgba(100, 116, 139, 0.15) !important;
+            transform: scale(1) !important;
         }
         
-        /* Logout Button */
+        /* Logout Button - Minimal Text */
         .logout-btn {
-            background: rgba(220, 38, 38, 0.1) !important;
-            color: #DC2626 !important;
-            border: 1px solid rgba(220, 38, 38, 0.3) !important;
+            background: transparent !important;
+            color: #64748b !important;
+            border: none !important;
+            font-size: 13px !important;
+            padding: 8px 12px !important;
+            font-weight: 500 !important;
         }
         
         .logout-btn:hover {
-            background: #DC2626 !important;
-            color: white !important;
-            border-color: #DC2626 !important;
+            color: #DC2626 !important;
+            background: rgba(220, 38, 38, 0.05) !important;
             transform: translateY(-1px) !important;
-            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3) !important;
         }
         
         .logout-btn:active {
             transform: translateY(0) !important;
-            background: #B91C1C !important;
         }
         
         /* Navbar Layout Enhancement */
@@ -387,17 +383,19 @@
         /* Admin Footer Version */
         .admin-footer {
             display: flex !important;
-            justify-content: space-between !important;
+            flex-direction: column !important;
             align-items: center !important;
             padding: 20px !important;
             border-top: 1px solid #e5e7eb !important;
             margin-top: 20px !important;
+            gap: 12px !important;
         }
         
         .admin-version {
-            font-size: 12px !important;
-            color: #64748b !important;
+            font-size: 11px !important;
+            color: #94a3b8 !important;
             font-weight: 500 !important;
+            text-align: center !important;
         }
         
         /* Secondary Buttons (Copy buttons) */
@@ -863,19 +861,33 @@
         .dark-theme .settings-btn {
             background: rgba(14, 165, 233, 0.15) !important;
             border-color: rgba(14, 165, 233, 0.4) !important;
+            color: #94a3b8 !important;
         }
         
         .dark-theme .settings-btn:hover {
             background: rgba(14, 165, 233, 0.25) !important;
+            color: #38bdf8 !important;
         }
         
         .dark-theme .help-btn {
-            color: #94a3b8 !important;
+            color: #cbd5e1 !important;
+            border-color: #cbd5e1 !important;
         }
         
         .dark-theme .help-btn:hover {
             background: rgba(148, 163, 184, 0.15) !important;
             color: #cbd5e1 !important;
+            background: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        
+        .dark-theme .logout-btn {
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .logout-btn:hover {
+            color: #fca5a5 !important;
+            background: rgba(220, 38, 38, 0.1) !important;
         }
         
         .dark-theme .checkbox-group label,
