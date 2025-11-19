@@ -169,6 +169,21 @@
             background: linear-gradient(135deg, #0EA5E9, #2563EB) !important;
         }
         
+        /* Brand Name - Blue Gradient */
+        .brand-name {
+            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            font-weight: 700 !important;
+        }
+        
+        .logo-section {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        
         /* Primary Buttons */
         .run-btn,
         .run-ai-btn,
@@ -204,7 +219,10 @@
         
         .run-btn:disabled,
         .run-ai-btn:disabled {
-            background: #94a3b8 !important;
+            background: #E2E8F0 !important;
+            color: #1E293B !important;
+            cursor: not-allowed !important;
+            opacity: 0.7 !important;
         }
         
         /* Secondary Buttons */
@@ -277,6 +295,19 @@
         .card-header {
             background: transparent !important;
             border-left: none !important;
+        }
+        
+        /* Page Title with Blue Gradient */
+        .page-title {
+            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700 !important;
+        }
+        
+        .page-subtitle {
+            color: #0284C7 !important;
         }
         
         /* Step Labels */
