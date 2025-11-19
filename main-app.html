@@ -8,8 +8,127 @@
     <style>
         /* Blue gradient background matching index.html */
         body {
-            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%);
+            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 50%, #0EA5E9 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Glassmorphism Effects */
+        .app-container {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06) !important;
+            transition: all 0.3s ease !important;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05) !important;
+            transform: translateY(-2px);
+        }
+        
+        /* Enhanced Button Styles */
+        button {
+            transition: all 0.2s ease !important;
+        }
+        
+        .run-btn,
+        .run-ai-btn,
+        .browse-btn,
+        .auth-btn {
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        .run-btn:not(:disabled):hover,
+        .run-ai-btn:not(:disabled):hover,
+        .browse-btn:hover,
+        .auth-btn:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .run-btn:not(:disabled):active,
+        .run-ai-btn:not(:disabled):active,
+        .browse-btn:active,
+        .auth-btn:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 1px 2px rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        /* Micro-animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .file-info,
+        .ai-results-display,
+        .ai-prompt-display {
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        /* Drag & Drop Enhanced Animation */
+        .upload-area {
+            transition: all 0.3s ease !important;
+        }
+        
+        .upload-area.dragover {
+            transform: scale(1.02) !important;
+            animation: pulse 0.5s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                border-color: #0EA5E9;
+                box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+            }
+            50% { 
+                border-color: #0284C7;
+                box-shadow: 0 0 0 10px rgba(14, 165, 233, 0);
+            }
+        }
+        
+        .upload-area.dragover .upload-icon {
+            animation: bounce 0.5s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Admin Panel Glassmorphism */
+        .admin-panel {
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        /* Navbar Enhancement */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
         }
         
         /* Critical CSS for admin panel - ensure it works */
@@ -59,6 +178,8 @@
         button.admin-btn-primary {
             background: #0EA5E9 !important;
             border-color: #0EA5E9 !important;
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2) !important;
+            transition: all 0.2s ease !important;
         }
         
         .run-btn:hover,
@@ -68,6 +189,17 @@
         .admin-btn-primary:hover {
             background: #0284C7 !important;
             border-color: #0284C7 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .run-btn:active,
+        .run-ai-btn:active,
+        .browse-btn:active,
+        .auth-btn:active,
+        .admin-btn-primary:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 1px 2px rgba(14, 165, 233, 0.2) !important;
         }
         
         .run-btn:disabled,
@@ -82,6 +214,8 @@
             background: white !important;
             color: #0EA5E9 !important;
             border: 2px solid #0EA5E9 !important;
+            box-shadow: 0 1px 3px rgba(14, 165, 233, 0.1) !important;
+            transition: all 0.2s ease !important;
         }
         
         .settings-btn:hover,
@@ -90,6 +224,15 @@
             background: #F0F9FF !important;
             color: #0284C7 !important;
             border-color: #0284C7 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 3px 6px rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        .settings-btn:active,
+        .copy-prompt-btn:active,
+        .copy-results-btn:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 1px 2px rgba(14, 165, 233, 0.1) !important;
         }
         
         /* Logout Button */
@@ -132,8 +275,8 @@
         
         /* Card Headers */
         .card-header {
-            background: linear-gradient(to right, #F0F9FF, white) !important;
-            border-left: 4px solid #0EA5E9 !important;
+            background: transparent !important;
+            border-left: none !important;
         }
         
         /* Step Labels */
@@ -235,6 +378,34 @@
         ::selection {
             background: #DBEAFE !important;
             color: #1E3A8A !important;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Enhanced File Info Display */
+        .file-info {
+            animation: fadeInUp 0.3s ease !important;
+        }
+        
+        /* Upload Icon Animation on Hover */
+        .upload-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1);
+        }
+        
+        /* Card Content Transitions */
+        .card-content {
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .card.collapsed .card-content {
+            opacity: 0;
         }
     </style>
 </head>
