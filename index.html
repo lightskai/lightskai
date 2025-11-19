@@ -6,9 +6,16 @@
     <title>Light Skai - Meeting Intelligence Platform</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Critical CSS to ensure inputs work */
+        /* Critical CSS to ensure inputs work - HIGHEST PRIORITY */
+        body .content-wrapper .auth-container.active {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 100 !important;
+        }
+        
         .auth-container {
-            display: none;
             position: relative;
             z-index: 100;
         }
@@ -66,7 +73,7 @@
 <body>
     <div class="content-wrapper">
         <!-- Authentication Screen -->
-        <div class="auth-container active" id="authContainer">
+        <div class="auth-container active" id="authContainer" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
             <div class="auth-card">
                 <div class="auth-header">
                     <div class="auth-logo">LS</div>
@@ -429,31 +436,56 @@
             const emailInput = document.getElementById('emailInput');
             const passwordInput = document.getElementById('passwordInput');
             
-            if (emailInput) {
-                emailInput.disabled = false;
-                emailInput.readOnly = false;
-                emailInput.style.pointerEvents = 'auto';
-                emailInput.style.userSelect = 'text';
-                emailInput.style.webkitUserSelect = 'text';
-                emailInput.style.cursor = 'text';
-                emailInput.removeAttribute('disabled');
-                emailInput.removeAttribute('readonly');
-                console.log('Email input forcefully enabled:', emailInput);
+            // DIAGNOSTIC: Check if elements exist
+            console.log('=== DOM DIAGNOSTIC ===');
+            console.log('Email input element:', emailInput);
+            console.log('Password input element:', passwordInput);
+            console.log('Auth container:', document.getElementById('authContainer'));
+            console.log('Auth container classes:', document.getElementById('authContainer')?.className);
+            
+            // Check computed styles of auth container
+            const authContainer = document.getElementById('authContainer');
+            if (authContainer) {
+                const styles = window.getComputedStyle(authContainer);
+                console.log('Auth container display:', styles.display);
+                console.log('Auth container visibility:', styles.visibility);
+                console.log('Auth container opacity:', styles.opacity);
             }
             
-            if (passwordInput) {
-                passwordInput.disabled = false;
-                passwordInput.readOnly = false;
-                passwordInput.style.pointerEvents = 'auto';
-                passwordInput.style.userSelect = 'text';
-                passwordInput.style.webkitUserSelect = 'text';
-                passwordInput.style.cursor = 'text';
-                passwordInput.removeAttribute('disabled');
-                passwordInput.removeAttribute('readonly');
-                console.log('Password input forcefully enabled:', passwordInput);
+            if (!emailInput) {
+                console.error('❌ EMAIL INPUT NOT FOUND IN DOM!');
+                console.log('This means the auth-container is not being rendered');
+                console.log('Checking all inputs on page:', document.querySelectorAll('input'));
+                return;
             }
             
-            console.log('Input fields should now be fully interactive');
+            if (!passwordInput) {
+                console.error('❌ PASSWORD INPUT NOT FOUND IN DOM!');
+                return;
+            }
+            
+            // If we get here, inputs exist - force enable them
+            emailInput.disabled = false;
+            emailInput.readOnly = false;
+            emailInput.style.pointerEvents = 'auto';
+            emailInput.style.userSelect = 'text';
+            emailInput.style.webkitUserSelect = 'text';
+            emailInput.style.cursor = 'text';
+            emailInput.removeAttribute('disabled');
+            emailInput.removeAttribute('readonly');
+            console.log('✓ Email input forcefully enabled');
+            
+            passwordInput.disabled = false;
+            passwordInput.readOnly = false;
+            passwordInput.style.pointerEvents = 'auto';
+            passwordInput.style.userSelect = 'text';
+            passwordInput.style.webkitUserSelect = 'text';
+            passwordInput.style.cursor = 'text';
+            passwordInput.removeAttribute('disabled');
+            passwordInput.removeAttribute('readonly');
+            console.log('✓ Password input forcefully enabled');
+            
+            console.log('=== Input fields should now be fully interactive ===');
         });
     </script>
 </body>
