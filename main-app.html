@@ -291,56 +291,62 @@
         .settings-btn,
         .help-btn,
         .logout-btn {
-            padding: 8px 16px !important;
+            padding: 10px 16px !important;
             border-radius: 8px !important;
-            font-size: 14px !important;
+            font-size: 20px !important;
             font-weight: 500 !important;
             cursor: pointer !important;
             transition: all 0.2s ease !important;
             border: none !important;
             display: inline-flex !important;
             align-items: center !important;
+            justify-content: center !important;
             gap: 6px !important;
+            min-width: 44px !important;
         }
         
-        /* Settings Button - Secondary Style */
+        /* Settings Button - Icon Only */
         .settings-btn {
             background: rgba(14, 165, 233, 0.1) !important;
             color: #0EA5E9 !important;
             border: 1px solid rgba(14, 165, 233, 0.3) !important;
+            font-size: 18px !important;
+            padding: 10px !important;
         }
         
         .settings-btn:hover {
             background: rgba(14, 165, 233, 0.15) !important;
             border-color: rgba(14, 165, 233, 0.5) !important;
-            transform: translateY(-1px) !important;
+            transform: translateY(-1px) scale(1.05) !important;
             box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2) !important;
         }
         
         .settings-btn:active {
-            transform: translateY(0) !important;
+            transform: translateY(0) scale(1) !important;
             background: rgba(14, 165, 233, 0.2) !important;
         }
         
-        /* Help Button - Ghost Style */
+        /* Help Button - Icon Only */
         .help-btn {
             background: transparent !important;
             color: #64748b !important;
             border: 1px solid transparent !important;
+            font-size: 18px !important;
+            padding: 10px !important;
         }
         
         .help-btn:hover {
             background: rgba(100, 116, 139, 0.1) !important;
             color: #475569 !important;
-            transform: translateY(-1px) !important;
+            transform: translateY(-1px) scale(1.05) !important;
         }
         
         .help-btn:active {
-            transform: translateY(0) !important;
+            transform: translateY(0) scale(1) !important;
             background: rgba(100, 116, 139, 0.15) !important;
         }
         
-        /* Logout Button - Danger Style */
+        /* Logout Button */
         .logout-btn {
             background: rgba(220, 38, 38, 0.1) !important;
             color: #DC2626 !important;
@@ -376,6 +382,22 @@
             font-size: 12px !important;
             font-weight: 600 !important;
             border: 1px solid rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        /* Admin Footer Version */
+        .admin-footer {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 20px !important;
+            border-top: 1px solid #e5e7eb !important;
+            margin-top: 20px !important;
+        }
+        
+        .admin-version {
+            font-size: 12px !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
         }
         
         /* Secondary Buttons (Copy buttons) */
@@ -680,6 +702,203 @@
             color: #0EA5E9 !important;
             border-color: #0EA5E9 !important;
         }
+        
+        /* ===================================== */
+        /* DARK THEME STYLES */
+        /* ===================================== */
+        
+        body.dark-theme {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+        }
+        
+        .dark-theme .app-container {
+            background: rgba(15, 23, 42, 0.95) !important;
+        }
+        
+        .dark-theme .navbar {
+            background: rgba(15, 23, 42, 0.98) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .card {
+            background: rgba(30, 41, 59, 0.95) !important;
+            border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .card:hover {
+            background: rgba(30, 41, 59, 0.98) !important;
+            border: 1px solid rgba(148, 163, 184, 0.2) !important;
+        }
+        
+        .dark-theme .page-title {
+            background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+        
+        .dark-theme .page-subtitle {
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .card-header {
+            color: #e2e8f0 !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .selector-label,
+        .dark-theme .form-label,
+        .dark-theme label {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .industry-select,
+        .dark-theme .form-input,
+        .dark-theme select,
+        .dark-theme input[type="text"],
+        .dark-theme input[type="email"],
+        .dark-theme input[type="password"],
+        .dark-theme textarea {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-color: rgba(148, 163, 184, 0.2) !important;
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .industry-select:focus,
+        .dark-theme .form-input:focus,
+        .dark-theme select:focus,
+        .dark-theme input:focus,
+        .dark-theme textarea:focus {
+            background: rgba(15, 23, 42, 0.95) !important;
+            border-color: #38bdf8 !important;
+        }
+        
+        .dark-theme .upload-area {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(148, 163, 184, 0.3) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .upload-area:hover {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-color: #38bdf8 !important;
+        }
+        
+        .dark-theme .upload-text,
+        .dark-theme .upload-subtext {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .file-info {
+            background: rgba(14, 165, 233, 0.1) !important;
+            border-color: rgba(14, 165, 233, 0.3) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .file-name,
+        .dark-theme .file-size {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .ai-prompt-display,
+        .dark-theme .ai-results-display {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(148, 163, 184, 0.2) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .ai-prompt-empty,
+        .dark-theme .ai-results-empty {
+            color: #64748b !important;
+        }
+        
+        .dark-theme .admin-panel {
+            background: rgba(15, 23, 42, 0.98) !important;
+            border-left: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .admin-header {
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .admin-title {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .admin-close {
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .admin-close:hover {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .admin-user-profile {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(37, 99, 235, 0.15)) !important;
+            border-color: rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .dark-theme .admin-section {
+            border: 1px solid rgba(148, 163, 184, 0.1) !important;
+            background: rgba(30, 41, 59, 0.5) !important;
+        }
+        
+        .dark-theme .admin-section-header {
+            background: rgba(15, 23, 42, 0.5) !important;
+        }
+        
+        .dark-theme .admin-section-title,
+        .dark-theme .admin-description {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .admin-footer {
+            border-top-color: rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .admin-version {
+            color: #64748b !important;
+        }
+        
+        .dark-theme .settings-btn {
+            background: rgba(14, 165, 233, 0.15) !important;
+            border-color: rgba(14, 165, 233, 0.4) !important;
+        }
+        
+        .dark-theme .settings-btn:hover {
+            background: rgba(14, 165, 233, 0.25) !important;
+        }
+        
+        .dark-theme .help-btn {
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .help-btn:hover {
+            background: rgba(148, 163, 184, 0.15) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .checkbox-group label,
+        .dark-theme .report-option label {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(148, 163, 184, 0.2) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .report-option-radio:checked + label {
+            background: rgba(14, 165, 233, 0.2) !important;
+            border-color: #38bdf8 !important;
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .error-message {
+            background: rgba(220, 38, 38, 0.2) !important;
+            color: #fca5a5 !important;
+        }
+        
+        .dark-theme .step-label {
+            color: #38bdf8 !important;
+        }
     </style>
 </head>
 <body>
@@ -716,10 +935,9 @@
                     <div class="brand-name">Light Skai</div>
                 </div>
                 <div class="nav-right">
-                    <button class="settings-btn" id="settingsBtn">⚙️ Settings</button>
-                    <button class="help-btn">Help & Support</button>
+                    <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙️</button>
+                    <button class="help-btn" aria-label="Help & Support" title="Help & Support">❓</button>
                     <button class="logout-btn" id="logoutBtn">Logout</button>
-                    <div class="version">v2.4.1</div>
                 </div>
             </div>
 
@@ -1008,6 +1226,7 @@
 
                 <div class="admin-footer">
                     <button class="admin-btn admin-btn-secondary" id="adminCancelBtn">Cancel</button>
+                    <div class="admin-version">Version 2.4.1</div>
                 </div>
             </div>
         </div>
@@ -1107,6 +1326,58 @@
                 }
             }, 500);
         })();
+        
+        // Dark Theme Toggle Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeSelect = document.getElementById('themeSelect');
+            const applyThemeBtn = document.getElementById('applyThemeBtn');
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (themeSelect) {
+                themeSelect.value = savedTheme;
+            }
+            applyTheme(savedTheme);
+            
+            // Apply theme button handler
+            if (applyThemeBtn) {
+                applyThemeBtn.addEventListener('click', function() {
+                    const selectedTheme = themeSelect.value;
+                    localStorage.setItem('theme', selectedTheme);
+                    applyTheme(selectedTheme);
+                    
+                    // Show success message
+                    alert('Theme applied successfully!');
+                });
+            }
+            
+            function applyTheme(theme) {
+                const body = document.body;
+                
+                if (theme === 'dark') {
+                    body.classList.add('dark-theme');
+                } else if (theme === 'light') {
+                    body.classList.remove('dark-theme');
+                } else if (theme === 'auto') {
+                    // Auto mode - use system preference
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        body.classList.add('dark-theme');
+                    } else {
+                        body.classList.remove('dark-theme');
+                    }
+                }
+            }
+            
+            // Listen for system theme changes when in auto mode
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                    const currentTheme = localStorage.getItem('theme') || 'light';
+                    if (currentTheme === 'auto') {
+                        applyTheme('auto');
+                    }
+                });
+            }
+        });
     </script>
     
     <!-- Application Scripts -->
