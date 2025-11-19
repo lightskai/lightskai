@@ -320,17 +320,28 @@
             transform: scale(1) rotate(0deg) !important;
         }
         
-        /* Help Button - Simple Question Mark */
+        /* Help Button - Matches Info Icon Style */
         .help-btn {
-            font-size: 20px !important;
-            color: #1e293b !important;
-            padding: 8px !important;
-            background: transparent !important;
+            width: 20px !important;
+            height: 20px !important;
+            min-width: 20px !important;
+            border-radius: 50% !important;
+            background: #0EA5E9 !important;
+            color: white !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            font-style: italic !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             border: none !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
         }
         
         .help-btn:hover {
-            color: #0EA5E9 !important;
+            background: #0284C7 !important;
             transform: scale(1.1) !important;
         }
         
@@ -939,11 +950,12 @@
         }
         
         .dark-theme .help-btn {
-            color: #cbd5e1 !important;
+            background: #38bdf8 !important;
+            color: white !important;
         }
         
         .dark-theme .help-btn:hover {
-            color: #38bdf8 !important;
+            background: #60a5fa !important;
         }
         
         .dark-theme .logout-btn {
@@ -1013,7 +1025,7 @@
                 </div>
                 <div class="nav-right">
                     <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙️</button>
-                    <button class="help-btn" aria-label="Help & Support" title="Help & Support">❓</button>
+                    <button class="help-btn" aria-label="Help & Support" title="Help & Support">i</button>
                     <button class="logout-btn" id="logoutBtn">Logout</button>
                 </div>
             </div>
@@ -1455,6 +1467,48 @@
     </script>
     
     <!-- Application Scripts -->
+    <script>
+        // PDF Generation Enhancement - Include AI Results
+        // This script ensures AI Results are included when generating the PDF report
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for the external app.js to load and set up the runBtn handler
+            setTimeout(function() {
+                const runBtn = document.getElementById('runBtn');
+                const aiResultsDisplay = document.getElementById('aiResultsDisplay');
+                
+                if (runBtn && aiResultsDisplay) {
+                    // Store the original click handler
+                    const originalHandler = runBtn.onclick;
+                    
+                    // Override the click handler to include AI Results
+                    runBtn.addEventListener('click', function(e) {
+                        // Get AI Results content
+                        const aiResultsContent = aiResultsDisplay.textContent || aiResultsDisplay.innerText;
+                        
+                        // Store in a global variable that the PDF generator can access
+                        window.aiResultsForPDF = aiResultsContent;
+                        
+                        console.log('AI Results prepared for PDF:', aiResultsContent.substring(0, 100) + '...');
+                    }, true); // Use capture phase to run before other handlers
+                    
+                    console.log('PDF Enhancement: AI Results will be included in generated reports');
+                }
+            }, 1000);
+        });
+        
+        // Helper function for external app.js to access AI Results
+        window.getAIResultsForPDF = function() {
+            const aiResultsDisplay = document.getElementById('aiResultsDisplay');
+            if (aiResultsDisplay) {
+                const content = aiResultsDisplay.textContent || aiResultsDisplay.innerText;
+                // Clean up the content
+                return content.replace(/^\s+|\s+$/g, '').replace(/\n\s*\n/g, '\n\n');
+            }
+            return '';
+        };
+    </script>
+    
     <script src="js/app.js"></script>
     <script src="js/auth.js"></script>
 </body>
