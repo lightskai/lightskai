@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const companyNameInput = document.getElementById('companyNameInput');
     const companyNameColorInput = document.getElementById('companyNameColorInput');
     const companyNameColorText = document.getElementById('companyNameColorText');
+    const pageTitleInput = document.getElementById('pageTitleInput');
+    const pageTitleColorInput = document.getElementById('pageTitleColorInput');
+    const pageTitleColorText = document.getElementById('pageTitleColorText');
+    const pageSubtitleInput = document.getElementById('pageSubtitleInput');
+    const pageSubtitleColorInput = document.getElementById('pageSubtitleColorInput');
+    const pageSubtitleColorText = document.getElementById('pageSubtitleColorText');
     const logoImageInput = document.getElementById('logoImageInput');
     const applyLogoBtn = document.getElementById('applyLogoBtn');
     const resetLogoBtn = document.getElementById('resetLogoBtn');
@@ -16,29 +22,71 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load saved branding
     loadBranding();
 
-    // Color picker sync - update text input when color picker changes
+    // Color picker sync - company name color
     if (companyNameColorInput) {
         companyNameColorInput.addEventListener('input', function() {
             companyNameColorText.value = this.value;
         });
     }
 
-    // Text input sync - update color picker when text input changes
     if (companyNameColorText) {
         companyNameColorText.addEventListener('input', function() {
             const color = this.value.trim();
-            // Validate hex color format
             if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
                 companyNameColorInput.value = color;
             }
         });
 
-        // Also handle on blur to correct invalid values
         companyNameColorText.addEventListener('blur', function() {
             const color = this.value.trim();
             if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
-                // Reset to color picker value if invalid
                 this.value = companyNameColorInput.value;
+            }
+        });
+    }
+
+    // Color picker sync - page title color
+    if (pageTitleColorInput) {
+        pageTitleColorInput.addEventListener('input', function() {
+            pageTitleColorText.value = this.value;
+        });
+    }
+
+    if (pageTitleColorText) {
+        pageTitleColorText.addEventListener('input', function() {
+            const color = this.value.trim();
+            if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                pageTitleColorInput.value = color;
+            }
+        });
+
+        pageTitleColorText.addEventListener('blur', function() {
+            const color = this.value.trim();
+            if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                this.value = pageTitleColorInput.value;
+            }
+        });
+    }
+
+    // Color picker sync - page subtitle color
+    if (pageSubtitleColorInput) {
+        pageSubtitleColorInput.addEventListener('input', function() {
+            pageSubtitleColorText.value = this.value;
+        });
+    }
+
+    if (pageSubtitleColorText) {
+        pageSubtitleColorText.addEventListener('input', function() {
+            const color = this.value.trim();
+            if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                pageSubtitleColorInput.value = color;
+            }
+        });
+
+        pageSubtitleColorText.addEventListener('blur', function() {
+            const color = this.value.trim();
+            if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                this.value = pageSubtitleColorInput.value;
             }
         });
     }
@@ -89,6 +137,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const logoText = logoTextInput.value.trim() || 'LS';
             const companyName = companyNameInput.value.trim() || 'Light Skai';
             const companyNameColor = companyNameColorInput.value;
+            const pageTitle = pageTitleInput.value.trim() || 'Meeting Intelligence Platform';
+            const pageTitleColor = pageTitleColorInput.value;
+            const pageSubtitle = pageSubtitleInput.value.trim() || 'Upload your meeting notes or transcriptions to generate a comprehensive report.';
+            const pageSubtitleColor = pageSubtitleColorInput.value;
 
             if (logoType === 'text') {
                 // Save text logo
@@ -96,7 +148,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: 'text',
                     logoText: logoText,
                     companyName: companyName,
-                    companyNameColor: companyNameColor
+                    companyNameColor: companyNameColor,
+                    pageTitle: pageTitle,
+                    pageTitleColor: pageTitleColor,
+                    pageSubtitle: pageSubtitle,
+                    pageSubtitleColor: pageSubtitleColor
                 };
                 localStorage.setItem('companyBranding', JSON.stringify(branding));
                 applyBranding(branding);
@@ -114,7 +170,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         type: 'image',
                         logoImage: event.target.result,
                         companyName: companyName,
-                        companyNameColor: companyNameColor
+                        companyNameColor: companyNameColor,
+                        pageTitle: pageTitle,
+                        pageTitleColor: pageTitleColor,
+                        pageSubtitle: pageSubtitle,
+                        pageSubtitleColor: pageSubtitleColor
                     };
                     localStorage.setItem('companyBranding', JSON.stringify(branding));
                     applyBranding(branding);
@@ -134,6 +194,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 companyNameInput.value = 'Light Skai';
                 companyNameColorInput.value = '#1e293b';
                 companyNameColorText.value = '#1e293b';
+                pageTitleInput.value = 'Meeting Intelligence Platform';
+                pageTitleColorInput.value = '#1e293b';
+                pageTitleColorText.value = '#1e293b';
+                pageSubtitleInput.value = 'Upload your meeting notes or transcriptions to generate a comprehensive report.';
+                pageSubtitleColorInput.value = '#64748b';
+                pageSubtitleColorText.value = '#64748b';
                 logoTextGroup.style.display = 'block';
                 logoImageGroup.style.display = 'none';
                 logoPreview.style.display = 'none';
@@ -142,7 +208,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: 'text',
                     logoText: 'LS',
                     companyName: 'Light Skai',
-                    companyNameColor: '#1e293b'
+                    companyNameColor: '#1e293b',
+                    pageTitle: 'Meeting Intelligence Platform',
+                    pageTitleColor: '#1e293b',
+                    pageSubtitle: 'Upload your meeting notes or transcriptions to generate a comprehensive report.',
+                    pageSubtitleColor: '#64748b'
                 });
             }
         });
@@ -160,6 +230,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 companyNameInput.value = branding.companyName || 'Light Skai';
                 companyNameColorInput.value = branding.companyNameColor || '#1e293b';
                 companyNameColorText.value = branding.companyNameColor || '#1e293b';
+                pageTitleInput.value = branding.pageTitle || 'Meeting Intelligence Platform';
+                pageTitleColorInput.value = branding.pageTitleColor || '#1e293b';
+                pageTitleColorText.value = branding.pageTitleColor || '#1e293b';
+                pageSubtitleInput.value = branding.pageSubtitle || 'Upload your meeting notes or transcriptions to generate a comprehensive report.';
+                pageSubtitleColorInput.value = branding.pageSubtitleColor || '#64748b';
+                pageSubtitleColorText.value = branding.pageSubtitleColor || '#64748b';
                 
                 if (branding.type === 'text') {
                     logoTextInput.value = branding.logoText || 'LS';
@@ -185,6 +261,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const logoElement = document.querySelector('.logo');
         const brandNameElement = document.querySelector('.brand-name');
         const logoSection = document.querySelector('.logo-section');
+        const pageTitleElement = document.querySelector('.page-title');
+        const pageSubtitleElement = document.querySelector('.page-subtitle');
         
         if (!logoElement || !brandNameElement || !logoSection) return;
 
@@ -198,6 +276,20 @@ document.addEventListener('DOMContentLoaded', function() {
         brandNameElement.style.setProperty('-webkit-text-fill-color', color, 'important');
         brandNameElement.style.setProperty('background-clip', 'unset', 'important');
         brandNameElement.style.setProperty('-webkit-background-clip', 'unset', 'important');
+
+        // Update page title and color
+        if (pageTitleElement) {
+            pageTitleElement.textContent = branding.pageTitle || 'Meeting Intelligence Platform';
+            const titleColor = branding.pageTitleColor || '#1e293b';
+            pageTitleElement.style.setProperty('color', titleColor, 'important');
+        }
+
+        // Update page subtitle and color
+        if (pageSubtitleElement) {
+            pageSubtitleElement.textContent = branding.pageSubtitle || 'Upload your meeting notes or transcriptions to generate a comprehensive report.';
+            const subtitleColor = branding.pageSubtitleColor || '#64748b';
+            pageSubtitleElement.style.setProperty('color', subtitleColor, 'important');
+        }
 
         // Remove any existing custom logo image
         const existingCustomLogo = logoSection.querySelector('.custom-logo-image');
