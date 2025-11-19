@@ -124,14 +124,24 @@ const Auth = {
     },
 
     showAuth() {
-        elements.authContainer.classList.add('active');
-        elements.appContainer.classList.remove('active');
+        if (elements.authContainer) {
+            elements.authContainer.classList.add('active');
+        }
+        if (elements.appContainer) {
+            elements.appContainer.classList.remove('active');
+        }
     },
 
     showApp() {
-        elements.authContainer.classList.remove('active');
-        elements.appContainer.classList.add('active');
-        elements.userEmail.textContent = state.currentUser?.email || '';
+        if (elements.authContainer) {
+            elements.authContainer.classList.remove('active');
+        }
+        if (elements.appContainer) {
+            elements.appContainer.classList.add('active');
+        }
+        if (elements.userEmail && state.currentUser) {
+            elements.userEmail.textContent = state.currentUser.email || '';
+        }
         DataLoader.loadAll();
     },
 

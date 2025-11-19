@@ -56,6 +56,7 @@ let elements = {};
 
 // Initialize DOM elements
 function initElements() {
+    console.log('Initializing DOM elements...');
     elements = {
         authContainer: document.getElementById('authContainer'),
         authForm: document.getElementById('authForm'),
@@ -112,6 +113,23 @@ function initElements() {
         passwordStrengthBar: document.getElementById('passwordStrengthBar'),
         passwordRequirements: document.querySelectorAll('.password-requirement')
     };
+    
+    // Log critical elements for debugging
+    console.log('Email input:', elements.emailInput);
+    console.log('Password input:', elements.passwordInput);
+    console.log('Auth form:', elements.authForm);
+    
+    // Check if inputs are actually interactive
+    if (elements.emailInput) {
+        console.log('Email input disabled?', elements.emailInput.disabled);
+        console.log('Email input readonly?', elements.emailInput.readOnly);
+    }
+    if (elements.passwordInput) {
+        console.log('Password input disabled?', elements.passwordInput.disabled);
+        console.log('Password input readonly?', elements.passwordInput.readOnly);
+    }
+    
+    console.log('DOM elements initialized successfully');
 }
 
 // User Preferences Storage
@@ -995,19 +1013,47 @@ const CheckboxManager = {
 // Event Listeners
 const EventListeners = {
     init() {
-        elements.authForm.addEventListener('submit', this.handleAuthSubmit.bind(this));
-        elements.authToggleLink.addEventListener('click', () => Auth.toggleAuthMode());
-        elements.magicLinkToggle.addEventListener('click', () => Auth.toggleMagicLinkMode());
-        elements.forgotPasswordLink.addEventListener('click', () => Auth.toggleForgotPasswordMode());
-        elements.authBackLink.addEventListener('click', () => Auth.toggleForgotPasswordMode());
-        elements.logoutBtn.addEventListener('click', () => Auth.signOut());
+        // Auth-related listeners (only if elements exist - for login page)
+        if (elements.authForm) {
+            elements.authForm.addEventListener('submit', this.handleAuthSubmit.bind(this));
+        }
+        if (elements.authToggleLink) {
+            elements.authToggleLink.addEventListener('click', () => Auth.toggleAuthMode());
+        }
+        if (elements.magicLinkToggle) {
+            elements.magicLinkToggle.addEventListener('click', () => Auth.toggleMagicLinkMode());
+        }
+        if (elements.forgotPasswordLink) {
+            elements.forgotPasswordLink.addEventListener('click', () => Auth.toggleForgotPasswordMode());
+        }
+        if (elements.authBackLink) {
+            elements.authBackLink.addEventListener('click', () => Auth.toggleForgotPasswordMode());
+        }
         
-        elements.settingsBtn.addEventListener('click', () => AdminPanel.open());
-        elements.adminClose.addEventListener('click', () => AdminPanel.close());
-        elements.adminCancelBtn.addEventListener('click', () => AdminPanel.close());
-        elements.adminSaveBtn.addEventListener('click', () => AdminPanel.saveDefaults());
-        elements.adminResetBtn.addEventListener('click', () => AdminPanel.resetToSystemDefaults());
-        elements.adminSuccessCloseBtn.addEventListener('click', () => AdminPanel.closeAfterSuccess());
+        // Logout button (exists on main app page)
+        if (elements.logoutBtn) {
+            elements.logoutBtn.addEventListener('click', () => Auth.signOut());
+        }
+        
+        // Admin panel listeners (only if elements exist)
+        if (elements.settingsBtn) {
+            elements.settingsBtn.addEventListener('click', () => AdminPanel.open());
+        }
+        if (elements.adminClose) {
+            elements.adminClose.addEventListener('click', () => AdminPanel.close());
+        }
+        if (elements.adminCancelBtn) {
+            elements.adminCancelBtn.addEventListener('click', () => AdminPanel.close());
+        }
+        if (elements.adminSaveBtn) {
+            elements.adminSaveBtn.addEventListener('click', () => AdminPanel.saveDefaults());
+        }
+        if (elements.adminResetBtn) {
+            elements.adminResetBtn.addEventListener('click', () => AdminPanel.resetToSystemDefaults());
+        }
+        if (elements.adminSuccessCloseBtn) {
+            elements.adminSuccessCloseBtn.addEventListener('click', () => AdminPanel.closeAfterSuccess());
+        }
         
         if (elements.adminChangePasswordBtn) {
             elements.adminChangePasswordBtn.addEventListener('click', () => AdminPanel.changePassword());
@@ -1018,32 +1064,46 @@ const EventListeners = {
                 const strength = AdminPanel.checkPasswordStrength(e.target.value);
                 const bar = elements.passwordStrengthBar;
                 
-                bar.className = 'password-strength-bar';
-                if (strength === 1) {
-                    bar.classList.add('password-strength-weak');
-                } else if (strength === 2) {
-                    bar.classList.add('password-strength-medium');
-                } else if (strength >= 3) {
-                    bar.classList.add('password-strength-strong');
+                if (bar) {
+                    bar.className = 'password-strength-bar';
+                    if (strength === 1) {
+                        bar.classList.add('password-strength-weak');
+                    } else if (strength === 2) {
+                        bar.classList.add('password-strength-medium');
+                    } else if (strength >= 3) {
+                        bar.classList.add('password-strength-strong');
+                    }
                 }
                 
                 AdminPanel.updatePasswordRequirements(e.target.value);
             });
         }
         
-        elements.adminPanel.addEventListener('click', (e) => {
-            if (e.target === elements.adminPanel) {
-                AdminPanel.close();
-            }
-        });
+        if (elements.adminPanel) {
+            elements.adminPanel.addEventListener('click', (e) => {
+                if (e.target === elements.adminPanel) {
+                    AdminPanel.close();
+                }
+            });
+        }
         
-        elements.uploadArea.addEventListener('dragover', this.handleDragOver);
-        elements.uploadArea.addEventListener('dragleave', this.handleDragLeave);
-        elements.uploadArea.addEventListener('drop', this.handleDrop);
-        elements.fileInput.addEventListener('change', this.handleFileSelect);
-        elements.removeFile.addEventListener('click', () => FileHandler.removeFile());
+        // File upload listeners (only on main app page)
+        if (elements.uploadArea) {
+            elements.uploadArea.addEventListener('dragover', this.handleDragOver);
+            elements.uploadArea.addEventListener('dragleave', this.handleDragLeave);
+            elements.uploadArea.addEventListener('drop', this.handleDrop);
+        }
+        if (elements.fileInput) {
+            elements.fileInput.addEventListener('change', this.handleFileSelect);
+        }
+        if (elements.removeFile) {
+            elements.removeFile.addEventListener('click', () => FileHandler.removeFile());
+        }
         
-        elements.runBtn.addEventListener('click', () => ReportGenerator.generate());
+        // Report generation button
+        if (elements.runBtn) {
+            elements.runBtn.addEventListener('click', () => ReportGenerator.generate());
+        }
 
         if (elements.copyPromptBtn) {
             elements.copyPromptBtn.addEventListener('click', async () => {
@@ -1328,27 +1388,35 @@ const EventListeners = {
     },
 
     setupPreferenceSaving() {
-        elements.reportOptionsContainer.addEventListener('change', () => {
-            UserPreferences.save();
-        });
-
-        elements.meetingTypeSelect.addEventListener('change', () => {
-            UserPreferences.save();
-        });
-        elements.methodologySelect.addEventListener('change', () => {
-            UserPreferences.save();
-        });
-        elements.industrySelect.addEventListener('change', () => {
-            UserPreferences.save();
-        });
-
-        let dragSaveTimeout;
-        elements.reportOptionsContainer.addEventListener('dragend', () => {
-            clearTimeout(dragSaveTimeout);
-            dragSaveTimeout = setTimeout(() => {
+        if (elements.reportOptionsContainer) {
+            elements.reportOptionsContainer.addEventListener('change', () => {
                 UserPreferences.save();
-            }, 500);
-        });
+            });
+            
+            let dragSaveTimeout;
+            elements.reportOptionsContainer.addEventListener('dragend', () => {
+                clearTimeout(dragSaveTimeout);
+                dragSaveTimeout = setTimeout(() => {
+                    UserPreferences.save();
+                }, 500);
+            });
+        }
+
+        if (elements.meetingTypeSelect) {
+            elements.meetingTypeSelect.addEventListener('change', () => {
+                UserPreferences.save();
+            });
+        }
+        if (elements.methodologySelect) {
+            elements.methodologySelect.addEventListener('change', () => {
+                UserPreferences.save();
+            });
+        }
+        if (elements.industrySelect) {
+            elements.industrySelect.addEventListener('change', () => {
+                UserPreferences.save();
+            });
+        }
     },
 
     async handleAuthSubmit(e) {
