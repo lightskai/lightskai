@@ -921,6 +921,77 @@ const ReportGenerator = {
             y += 7;
         });
         
+        // === ADD AI RESULTS SECTION ===
+        // Get AI Results content using the helper function from main-app.html
+        let aiResultsContent = '';
+        
+        // Try to get AI Results from the helper function
+        if (typeof window.getAIResultsForPDF === 'function') {
+            aiResultsContent = window.getAIResultsForPDF();
+        } else {
+            // Fallback: Get directly from the display element
+            const aiResultsDisplay = document.getElementById('aiResultsDisplay');
+            if (aiResultsDisplay) {
+                aiResultsContent = aiResultsDisplay.textContent || aiResultsDisplay.innerText;
+                // Clean up the content
+                aiResultsContent = aiResultsContent.replace(/^\s+|\s+$/g, '').replace(/\n\s*\n/g, '\n\n');
+            }
+        }
+        
+        // Only add AI Results section if there's content and it's not the empty state message
+        if (aiResultsContent && 
+            aiResultsContent.trim().length > 0 && 
+            !aiResultsContent.includes('Click "Run AI Analysis"') &&
+            !aiResultsContent.includes('run AI analysis to see results')) {
+            
+            // Add page break before AI Results
+            doc.addPage();
+            y = 20;
+            
+            // Add section header
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('AI Analysis Results', 20, y);
+            y += 10;
+            
+            // Add a separator line
+            doc.setLineWidth(0.5);
+            doc.line(20, y, 190, y);
+            y += 8;
+            
+            // Reset font for content
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            
+            // Configure text wrapping
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 20;
+            const maxLineWidth = pageWidth - (margin * 2);
+            const lineHeight = 6;
+            const bottomMargin = 25; // Extra space for footer
+            
+            // Split the AI results into lines that fit the page width
+            const lines = doc.splitTextToSize(aiResultsContent, maxLineWidth);
+            
+            // Add the content with proper pagination
+            lines.forEach(line => {
+                // Check if we need a new page
+                if (y + lineHeight > pageHeight - bottomMargin) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                doc.text(line, margin, y);
+                y += lineHeight;
+            });
+            
+            console.log('AI Results added to PDF successfully');
+        } else {
+            console.log('No AI Results to add to PDF (empty or not yet generated)');
+        }
+        // === END AI RESULTS SECTION ===
+        
         const pageCount = doc.internal.getNumberOfPages();
         for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i);
