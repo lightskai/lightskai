@@ -1271,6 +1271,54 @@
                     </div>
                 </div>
 
+                <!-- Company Branding Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🏢</div>
+                            <div class="admin-section-title">Company Branding</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Customize the company logo displayed in the navigation bar.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Logo Type</label>
+                            <select class="form-input" id="logoTypeSelect">
+                                <option value="text">Text Logo</option>
+                                <option value="image">Image Logo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="logoTextGroup">
+                            <label class="form-label">Logo Text (2-3 characters recommended)</label>
+                            <input type="text" class="form-input" id="logoTextInput" placeholder="LS" maxlength="4" value="LS">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-input" id="companyNameInput" placeholder="Light Skai" value="Light Skai">
+                        </div>
+
+                        <div class="form-group" id="logoImageGroup" style="display: none;">
+                            <label class="form-label">Upload Logo Image</label>
+                            <input type="file" class="form-input" id="logoImageInput" accept="image/png,image/jpeg,image/jpg,image/svg+xml">
+                            <small style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">
+                                Recommended: Square image, max 200KB. Transparent PNG works best.
+                            </small>
+                            <div id="logoPreview" style="margin-top: 12px; display: none;">
+                                <img id="logoPreviewImg" style="max-width: 60px; max-height: 60px; border-radius: 8px; border: 1px solid #e2e8f0;" alt="Logo preview">
+                            </div>
+                        </div>
+
+                        <button class="admin-btn admin-btn-primary" id="applyLogoBtn" style="margin-top: 16px;">Apply Branding</button>
+                        <button class="admin-btn admin-btn-secondary" id="resetLogoBtn" style="margin-top: 16px; margin-left: 8px;">Reset to Default</button>
+                    </div>
+                </div>
+
                 <!-- Default Meeting Configuration Section -->
                 <div class="admin-section collapsed">
                     <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
@@ -1462,6 +1510,180 @@
                         applyTheme('auto');
                     }
                 });
+            }
+        });
+
+        // Company Branding Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoTypeSelect = document.getElementById('logoTypeSelect');
+            const logoTextGroup = document.getElementById('logoTextGroup');
+            const logoImageGroup = document.getElementById('logoImageGroup');
+            const logoTextInput = document.getElementById('logoTextInput');
+            const companyNameInput = document.getElementById('companyNameInput');
+            const logoImageInput = document.getElementById('logoImageInput');
+            const applyLogoBtn = document.getElementById('applyLogoBtn');
+            const resetLogoBtn = document.getElementById('resetLogoBtn');
+            const logoPreview = document.getElementById('logoPreview');
+            const logoPreviewImg = document.getElementById('logoPreviewImg');
+
+            // Load saved branding
+            loadBranding();
+
+            // Logo type selector handler
+            if (logoTypeSelect) {
+                logoTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'text') {
+                        logoTextGroup.style.display = 'block';
+                        logoImageGroup.style.display = 'none';
+                    } else {
+                        logoTextGroup.style.display = 'none';
+                        logoImageGroup.style.display = 'block';
+                    }
+                });
+            }
+
+            // Logo image preview handler
+            if (logoImageInput) {
+                logoImageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file size (max 200KB)
+                        if (file.size > 200 * 1024) {
+                            alert('Image size must be less than 200KB');
+                            this.value = '';
+                            logoPreview.style.display = 'none';
+                            return;
+                        }
+
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            logoPreviewImg.src = event.target.result;
+                            logoPreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        logoPreview.style.display = 'none';
+                    }
+                });
+            }
+
+            // Apply branding button handler
+            if (applyLogoBtn) {
+                applyLogoBtn.addEventListener('click', function() {
+                    const logoType = logoTypeSelect.value;
+                    const logoText = logoTextInput.value.trim() || 'LS';
+                    const companyName = companyNameInput.value.trim() || 'Light Skai';
+
+                    if (logoType === 'text') {
+                        // Save text logo
+                        const branding = {
+                            type: 'text',
+                            logoText: logoText,
+                            companyName: companyName
+                        };
+                        localStorage.setItem('companyBranding', JSON.stringify(branding));
+                        applyBranding(branding);
+                        alert('Branding applied successfully!');
+                    } else {
+                        // Save image logo
+                        const file = logoImageInput.files[0];
+                        if (!file) {
+                            alert('Please select a logo image');
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const branding = {
+                                type: 'image',
+                                logoImage: event.target.result,
+                                companyName: companyName
+                            };
+                            localStorage.setItem('companyBranding', JSON.stringify(branding));
+                            applyBranding(branding);
+                            alert('Branding applied successfully!');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Reset branding button handler
+            if (resetLogoBtn) {
+                resetLogoBtn.addEventListener('click', function() {
+                    if (confirm('Reset to default branding?')) {
+                        localStorage.removeItem('companyBranding');
+                        logoTypeSelect.value = 'text';
+                        logoTextInput.value = 'LS';
+                        companyNameInput.value = 'Light Skai';
+                        logoTextGroup.style.display = 'block';
+                        logoImageGroup.style.display = 'none';
+                        logoPreview.style.display = 'none';
+                        
+                        applyBranding({
+                            type: 'text',
+                            logoText: 'LS',
+                            companyName: 'Light Skai'
+                        });
+                        alert('Branding reset to default!');
+                    }
+                });
+            }
+
+            // Function to load saved branding
+            function loadBranding() {
+                const savedBranding = localStorage.getItem('companyBranding');
+                if (savedBranding) {
+                    try {
+                        const branding = JSON.parse(savedBranding);
+                        
+                        // Update form fields
+                        logoTypeSelect.value = branding.type;
+                        companyNameInput.value = branding.companyName || 'Light Skai';
+                        
+                        if (branding.type === 'text') {
+                            logoTextInput.value = branding.logoText || 'LS';
+                            logoTextGroup.style.display = 'block';
+                            logoImageGroup.style.display = 'none';
+                        } else {
+                            logoPreviewImg.src = branding.logoImage;
+                            logoPreview.style.display = 'block';
+                            logoTextGroup.style.display = 'none';
+                            logoImageGroup.style.display = 'block';
+                        }
+                        
+                        // Apply to navbar
+                        applyBranding(branding);
+                    } catch (e) {
+                        console.error('Error loading branding:', e);
+                    }
+                }
+            }
+
+            // Function to apply branding to navbar
+            function applyBranding(branding) {
+                const logoElement = document.querySelector('.logo');
+                const brandNameElement = document.querySelector('.brand-name');
+                
+                if (!logoElement || !brandNameElement) return;
+
+                // Update company name
+                brandNameElement.textContent = branding.companyName || 'Light Skai';
+
+                if (branding.type === 'text') {
+                    // Text logo
+                    logoElement.textContent = branding.logoText || 'LS';
+                    logoElement.style.backgroundImage = '';
+                    logoElement.style.fontSize = '';
+                } else {
+                    // Image logo
+                    logoElement.textContent = '';
+                    logoElement.style.backgroundImage = `url(${branding.logoImage})`;
+                    logoElement.style.backgroundSize = 'cover';
+                    logoElement.style.backgroundPosition = 'center';
+                    logoElement.style.backgroundRepeat = 'no-repeat';
+                }
             }
         });
     </script>
