@@ -5,6 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Light Skai - Meeting Intelligence Platform</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Critical CSS for admin panel - ensure it works */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 500px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 10000;
+            overflow-y: auto;
+        }
+        
+        .admin-panel.active {
+            right: 0 !important;
+        }
+        
+        .admin-panel-content {
+            padding: 20px;
+        }
+        
+        /* Debug: Make sure panel is visible when active */
+        .admin-panel.active {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Auth check script - runs immediately -->
