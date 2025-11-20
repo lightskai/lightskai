@@ -34,7 +34,6 @@
             flex-direction: column;
         }
 
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -81,7 +80,6 @@
             100% { opacity: 1; }
         }
 
-        /* Layout */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 280px 1fr 1fr;
@@ -91,7 +89,6 @@
             overflow: hidden;
         }
 
-        /* Controls Sidebar */
         .controls-panel {
             grid-row: 1 / -1;
             background: var(--bg-card);
@@ -153,7 +150,6 @@
             width: 100%;
         }
 
-        /* Search Input Styles */
         .search-container {
             display: flex;
             gap: 8px;
@@ -204,7 +200,6 @@
             background: var(--bg-hover);
         }
 
-        /* Main Cards */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -227,7 +222,6 @@
             font-size: 1rem;
         }
 
-        /* Table Styles */
         .table-container {
             overflow-y: auto;
             flex: 1;
@@ -298,7 +292,6 @@
         .iv-med { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
         .iv-high { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
 
-        /* Range Bar */
         .range-container {
             position: relative;
             width: 100%;
@@ -361,7 +354,6 @@
 
     <div class="dashboard-grid">
         
-        <!-- Left: Controls Panel -->
         <aside class="controls-panel">
             <div class="control-group">
                 <label class="control-label">
@@ -415,7 +407,6 @@
             <div class="status-text" id="statusText">Ready - Click Fetch Data to load</div>
         </aside>
 
-        <!-- Right Top: Data Table -->
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">📈 Dow 30 Stocks</h2>
@@ -441,7 +432,6 @@
             </div>
         </div>
 
-        <!-- Right Bottom: Scatter Chart -->
         <div class="card chart-card">
             <div class="card-header">
                 <h2 class="card-title">📊 Return vs Volatility Matrix</h2>
@@ -458,15 +448,10 @@
         const API_KEY = 'CsC37moTEOy5wF0yLpwBjDZJorOAaPXD';
         const BASE_URL = 'https://financialmodelingprep.com/api/v3';
         
-        // CORS Proxy options (try multiple if one fails)
-        const CORS_PROXIES = [
-            '', // Try direct first
-            'https://corsproxy.io/?',
-            'https://api.allorigins.win/raw?url='
-        ];
-        let currentProxyIndex = 0;
+        // Use local PHP proxy (upload api-proxy.php to your server)
+        const USE_PROXY = true;
+        const PROXY_URL = 'api-proxy.php';
         
-        // Dow 30 symbols
         const DOW30_SYMBOLS = [
             'AAPL', 'MSFT', 'JPM', 'V', 'UNH', 'HD', 'PG', 'JNJ', 'DIS', 'MA',
             'NVDA', 'BAC', 'XOM', 'PFE', 'CSCO', 'ADBE', 'CRM', 'NKE', 'MRK',
@@ -499,55 +484,38 @@
         });
 
         // ==========================================
-        // 3. API FUNCTIONS
+        // 3. API FUNCTIONS WITH PROXY SUPPORT
         // ==========================================
 
-        /**
-         * Fetch real-time quotes for all Dow 30 stocks
-         */
+        async function fetchWithProxy(apiUrl) {
+            if (USE_PROXY) {
+                const proxyUrl = `${PROXY_URL}?url=${encodeURIComponent(apiUrl)}`;
+                return await fetch(proxyUrl);
+            } else {
+                return await fetch(apiUrl);
+            }
+        }
+
         async function fetchMarketData() {
             try {
                 statusText.textContent = 'Fetching market data...';
                 const symbolsParam = DOW30_SYMBOLS.join(',');
                 const apiUrl = `${BASE_URL}/quote/${symbolsParam}?apikey=${API_KEY}`;
                 
-                // Try with current proxy
-                const proxy = CORS_PROXIES[currentProxyIndex];
-                const url = proxy ? `${proxy}${encodeURIComponent(apiUrl)}` : apiUrl;
-                
-                console.log('Fetching from:', url);
-                console.log('Using proxy:', proxy || 'direct');
-                
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
+                console.log('Fetching market data...');
+                const response = await fetchWithProxy(apiUrl);
                 
                 console.log('Response status:', response.status);
                 
                 if (!response.ok) {
-                    // If 403, try next proxy
-                    if (response.status === 403 && currentProxyIndex < CORS_PROXIES.length - 1) {
-                        currentProxyIndex++;
-                        console.log('Trying next proxy...');
-                        return await fetchMarketData(); // Retry with next proxy
-                    }
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}. Try a different browser or disable ad blockers.`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                let data = await response.json();
-                
-                // Handle AllOrigins wrapper
-                if (data.contents) {
-                    data = JSON.parse(data.contents);
-                }
-                
+                const data = await response.json();
                 console.log('Received data:', data);
                 
                 if (!Array.isArray(data) || data.length === 0) {
-                    throw new Error('No data received from API. API key may be invalid or rate limited.');
+                    throw new Error('No data received from API');
                 }
                 
                 statusText.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
@@ -556,52 +524,21 @@
             } catch (error) {
                 console.error('Error fetching market data:', error);
                 statusText.innerHTML = `<span style="color: var(--accent-red);">Error: ${error.message}</span>`;
-                
-                // Show helpful message
-                const helpDiv = document.createElement('div');
-                helpDiv.className = 'error-message';
-                helpDiv.innerHTML = `
-                    <strong>Troubleshooting:</strong><br>
-                    • Check browser console for details<br>
-                    • Disable ad blockers/VPN<br>
-                    • Try a different browser<br>
-                    • API key may be rate limited
-                `;
-                if (!document.querySelector('.error-message')) {
-                    statusText.parentElement.appendChild(helpDiv);
-                }
-                
                 return null;
             }
         }
 
-        /**
-         * Fetch historical data for a single symbol
-         */
         async function fetchHistoricalData(symbol) {
             try {
                 const apiUrl = `${BASE_URL}/historical-price-full/${symbol}?apikey=${API_KEY}`;
-                const proxy = CORS_PROXIES[currentProxyIndex];
-                const url = proxy ? `${proxy}${encodeURIComponent(apiUrl)}` : apiUrl;
-                
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
+                const response = await fetchWithProxy(apiUrl);
                 
                 if (!response.ok) {
                     console.error(`Failed to fetch historical data for ${symbol}`);
                     return null;
                 }
                 
-                let data = await response.json();
-                
-                // Handle AllOrigins wrapper
-                if (data.contents) {
-                    data = JSON.parse(data.contents);
-                }
+                const data = await response.json();
                 
                 if (!data.historical || data.historical.length === 0) {
                     return null;
@@ -610,14 +547,12 @@
                 const hist = data.historical;
                 const current = hist[0].close;
                 
-                // Calculate percentage changes for different timeframes
                 const getChange = (daysAgo) => {
                     if (hist.length <= daysAgo) return 0;
                     const pastPrice = hist[daysAgo].close;
                     return ((current - pastPrice) / pastPrice) * 100;
                 };
                 
-                // Calculate YTD
                 const now = new Date();
                 const startOfYear = new Date(now.getFullYear(), 0, 1);
                 const ytdIndex = hist.findIndex(h => new Date(h.date) <= startOfYear);
@@ -639,9 +574,6 @@
             }
         }
 
-        /**
-         * Transform API data into our internal format
-         */
         function transformMarketData(apiData) {
             return apiData.map(stock => ({
                 symbol: stock.symbol,
@@ -654,22 +586,17 @@
                 yearLow: stock.yearLow || stock.price,
                 dayHigh: stock.dayHigh || stock.price,
                 dayLow: stock.dayLow || stock.price,
-                // Calculate intraday volatility as a proxy
                 iv: stock.dayHigh && stock.dayLow && stock.price 
                     ? ((stock.dayHigh - stock.dayLow) / stock.price) * 100 
                     : 0,
-                timeframes: {} // Will be populated on-demand
+                timeframes: {}
             }));
         }
 
-        /**
-         * Main function to refresh all market data
-         */
         async function refreshMarketData() {
             const apiData = await fetchMarketData();
             
             if (!apiData) {
-                // Keep existing data if fetch fails
                 return;
             }
             
@@ -804,15 +731,12 @@
 
             let filtered = [...marketData];
 
-            // 1. Local Filter (Dow 30 Only)
             if (filterTerm.length > 0) {
                 filtered = filtered.filter(s => s.symbol.includes(filterTerm));
             }
 
-            // 2. Handle History (Lazy Load with Caching)
             if(currentTimeframe !== '1D') {
                 for (let stock of filtered) {
-                    // API OPTIMIZATION: Only fetch if we don't have it yet
                     if (!stock.timeframes[currentTimeframe]) {
                         const hist = await fetchHistoricalData(stock.symbol);
                         if(hist) {
@@ -828,7 +752,6 @@
                 }
             }
 
-            // 3. Filter Logic
             filtered = filtered.filter(stock => {
                 let changeToCheck = stock.change; 
                 if(currentTimeframe !== '1D' && stock.timeframes[currentTimeframe]) {
@@ -849,7 +772,6 @@
                 return meetsDrop && meetsIV && meetsCap;
             });
 
-            // 4. Sort
             filtered.sort((a, b) => {
                 let valA, valB;
                 
@@ -874,7 +796,6 @@
             resultCount.textContent = filtered.length;
             renderTable(filtered, currentTimeframe);
 
-            // Only update chart if we have valid data
             if (filtered.length > 0) {
                 const chartData = filtered.map(s => ({
                     x: currentTimeframe === '1D' ? s.change : (s.timeframes[currentTimeframe]?.change || 0),
@@ -885,7 +806,6 @@
                 scatterChart.options.scales.x.title.text = `% Change (${currentTimeframe})`;
                 scatterChart.update();
             } else {
-                // Clear chart if no data
                 scatterChart.data.datasets[0].data = [];
                 scatterChart.update();
             }
@@ -914,12 +834,6 @@
             });
         });
 
-        // Filter input (Manual fetch only - no auto-update)
-        // Removed: symbolInput.addEventListener('keyup', filterAndRender);
-
-        // Removed auto-update on slider/select changes
-        // User must click Fetch Data button to apply filters
-
         refreshBtn.addEventListener('click', async () => {
             refreshBtn.disabled = true;
             refreshBtn.textContent = '⏳ Fetching...';
@@ -934,12 +848,7 @@
         // 5. INITIALIZATION
         // ==========================================
 
-        // Removed automatic polling - user must click Fetch Data button
-        // No startPolling() function needed
-
         initChart();
-        // Removed: refreshMarketData() - don't auto-fetch on page load
-        // Removed: startPolling() - no automatic refresh 
 
     </script>
 </body>
