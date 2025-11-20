@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dow 30 MarketPulse - Real-Time Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #0F172A;
+            --bg-card: #1E293B;
+            --bg-hover: #334155;
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --accent-red: #EF4444;
+            --accent-green: #10B981;
+            --accent-blue: #3B82F6;
+            --accent-orange: #F59E0B;
+            --border: #334155;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand span { color: var(--accent-blue); }
+
+        .live-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .demo-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .controls-panel {
+            grid-row: 1 / -1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-value { color: var(--accent-blue); font-weight: 600; }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+            height: 4px;
+            background: var(--bg-hover);
+            border-radius: 2px;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            margin-top: -6px; 
+        }
+        
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            background: var(--bg-hover);
+            border-radius: 2px;
+        }
+
+        select, .search-input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        .search-input {
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+        
+        .btn-refresh {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-top: auto;
+        }
+
+        .btn-refresh:hover { background: #2563eb; }
+        
+        .btn-refresh:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .table-container {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 10;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover { background: rgba(255,255,255,0.05); }
+        th.active-sort { color: var(--accent-blue); }
+        .sort-icon { margin-left: 4px; }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            font-size: 0.875rem;
+        }
+
+        tr:hover { background: rgba(255,255,255,0.02); }
+
+        .ticker-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--accent-blue);
+            font-size: 0.95rem;
+        }
+
+        .company-name {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .val-green { color: var(--accent-green); }
+        .val-red { color: var(--accent-red); }
+
+        .iv-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-orange);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .iv-low { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .iv-med { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
+        .iv-high { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+        .range-container {
+            position: relative;
+            width: 100%;
+            height: 6px;
+            background: var(--bg-hover);
+            border-radius: 3px;
+            overflow: visible;
+        }
+
+        .range-track {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-orange) 50%, var(--accent-green) 100%);
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        .range-marker {
+            position: absolute;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid var(--accent-blue);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .chart-card { grid-column: span 2; }
+        .chart-canvas { height: 100%; width: 100%; }
+
+        .status-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">Dow 30 <span>MarketPulse</span></div>
+        <div class="live-badge" id="modeBadge">
+            <div class="live-dot"></div>
+            DEMO MODE
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <aside class="controls-panel">
+            <div class="control-group">
+                <label class="control-label">
+                    <span>📉 Max Drop</span>
+                    <span class="slider-value" id="dropValue">0%</span>
+                </label>
+                <input type="range" id="dropSlider" min="0" max="20" value="0" step="0.5">
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span>📊 Min Volatility</span>
+                    <span class="slider-value" id="ivValue">0%</span>
+                </label>
+                <input type="range" id="ivSlider" min="0" max="10" value="0" step="0.1">
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Market Cap</label>
+                <select id="marketCapSelect">
+                    <option value="all">All Sizes</option>
+                    <option value="large">Large (>100B)</option>
+                    <option value="mid">Mid (10-100B)</option>
+                    <option value="small">Small (<10B)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Timeframe</label>
+                <select id="timeframeSelect">
+                    <option value="1D">1 Day</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Filter Symbol</label>
+                <input type="text" id="symbolInput" class="search-input" placeholder="e.g. AAPL" maxlength="5">
+            </div>
+
+            <button id="refreshBtn" class="btn-refresh">🔍 Fetch Data</button>
+            
+            <div class="status-text" id="statusText">Click Fetch Data to load</div>
+            
+            <div class="info-box" style="margin-top: auto;">
+                <strong>ℹ️ Demo Mode</strong><br>
+                Showing sample data. To use live data, you need a working API solution (server-side proxy required).
+            </div>
+        </aside>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">📈 Dow 30 Stocks</h2>
+                <span class="status-text">Results: <strong id="resultCount">0</strong></span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-key="symbol">Symbol <span class="sort-icon"></span></th>
+                            <th data-key="price" style="text-align: right;">Price <span class="sort-icon"></span></th>
+                            <th data-key="change" class="active-sort" style="text-align: right;">% Change <span class="sort-icon">▲</span></th>
+                            <th data-key="iv" style="text-align: center;">Day Volatility <span class="sort-icon"></span></th>
+                            <th data-key="range">52 Week Range <span class="sort-icon"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="5" style="text-align:center; padding:40px; color: var(--text-muted);">
+                            Click <strong style="color: var(--accent-blue);">Fetch Data</strong> to load
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card chart-card">
+            <div class="card-header">
+                <h2 class="card-title">📊 Return vs Volatility Matrix</h2>
+            </div>
+            <canvas id="scatterChart" class="chart-canvas"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // DEMO DATA (realistic stock data)
+        // ==========================================
+        const DEMO_DATA = [
+            {symbol: 'AAPL', name: 'Apple Inc.', price: 189.50, change: 1.2, marketCap: 2950000000000, yearHigh: 199.62, yearLow: 164.08, dayHigh: 190.20, dayLow: 188.10},
+            {symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.91, change: 0.8, marketCap: 2820000000000, yearHigh: 384.30, yearLow: 309.45, dayHigh: 380.50, dayLow: 377.20},
+            {symbol: 'JPM', name: 'JPMorgan Chase', price: 154.32, change: -0.5, marketCap: 445000000000, yearHigh: 161.25, yearLow: 135.19, dayHigh: 155.80, dayLow: 153.40},
+            {symbol: 'V', name: 'Visa Inc.', price: 259.18, change: 0.3, marketCap: 533000000000, yearHigh: 274.50, yearLow: 217.65, dayHigh: 260.45, dayLow: 258.10},
+            {symbol: 'UNH', name: 'UnitedHealth Group', price: 524.67, change: -1.1, marketCap: 488000000000, yearHigh: 558.10, yearLow: 445.68, dayHigh: 530.20, dayLow: 520.30},
+            {symbol: 'HD', name: 'Home Depot', price: 321.45, change: 0.6, marketCap: 325000000000, yearHigh: 345.69, yearLow: 287.10, dayHigh: 323.80, dayLow: 319.90},
+            {symbol: 'PG', name: 'Procter & Gamble', price: 156.78, change: -0.2, marketCap: 374000000000, yearHigh: 165.35, yearLow: 142.55, dayHigh: 157.90, dayLow: 155.60},
+            {symbol: 'JNJ', name: 'Johnson & Johnson', price: 162.34, change: 0.1, marketCap: 394000000000, yearHigh: 173.44, yearLow: 145.68, dayHigh: 163.20, dayLow: 161.50},
+            {symbol: 'DIS', name: 'Walt Disney Co.', price: 93.87, change: -1.8, marketCap: 171000000000, yearHigh: 123.74, yearLow: 78.73, dayHigh: 95.60, dayLow: 92.10},
+            {symbol: 'MA', name: 'Mastercard Inc.', price: 432.56, change: 0.9, marketCap: 410000000000, yearHigh: 449.77, yearLow: 359.81, dayHigh: 435.20, dayLow: 430.10},
+            {symbol: 'NVDA', name: 'NVIDIA Corp.', price: 495.22, change: 2.4, marketCap: 1220000000000, yearHigh: 502.66, yearLow: 108.13, dayHigh: 501.30, dayLow: 487.50},
+            {symbol: 'BAC', name: 'Bank of America', price: 34.56, change: -0.7, marketCap: 270000000000, yearHigh: 37.61, yearLow: 26.55, dayHigh: 35.10, dayLow: 34.20},
+            {symbol: 'XOM', name: 'Exxon Mobil', price: 108.23, change: 0.4, marketCap: 441000000000, yearHigh: 120.20, yearLow: 95.77, dayHigh: 109.50, dayLow: 107.30},
+            {symbol: 'PFE', name: 'Pfizer Inc.', price: 28.94, change: -1.3, marketCap: 163000000000, yearHigh: 37.53, yearLow: 25.20, dayHigh: 29.60, dayLow: 28.40},
+            {symbol: 'CSCO', name: 'Cisco Systems', price: 51.67, change: 0.5, marketCap: 208000000000, yearHigh: 56.52, yearLow: 44.50, dayHigh: 52.30, dayLow: 51.10},
+            {symbol: 'ADBE', name: 'Adobe Inc.', price: 567.89, change: 1.6, marketCap: 260000000000, yearHigh: 638.25, yearLow: 433.97, dayHigh: 572.40, dayLow: 562.10},
+            {symbol: 'CRM', name: 'Salesforce', price: 254.32, change: -0.8, marketCap: 247000000000, yearHigh: 305.65, yearLow: 195.81, dayHigh: 258.90, dayLow: 251.70},
+            {symbol: 'NKE', name: 'Nike Inc.', price: 102.45, change: 1.1, marketCap: 157000000000, yearHigh: 128.46, yearLow: 88.66, dayHigh: 103.80, dayLow: 101.20},
+            {symbol: 'MRK', name: 'Merck & Co.', price: 112.78, change: 0.2, marketCap: 286000000000, yearHigh: 128.47, yearLow: 101.50, dayHigh: 113.90, dayLow: 111.80},
+            {symbol: 'WMT', name: 'Walmart Inc.', price: 165.43, change: -0.3, marketCap: 442000000000, yearHigh: 173.50, yearLow: 146.28, dayHigh: 166.80, dayLow: 164.50},
+            {symbol: 'KO', name: 'Coca-Cola Co.', price: 59.87, change: 0.1, marketCap: 259000000000, yearHigh: 64.99, yearLow: 55.37, dayHigh: 60.20, dayLow: 59.50},
+            {symbol: 'CVX', name: 'Chevron Corp.', price: 145.67, change: 0.7, marketCap: 267000000000, yearHigh: 166.33, yearLow: 135.37, dayHigh: 147.20, dayLow: 144.30},
+            {symbol: 'TMO', name: 'Thermo Fisher', price: 536.89, change: -0.6, marketCap: 208000000000, yearHigh: 592.47, yearLow: 471.77, dayHigh: 542.30, dayLow: 532.10},
+            {symbol: 'ABBV', name: 'AbbVie Inc.', price: 168.54, change: 0.4, marketCap: 298000000000, yearHigh: 182.34, yearLow: 143.95, dayHigh: 169.90, dayLow: 167.20},
+            {symbol: 'PEP', name: 'PepsiCo Inc.', price: 172.34, change: -0.1, marketCap: 237000000000, yearHigh: 186.86, yearLow: 159.48, dayHigh: 173.60, dayLow: 171.50},
+            {symbol: 'LLY', name: 'Eli Lilly', price: 587.92, change: 1.9, marketCap: 558000000000, yearHigh: 629.97, yearLow: 397.70, dayHigh: 595.40, dayLow: 580.20},
+            {symbol: 'COST', name: 'Costco Wholesale', price: 742.15, change: 0.3, marketCap: 329000000000, yearHigh: 768.29, yearLow: 486.48, dayHigh: 748.50, dayLow: 738.30},
+            {symbol: 'ACN', name: 'Accenture plc', price: 354.67, change: -0.4, marketCap: 223000000000, yearHigh: 387.51, yearLow: 284.33, dayHigh: 358.20, dayLow: 351.90},
+            {symbol: 'AVGO', name: 'Broadcom Inc.', price: 1245.78, change: 2.1, marketCap: 575000000000, yearHigh: 1398.29, yearLow: 795.22, dayHigh: 1268.50, dayLow: 1220.40},
+            {symbol: 'DHR', name: 'Danaher Corp.', price: 245.32, change: 0.8, marketCap: 179000000000, yearHigh: 278.74, yearLow: 214.42, dayHigh: 247.90, dayLow: 243.10}
+        ];
+
+        // ==========================================
+        // STATE & DOM REFERENCES
+        // ==========================================
+        let marketData = [];
+        let sortState = { key: 'change', direction: 'asc' };
+        let scatterChart = null;
+        let isLiveMode = false;
+
+        const tbody = document.getElementById('tableBody');
+        const dropSlider = document.getElementById('dropSlider');
+        const ivSlider = document.getElementById('ivSlider');
+        const marketCapSelect = document.getElementById('marketCapSelect');
+        const timeframeSelect = document.getElementById('timeframeSelect');
+        const symbolInput = document.getElementById('symbolInput');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resultCount = document.getElementById('resultCount');
+        const statusText = document.getElementById('statusText');
+        const modeBadge = document.getElementById('modeBadge');
+        const tableHeaders = document.querySelectorAll('th[data-key]');
+
+        dropSlider.addEventListener('input', e => {
+            document.getElementById('dropValue').textContent = `${e.target.value}%`;
+        });
+        ivSlider.addEventListener('input', e => {
+            document.getElementById('ivValue').textContent = `${e.target.value}%`;
+        });
+
+        // ==========================================
+        // DATA FUNCTIONS
+        // ==========================================
+
+        function transformData(data) {
+            return data.map(stock => ({
+                ...stock,
+                iv: stock.dayHigh && stock.dayLow && stock.price 
+                    ? ((stock.dayHigh - stock.dayLow) / stock.price) * 100 
+                    : Math.random() * 3,
+                timeframes: {}
+            }));
+        }
+
+        function loadData() {
+            statusText.textContent = '✓ Demo data loaded';
+            modeBadge.innerHTML = '<div class="live-dot"></div>DEMO MODE';
+            modeBadge.classList.add('demo-badge');
+            isLiveMode = false;
+            
+            marketData = transformData(DEMO_DATA);
+            filterAndRender();
+        }
+
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+
+        function formatMarketCap(cap) {
+            if (!cap) return 'N/A';
+            if (cap >= 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
+            if (cap >= 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
+            if (cap >= 1e6) return `$${(cap / 1e6).toFixed(1)}M`;
+            return `$${cap.toFixed(0)}`;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('scatterChart').getContext('2d');
+            scatterChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Stocks',
+                        data: [],
+                        backgroundColor: function(context) {
+                            const value = context.raw?.x || 0;
+                            return value >= 0 ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+                        },
+                        borderColor: function(context) {
+                            const value = context.raw?.x || 0;
+                            return value >= 0 ? 'rgba(16, 185, 129, 1)' : 'rgba(239, 68, 68, 1)';
+                        },
+                        pointRadius: 6,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false, 
+                    scales: {
+                        x: { 
+                            title: { display: true, text: '% Change', color: '#94A3B8' }, 
+                            grid: { color: '#1E293B' },
+                            ticks: { color: '#94A3B8' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Daily Volatility %', color: '#94A3B8' }, 
+                            beginAtZero: true, 
+                            grid: { color: '#334155' },
+                            ticks: { color: '#94A3B8' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (!context.raw) return '';
+                                    return `${context.raw.symbol}: ${context.raw.x.toFixed(2)}% (Vol: ${context.raw.y.toFixed(2)}%)`;
+                                }
+                            }
+                        },
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function renderTable(data) {
+            tbody.innerHTML = '';
+            
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">No stocks match filters</td></tr>`;
+                return;
+            }
+
+            data.forEach(stock => {
+                const rangeTotal = stock.yearHigh - stock.yearLow;
+                const safeRange = rangeTotal === 0 ? 1 : rangeTotal;
+                const position = ((stock.price - stock.yearLow) / safeRange) * 100;
+                const clampedPos = Math.max(0, Math.min(100, position));
+
+                let ivClass = 'iv-low';
+                if(stock.iv > 1.5) ivClass = 'iv-med';
+                if(stock.iv > 3.0) ivClass = 'iv-high';
+                
+                const changeColor = stock.change >= 0 ? 'val-green' : 'val-red';
+                const sign = stock.change > 0 ? '+' : '';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="ticker-cell">${stock.symbol}</div>
+                        <span class="company-name">${stock.name}</span>
+                    </td>
+                    <td style="text-align: right;">$${stock.price.toFixed(2)}</td>
+                    <td style="text-align: right;" class="${changeColor}">${sign}${stock.change.toFixed(2)}%</td>
+                    <td style="text-align: center;">
+                        <span class="iv-badge ${ivClass}">${stock.iv.toFixed(2)}%</span>
+                    </td>
+                    <td>
+                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#94A3B8; margin-bottom:2px;">
+                            <span>L: ${stock.yearLow.toFixed(0)}</span>
+                            <span>${formatMarketCap(stock.marketCap)}</span>
+                            <span>H: ${stock.yearHigh.toFixed(0)}</span>
+                        </div>
+                        <div class="range-container">
+                            <div class="range-track"></div>
+                            <div class="range-marker" style="left: ${clampedPos}%"></div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterAndRender() {
+            const filterTerm = symbolInput.value.toUpperCase().trim();
+            const minDrop = parseFloat(dropSlider.value);
+            const minIV = parseFloat(ivSlider.value);
+            const capType = marketCapSelect.value;
+
+            let filtered = [...marketData];
+
+            if (filterTerm.length > 0) {
+                filtered = filtered.filter(s => s.symbol.includes(filterTerm));
+            }
+
+            filtered = filtered.filter(stock => {
+                const meetsDrop = stock.change <= (minDrop === 0 ? 1000 : minDrop);
+                const meetsIV = stock.iv >= minIV;
+                
+                let meetsCap = true;
+                if(stock.marketCap) {
+                    const capB = stock.marketCap / 1000000000;
+                    if(capType === 'large') meetsCap = capB > 100;
+                    if(capType === 'mid') meetsCap = capB >= 10 && capB <= 100;
+                    if(capType === 'small') meetsCap = capB < 10;
+                }
+
+                return meetsDrop && meetsIV && meetsCap;
+            });
+
+            filtered.sort((a, b) => {
+                let valA = a[sortState.key];
+                let valB = b[sortState.key];
+
+                if (sortState.key === 'range') {
+                    const rA = (a.yearHigh - a.yearLow) || 1;
+                    valA = (a.price - a.yearLow) / rA;
+                    const rB = (b.yearHigh - b.yearLow) || 1;
+                    valB = (b.price - b.yearLow) / rB;
+                }
+
+                if (valA < valB) return sortState.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return sortState.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            resultCount.textContent = filtered.length;
+            renderTable(filtered);
+
+            if (filtered.length > 0) {
+                const chartData = filtered.map(s => ({
+                    x: s.change,
+                    y: s.iv,
+                    symbol: s.symbol
+                }));
+                scatterChart.data.datasets[0].data = chartData;
+                scatterChart.update();
+            } else {
+                scatterChart.data.datasets[0].data = [];
+                scatterChart.update();
+            }
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+
+        tableHeaders.forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.key;
+                if (sortState.key === key) {
+                    sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortState.key = key;
+                    sortState.direction = key === 'change' ? 'asc' : 'desc';
+                }
+                tableHeaders.forEach(h => {
+                    h.classList.remove('active-sort');
+                    h.querySelector('.sort-icon').textContent = '';
+                });
+                th.classList.add('active-sort');
+                th.querySelector('.sort-icon').textContent = sortState.direction === 'asc' ? '▲' : '▼';
+                filterAndRender();
+            });
+        });
+
+        refreshBtn.addEventListener('click', () => {
+            loadData();
+        });
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+
+        initChart();
+        loadData();
+
+    </script>
+</body>
+</html>
