@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MarketPulse - Real-Time Live Dashboard</title>
+    <title>Dow 30 MarketPulse - Real-Time Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -171,17 +171,16 @@
         }
 
         .search-btn {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
+            background: var(--bg-hover);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 0 12px;
-            cursor: pointer;
+            cursor: not-allowed;
             font-weight: 600;
             white-space: nowrap;
         }
-        .search-btn:hover { background: #2563EB; }
-
+        
         .btn-refresh {
             background: var(--bg-hover);
             color: var(--text-main);
@@ -348,11 +347,11 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue);">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
             </svg>
-            Market<span>Pulse</span>
+            Market<span>Pulse</span> <span style="font-size:0.8em; margin-left:10px; color:#94A3B8;">Dow 30 Edition</span>
         </div>
         <div class="live-badge">
             <div class="live-dot"></div>
-            <span id="connectionStatus">REAL-TIME CONNECTION</span>
+            <span id="connectionStatus">LIVE CONNECTION</span>
         </div>
     </header>
 
@@ -361,10 +360,9 @@
             <h3>Scanner Settings</h3>
             
             <div class="control-group">
-                <label class="control-label">Symbol Lookup</label>
+                <label class="control-label">Filter Symbols</label>
                 <div class="search-container">
-                    <input type="text" id="symbolInput" class="search-input" placeholder="e.g. AAPL">
-                    <button id="searchBtn" class="search-btn">Go</button>
+                    <input type="text" id="symbolInput" class="search-input" placeholder="Filter list...">
                 </div>
             </div>
 
@@ -451,10 +449,12 @@
         // 1. CONFIG & STATE
         // ==========================================
         const API_KEY = 'CsC37moTEOy5wF0yLpwBjDZJorOAaPXD';
-        // A list of popular tickers to populate the "Scanner" on load
-        const BATCH_SYMBOLS = "AAPL,NVDA,TSLA,AMD,AMZN,MSFT,GOOGL,META,NFLX,BRK.B,JPM,V,JNJ,WMT,PG,UNH,DIS,HD,BAC,XOM,CVX,KO,PEP,COST,AVGO,ADBE,CRM,QCOM,TXN,INTC,PYPL,SBUX,NKE,LMT,RTX,BA,CAT,DE,GS,MS";
+        
+        // STRICT DOW 30 LIST (As of Late 2024/2025)
+        // Includes: NVDA (Replaced INTC), AMZN (Replaced WBA), SHW (Replaced DOW)
+        const DOW_30_SYMBOLS = "AAPL,AMGN,AXP,AMZN,BA,CAT,CRM,CSCO,CVX,DIS,GS,HD,HON,IBM,JNJ,JPM,KO,MCD,MMM,MRK,MSFT,NKE,NVDA,PG,SHW,TRV,UNH,V,VZ,WMT";
 
-        let marketData = [];
+        let marketData = []; // This will hold our "Master" data with cached histories
         let sortState = { key: 'change', direction: 'asc' };
         let pollingInterval = null;
 
@@ -462,7 +462,6 @@
         // 2. DATA FETCHING ENGINE
         // ==========================================
 
-        // Helper: Format Market Cap
         function formatMarketCap(cap) {
             if (!cap) return "N/A";
             if (cap >= 1e12) return (cap / 1e12).toFixed(2) + "T";
@@ -471,8 +470,6 @@
             return cap.toLocaleString();
         }
 
-        // Helper: Calculate "Day Volatility" (Proxy for IV)
-        // Formula: (High - Low) / Price. Returns percentage.
         function calculateDayVol(high, low, price) {
             if(!high || !low || !price) return 0;
             return ((high - low) / price) * 100;
@@ -480,58 +477,91 @@
 
         // Fetch Batch Quotes (Real Time)
         async function fetchLiveQuotes(symbols) {
+            const statusDot = document.getElementById('connectionStatus');
             try {
-                document.getElementById('connectionStatus').style.color = '#3B82F6'; // Blue pulsing
+                if(statusDot) statusDot.style.color = '#3B82F6'; // Pulse Blue
+                
                 const response = await fetch(`https://financialmodelingprep.com/stable/quote?symbol=${symbols}&apikey=${API_KEY}`);
+                
+                if (!response.ok) {
+                    console.error(`API HTTP Error: ${response.status}`);
+                    if(statusDot) statusDot.style.color = '#EF4444'; 
+                    return [];
+                }
+
                 const data = await response.json();
                 
-                // Map API Data to Internal Model
-                const mappedData = data.map(item => {
-                    const volatility = calculateDayVol(item.dayHigh, item.dayLow, item.price);
-                    
-                    return {
-                        symbol: item.symbol,
-                        name: item.name,
-                        price: item.price,
-                        change: item.changesPercentage, // Live 1D Change
-                        dayLow: item.dayLow,
-                        dayHigh: item.dayHigh,
-                        yearLow: item.yearLow,
-                        yearHigh: item.yearHigh,
-                        marketCap: item.marketCap,
-                        iv: volatility, // Calculated
-                        sector: 'Unknown', // Quote endpoint doesn't give sector, ignoring for now
-                        timeframes: {
-                            '1D': { change: item.changesPercentage }
-                        }
-                    };
-                });
+                // CRITICAL CHECK: Ensure array to prevent crash
+                if (!Array.isArray(data)) {
+                    console.error("API Error (Limit or format):", data);
+                    if(statusDot) statusDot.style.color = '#EF4444';
+                    return [];
+                }
 
-                document.getElementById('connectionStatus').style.color = '#10B981'; // Green connected
-                return mappedData;
+                if(statusDot) statusDot.style.color = '#10B981'; // Green
+                return data;
 
             } catch (error) {
                 console.error("Fetch Error:", error);
+                if(statusDot) statusDot.style.color = '#EF4444';
                 return [];
             }
         }
 
-        // Fetch Historical Changes (If user selects 5D, YTD, etc.)
+        // Fetch Historical Changes
         async function fetchHistoricalData(symbol) {
             try {
                 const response = await fetch(`https://financialmodelingprep.com/stable/stock-price-change?symbol=${symbol}&apikey=${API_KEY}`);
                 const data = await response.json();
-                if(data && data.length > 0) return data[0];
+                if(Array.isArray(data) && data.length > 0) return data[0];
                 return null;
             } catch (e) { return null; }
         }
 
-        // Update Data Store
-        async function refreshMarketData(symbolsToFetch = BATCH_SYMBOLS) {
-            const newData = await fetchLiveQuotes(symbolsToFetch);
-            if(newData.length > 0) {
-                // If we are refreshing, update existing records or replace list
-                marketData = newData;
+        // CORE UPDATE FUNCTION (SMART MERGE)
+        async function refreshMarketData() {
+            const liveItems = await fetchLiveQuotes(DOW_30_SYMBOLS);
+            
+            if(liveItems.length > 0) {
+                // We need to merge new live data into our existing 'marketData' array
+                // to preserve any historical timeframes we have already fetched.
+                
+                liveItems.forEach(newItem => {
+                    const volatility = calculateDayVol(newItem.dayHigh, newItem.dayLow, newItem.price);
+                    
+                    // Check if we already have this stock in memory
+                    const existingStock = marketData.find(s => s.symbol === newItem.symbol);
+
+                    if (existingStock) {
+                        // UPDATE existing record (Keep cached timeframes)
+                        existingStock.price = newItem.price;
+                        existingStock.change = newItem.changesPercentage;
+                        existingStock.dayLow = newItem.dayLow;
+                        existingStock.dayHigh = newItem.dayHigh;
+                        existingStock.yearLow = newItem.yearLow;
+                        existingStock.yearHigh = newItem.yearHigh;
+                        existingStock.iv = volatility;
+                        existingStock.timeframes['1D'] = { change: newItem.changesPercentage };
+                    } else {
+                        // CREATE new record
+                        marketData.push({
+                            symbol: newItem.symbol,
+                            name: newItem.name,
+                            price: newItem.price,
+                            change: newItem.changesPercentage,
+                            dayLow: newItem.dayLow,
+                            dayHigh: newItem.dayHigh,
+                            yearLow: newItem.yearLow,
+                            yearHigh: newItem.yearHigh,
+                            marketCap: newItem.marketCap,
+                            iv: volatility,
+                            timeframes: {
+                                '1D': { change: newItem.changesPercentage }
+                            }
+                        });
+                    }
+                });
+                
                 filterAndRender();
             }
         }
@@ -550,10 +580,8 @@
         const resultCount = document.getElementById('resultCount');
         const refreshBtn = document.getElementById('refreshBtn');
         const symbolInput = document.getElementById('symbolInput');
-        const searchBtn = document.getElementById('searchBtn');
         const tableHeaders = document.querySelectorAll('#losersTable th[data-key]');
 
-        // Update Slider Labels
         dropSlider.addEventListener('input', (e) => dropVal.textContent = `${e.target.value}%`);
         ivSlider.addEventListener('input', (e) => ivVal.textContent = `${e.target.value}%`);
 
@@ -581,7 +609,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    animation: false, // Disable animation for live updates
+                    animation: false, 
                     scales: {
                         x: { title: { display: true, text: '% Change' }, grid: { color: '#1E293B' } },
                         y: { title: { display: true, text: 'Daily Volatility %' }, beginAtZero: true, grid: { color: '#334155' } }
@@ -609,11 +637,9 @@
             }
 
             data.forEach(stock => {
-                // Determine % change to show based on timeframe
-                // Note: '1D' comes from Quote. Others come from History API.
                 let currentChange = 0;
                 if(selectedTimeframe === '1D') {
-                    currentChange = stock.change; // From Quote
+                    currentChange = stock.change;
                 } else if (stock.timeframes && stock.timeframes[selectedTimeframe]) {
                     currentChange = stock.timeframes[selectedTimeframe].change;
                 }
@@ -658,7 +684,7 @@
         }
 
         async function filterAndRender() {
-            const searchTerm = symbolInput.value.toUpperCase().trim();
+            const filterTerm = symbolInput.value.toUpperCase().trim();
             const currentTimeframe = timeframeSelect.value; 
             const minDrop = parseFloat(dropSlider.value);
             const minIV = parseFloat(ivSlider.value);
@@ -666,21 +692,18 @@
 
             let filtered = [...marketData];
 
-            // 1. Filter by Search
-            if (searchTerm.length > 0) {
-                filtered = filtered.filter(s => s.symbol.includes(searchTerm));
+            // 1. Local Filter (Dow 30 Only)
+            if (filterTerm.length > 0) {
+                filtered = filtered.filter(s => s.symbol.includes(filterTerm));
             }
 
-            // 2. Handle Timeframes > 1D (Lazy Load Data)
+            // 2. Handle History (Lazy Load with Caching)
             if(currentTimeframe !== '1D') {
-                // For the visible rows, check if we have historical data. If not, fetch it.
-                // Doing this for *all* rows at once might hit rate limits, so we do it for filtered list
                 for (let stock of filtered) {
+                    // API OPTIMIZATION: Only fetch if we don't have it yet
                     if (!stock.timeframes[currentTimeframe]) {
-                        // Fetch history
                         const hist = await fetchHistoricalData(stock.symbol);
                         if(hist) {
-                            // Normalize keys from API (1D, 5D, 1M, 6M, ytd, 1Y, 5Y, max)
                             stock.timeframes['5D'] = { change: hist['5D'] };
                             stock.timeframes['1M'] = { change: hist['1M'] };
                             stock.timeframes['6M'] = { change: hist['6M'] };
@@ -695,17 +718,12 @@
 
             // 3. Filter Logic
             filtered = filtered.filter(stock => {
-                let changeToCheck = stock.change; // Default 1D
+                let changeToCheck = stock.change; 
                 if(currentTimeframe !== '1D' && stock.timeframes[currentTimeframe]) {
                     changeToCheck = stock.timeframes[currentTimeframe].change;
                 }
 
-                // Logic: Usually we only want to filter by "Drop" if we are looking for losers
-                // But user might want to see everything, so we check if slider is used (<-0.5)
-                // If slider is at 0 (max), show everything negative? Or just ignore?
-                // Let's strict filter: Must be LESS than slider value
                 const meetsDrop = changeToCheck <= (minDrop === 0 ? 1000 : minDrop);
-                
                 const meetsIV = stock.iv >= minIV;
                 
                 let meetsCap = true;
@@ -723,7 +741,6 @@
             filtered.sort((a, b) => {
                 let valA, valB;
                 
-                // Determine value to sort by
                 if (sortState.key === 'change') {
                      valA = currentTimeframe === '1D' ? a.change : (a.timeframes[currentTimeframe]?.change || 0);
                      valB = currentTimeframe === '1D' ? b.change : (b.timeframes[currentTimeframe]?.change || 0);
@@ -737,17 +754,14 @@
                     valB = b[sortState.key];
                 }
 
-                // Sort Direction
                 if (valA < valB) return sortState.direction === 'asc' ? -1 : 1;
                 if (valA > valB) return sortState.direction === 'asc' ? 1 : -1;
                 return 0;
             });
 
-            // 5. Update UI
             resultCount.textContent = filtered.length;
             renderTable(filtered, currentTimeframe);
 
-            // Update Chart
             const chartData = filtered.map(s => ({
                 x: currentTimeframe === '1D' ? s.change : (s.timeframes[currentTimeframe]?.change || 0),
                 y: s.iv,
@@ -762,7 +776,6 @@
         // 4. EVENT LISTENERS
         // ==========================================
 
-        // Sort Handlers
         tableHeaders.forEach(th => {
             th.addEventListener('click', () => {
                 const key = th.dataset.key;
@@ -772,42 +785,27 @@
                     sortState.key = key;
                     sortState.direction = key === 'change' ? 'asc' : 'desc';
                 }
-                // Update Icons
                 tableHeaders.forEach(h => {
                     h.classList.remove('active-sort');
                     h.querySelector('.sort-icon').textContent = '';
                 });
                 th.classList.add('active-sort');
                 th.querySelector('.sort-icon').textContent = sortState.direction === 'asc' ? '▲' : '▼';
-                
                 filterAndRender();
             });
         });
 
-        // Search Specific Symbol
-        searchBtn.addEventListener('click', async () => {
-            const term = symbolInput.value.toUpperCase().trim();
-            if(term) {
-                // Stop auto-refresh for the batch list if searching specific
-                clearInterval(pollingInterval);
-                refreshBtn.textContent = "Resume Live Scan";
-                
-                // Fetch Single
-                refreshMarketData(term);
-            }
-        });
+        // Filter input (Local only)
+        symbolInput.addEventListener('keyup', filterAndRender);
 
-        // Inputs
         [dropSlider, ivSlider, marketCapSelect, timeframeSelect].forEach(el => {
             el.addEventListener('change', filterAndRender);
         });
 
-        // Refresh
         refreshBtn.addEventListener('click', () => {
             symbolInput.value = '';
-            refreshMarketData(BATCH_SYMBOLS);
+            refreshMarketData();
             startPolling();
-            refreshBtn.textContent = "Force Refresh";
         });
 
         // ==========================================
@@ -816,19 +814,12 @@
 
         function startPolling() {
             if(pollingInterval) clearInterval(pollingInterval);
-            // Poll every 15 seconds for Quote updates
-            pollingInterval = setInterval(() => {
-                if(symbolInput.value === '') {
-                    refreshMarketData(BATCH_SYMBOLS);
-                } else {
-                    refreshMarketData(symbolInput.value);
-                }
-            }, 15000);
+            pollingInterval = setInterval(refreshMarketData, 15000);
         }
 
         initChart();
-        refreshMarketData(BATCH_SYMBOLS); // Initial Fetch
-        startPolling(); // Start Live Updates
+        refreshMarketData(); 
+        startPolling(); 
 
     </script>
 </body>
