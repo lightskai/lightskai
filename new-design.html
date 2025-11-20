@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Skai - Meeting Intelligence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================= */
+        /* MODERN THEME VARIABLES (Clean SaaS Look)  */
+        /* ========================================= */
+        :root {
+            --primary: #2563EB;       /* Professional Deep Blue */
+            --primary-hover: #1D4ED8;
+            --bg-body: #F8FAFC;       /* Slate 50 */
+            --bg-card: #FFFFFF;
+            --text-head: #0F172A;     /* Slate 900 */
+            --text-body: #475569;     /* Slate 600 */
+            --border-color: #E2E8F0;  /* Slate 200 */
+            --success-bg: #F0FDF4;
+            --success-text: #166534;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            /* Subtle geometric pattern instead of loud gradient */
+            background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+            background-size: 24px 24px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-body);
+            min-height: 100vh;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Layout Containers */
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            padding: 0 24px;
+        }
+
+        /* Modern Navbar */
+        .navbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            background: var(--primary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .brand-name {
+            color: var(--text-head);
+            font-weight: 700;
+            font-size: 1.125rem;
+            letter-spacing: -0.025em;
+        }
+
+        /* Nav Buttons (Reset to simple icons) */
+        .settings-btn, .logout-btn, .help-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-body);
+            transition: color 0.2s;
+        }
+        
+        .settings-btn:hover, .logout-btn:hover {
+            color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Typography */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            color: var(--text-head);
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+            background: none; 
+            -webkit-text-fill-color: initial;
+        }
+
+        .page-subtitle {
+            color: var(--text-body);
+            font-size: 1.125rem;
+        }
+
+        /* Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modern Cards (Solid, not Glass) */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: #CBD5E1;
+        }
+
+        .card-header {
+            background: #F8FAFC;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-head);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        /* Inputs & Selects */
+        .industry-select, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 6px;
+            background: white;
+            color: var(--text-head);
+            font-family: inherit;
+        }
+        
+        .industry-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .selector-group {
+            padding: 16px 20px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .selector-group:last-child { border-bottom: none; }
+
+        .selector-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-head);
+        }
+
+        /* Upload Area */
+        .upload-section { padding: 20px; }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #F8FAFC;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: #EFF6FF;
+        }
+
+        .upload-icon {
+            color: var(--primary);
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+        }
+        
+        .upload-text {
+            font-weight: 600;
+            color: var(--text-head);
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtext {
+            font-size: 0.875rem;
+            color: var(--text-body);
+            margin-bottom: 20px;
+        }
+
+        /* Primary Buttons */
+        .browse-btn, .run-btn, .run-ai-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .browse-btn:hover, .run-btn:hover, .run-ai-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .browse-btn:active { transform: translateY(1px); }
+
+        button:disabled {
+            background: #CBD5E1;
+            cursor: not-allowed;
+        }
+
+        /* Steps */
+        .step-label {
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            margin-right: 8px;
+        }
+
+        /* File Info Box */
+        .file-info {
+            margin-top: 16px;
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Hidden by default handled by JS, but adding animation support */
+            display: none; 
+        }
+
+        .file-details { display: flex; flex-direction: column; }
+        .file-name { font-weight: 500; color: var(--text-head); }
+        .file-size { font-size: 0.8rem; color: var(--text-body); }
+        .remove-file { color: #EF4444; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+
+        /* Results Areas */
+        .card-content { padding: 20px; }
+        
+        .ai-results-display, .ai-prompt-display {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Inter', sans-serif; /* Force readable font over monospace */
+            white-space: pre-wrap;
+            min-height: 100px;
+            font-size: 0.95rem;
+            color: var(--text-body);
+        }
+
+        .ai-results-empty, .ai-prompt-empty {
+            color: #94A3B8;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Admin Panel - Slide Out */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -520px; /* Hidden */
+            width: 500px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            z-index: 9999;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+        
+        .admin-panel.active { right: 0; }
+
+        .admin-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-title { font-size: 1.25rem; font-weight: 700; margin: 0; }
+        .admin-close { font-size: 1.5rem; background: none; border: none; cursor: pointer; color: var(--text-body); }
+        
+        .admin-panel-content { padding: 0; }
+
+        /* Admin User Profile */
+        .admin-user-profile {
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--border-color);
+            margin: 0; /* Override old margin */
+        }
+        
+        .admin-user-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        /* Admin Sections */
+        .admin-section {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .admin-section-header {
+            padding: 16px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .admin-section-header:hover { background: #F8FAFC; }
+        
+        .admin-section-header-left { display: flex; gap: 12px; align-items: center; }
+        .admin-section-title { font-weight: 600; color: var(--text-head); }
+        
+        .admin-section-content {
+            padding: 24px;
+            background: white;
+        }
+        
+        .admin-section.collapsed .admin-section-content { display: none; }
+
+        /* Form Elements in Admin */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 6px; }
+        .form-input { 
+            width: 100%; 
+            padding: 8px 12px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px;
+        }
+
+        /* Utility Classes */
+        .collapsed .card-content { display: none; }
+        
+        /* Button variations */
+        .admin-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        .admin-btn-primary { background: var(--primary); color: white; }
+        .admin-btn-secondary { background: white; border: 1px solid var(--border-color); color: var(--text-body); }
+        
+        .admin-success-message {
+            background: var(--success-bg);
+            color: var(--success-text);
+            padding: 12px 20px;
+            border-bottom: 1px solid #DCFCE7;
+            display: none; /* Controlled by JS */
+        }
+
+        /* Fix Checkboxes */
+        .checkbox-group { padding: 16px 20px; }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Check if user is logged in - if not, redirect to login
+        (async function() {
+            const CONFIG = {
+                SUPABASE_URL: 'https://khhrkgevrhtdlwcdxvbs.supabase.co',
+                SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoaHJrZ2V2cmh0ZGx3Y2R4dmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzA5NTIsImV4cCI6MjA3ODQ0Njk1Mn0.wqd6Uds-7pEr0p1MCrZKRzLzqOPS7ziZO8eGNs_G59c'
+            };
+            
+            const { createClient } = supabase;
+            const client = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+            
+            const { data: { session } } = await client.auth.getSession();
+            
+            if (!session) {
+                console.log('Not logged in, redirecting to login page...');
+                window.location.href = 'index.html';
+            } else {
+                console.log('User authenticated:', session.user.email);
+            }
+        })();
+    </script>
+
+    <div class="content-wrapper">
+        <div class="app-container active" id="appContainer">
+            <div class="navbar">
+                <div class="logo-section">
+                    <div class="logo">LS</div>
+                    <div class="brand-name">Light Skai</div>
+                </div>
+                <div class="nav-right">
+                    <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙️</button>
+                    <button class="help-btn" aria-label="Help & Support" title="Help & Support">?</button>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Meeting Intelligence Platform</h1>
+                    <p class="page-subtitle">Upload your meeting notes or transcriptions to generate a comprehensive report.</p>
+                </div>
+
+                <div class="main-grid">
+                    <div class="sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                Report Option
+                            </div>
+                            <div class="checkbox-group" id="reportOptionsContainer">
+                                <div style="padding: 20px; text-align: center; color: #64748b;">Loading options...</div>
+                            </div>
+                            <div class="error-message" id="optionsError"></div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                Meeting Configuration
+                            </div>
+                            
+                            <div class="selector-group">
+                                <label class="selector-label">Meeting Type</label>
+                                <select class="industry-select" id="meetingTypeSelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+
+                            <div class="selector-group">
+                                <label class="selector-label">Methodology</label>
+                                <select class="industry-select" id="methodologySelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+
+                            <div class="selector-group">
+                                <label class="selector-label">Industry</label>
+                                <select class="industry-select" id="industrySelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="selectorsError"></div>
+                        </div>
+                    </div>
+
+                    <div class="main-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <span><span class="step-label">Step 1:</span> Upload File</span>
+                            </div>
+                            <div class="upload-section">
+                                <div class="upload-area" id="uploadArea">
+                                    <div class="upload-icon">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="upload-text">Drag and drop your file here</div>
+                                    <div class="upload-subtext">Supported formats: PDF, TXT, DOCX • Max size: 1GB</div>
+                                    <button class="browse-btn" type="button" onclick="document.getElementById('fileInput').click()">
+                                        Browse Files
+                                    </button>
+                                    <input type="file" id="fileInput" class="file-input" style="display:none" accept=".pdf,.txt,.docx">
+                                </div>
+                                <div class="file-info" id="fileInfo">
+                                    <div class="file-details">
+                                        <span class="file-name" id="fileName"></span>
+                                        <span class="file-size" id="fileSize"></span>
+                                    </div>
+                                    <button class="remove-file" id="removeFile">×</button>
+                                </div>
+                                
+                                <div class="step-action" id="step1Container" style="display: none; margin-top: 20px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 2:</span>
+                                        <button class="run-ai-btn" id="runAIBtn" style="margin-top: 0; flex: 1;" disabled>
+                                            Run AI Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-action" style="margin-top: 20px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 3:</span>
+                                        <button class="run-btn" id="runBtn" disabled style="flex: 1;">Generate Report</button>
+                                    </div>
+                                </div>
+                                <div class="error-message" id="errorMessage"></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor: pointer">
+                                <span>AI Prompt</span>
+                                <div class="card-header-toggle">▼</div>
+                            </div>
+                            
+                            <div class="card-content">
+                                <div class="ai-prompt-display" id="aiPromptDisplay">
+                                    <div class="ai-prompt-empty">
+                                        Select report options above to see the AI prompt
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                    <button class="admin-btn admin-btn-secondary" id="copyPromptBtn" style="display: none; width: auto;">
+                                        Copy Prompt
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor: pointer">
+                                <span>AI Results</span>
+                                <div class="card-header-toggle">▼</div>
+                            </div>
+                            
+                            <div class="card-content">
+                                <div class="ai-results-display" id="aiResultsDisplay">
+                                    <div class="ai-results-empty">
+                                        Click "Run AI Analysis" to see results here
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                    <button class="admin-btn admin-btn-secondary" id="copyResultsBtn" style="display: none; width: auto;">
+                                        Copy Results
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-panel-content">
+                <div class="admin-success-message" id="adminSuccessMessage">
+                    <div class="admin-success-content" style="display:flex; justify-content:space-between;">
+                        <div class="admin-success-text">
+                            <span class="admin-success-icon">✓</span>
+                            <span>Settings saved successfully!</span>
+                        </div>
+                        <button class="admin-success-close-btn" id="adminSuccessCloseBtn" style="background:none;border:none;cursor:pointer;">&times;</button>
+                    </div>
+                </div>
+
+                <div class="admin-header">
+                    <h2 class="admin-title">User Settings</h2>
+                    <button class="admin-close" id="adminClose">×</button>
+                </div>
+
+                <div class="admin-user-profile">
+                    <div class="admin-user-avatar">
+                        <span class="admin-user-initial" id="userInitial">U</span>
+                    </div>
+                    <div class="admin-user-details">
+                        <div class="admin-user-email" id="userEmailSettings" style="font-weight:600; color: var(--text-head);"></div>
+                        <div class="admin-user-status" style="color:#166534; font-size:0.85rem;">● Active Account</div>
+                    </div>
+                </div>
+
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🔐</div>
+                            <div class="admin-section-title">Change Password</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description" style="color: var(--text-body); font-size: 0.9rem; margin-bottom: 16px;">
+                            Update your account password.
+                        </p>
+                        <div class="password-input-group">
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-input" id="adminNewPassword" placeholder="Enter new password">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-input" id="adminConfirmPassword" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                        <button class="admin-btn admin-btn-primary" id="adminChangePasswordBtn">Change Password</button>
+                    </div>
+                </div>
+
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🎨</div>
+                            <div class="admin-section-title">Theme Preferences</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <select class="form-input" id="themeSelect">
+                                <option value="light">Light Mode</option>
+                                <option value="dark">Dark Mode</option>
+                                <option value="auto">Auto (System Preference)</option>
+                            </select>
+                        </div>
+                        <button class="admin-btn admin-btn-primary" id="applyThemeBtn">Apply Theme</button>
+                    </div>
+                </div>
+
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🏢</div>
+                            <div class="admin-section-title">Company Branding</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-input" id="companyNameInput" placeholder="Light Skai" value="Light Skai">
+                        </div>
+                        <button class="admin-btn admin-btn-primary" id="applyLogoBtn">Apply Branding</button>
+                    </div>
+                </div>
+
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">📁</div>
+                            <div class="admin-section-title">Default Meeting Configuration</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <div class="form-group">
+                            <label class="form-label">Default Meeting Type</label>
+                            <select class="form-input" id="adminMeetingType">
+                                <option value="">Select Meeting Type</option>
+                            </select>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="admin-btn admin-btn-secondary" id="adminResetBtn">Reset</button>
+                            <button class="admin-btn admin-btn-primary" id="adminSaveBtn">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-footer" style="padding: 20px; text-align: center; border-top: 1px solid var(--border-color);">
+                    <button class="admin-btn admin-btn-secondary" id="adminCancelBtn">Cancel</button>
+                    <div class="admin-version" style="margin-top: 12px; font-size: 0.75rem; color: #94a3b8;">Version 2.4.1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    
+    <script>
+        // Configure PDF.js worker
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        }
+        
+        // Update user info logic (retained from original)
+        (function() {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                        const userEmailElement = document.getElementById('userEmail');
+                        if (userEmailElement && userEmailElement.textContent) {
+                            const email = userEmailElement.textContent.trim();
+                            const settingsEmail = document.getElementById('userEmailSettings');
+                            if (settingsEmail) settingsEmail.textContent = email;
+                            const userInitial = document.getElementById('userInitial');
+                            if (userInitial && email) userInitial.textContent = email.charAt(0).toUpperCase();
+                            observer.disconnect();
+                        }
+                    }
+                });
+            });
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    const userEmailElement = document.getElementById('userEmail');
+                    if (userEmailElement) observer.observe(userEmailElement, { childList: true, characterData: true, subtree: true });
+                });
+            } else {
+                const userEmailElement = document.getElementById('userEmail');
+                if (userEmailElement) observer.observe(userEmailElement, { childList: true, characterData: true, subtree: true });
+            }
+            
+            setTimeout(async function() {
+                try {
+                    const { createClient } = supabase;
+                    const client = createClient(
+                        'https://khhrkgevrhtdlwcdxvbs.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoaHJrZ2V2cmh0ZGx3Y2R4dmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzA5NTIsImV4cCI6MjA3ODQ0Njk1Mn0.wqd6Uds-7pEr0p1MCrZKRzLzqOPS7ziZO8eGNs_G59c'
+                    );
+                    const { data: { session } } = await client.auth.getSession();
+                    if (session && session.user && session.user.email) {
+                        const email = session.user.email;
+                        const settingsEmail = document.getElementById('userEmailSettings');
+                        if (settingsEmail) settingsEmail.textContent = email;
+                        const userInitial = document.getElementById('userInitial');
+                        if (userInitial) userInitial.textContent = email.charAt(0).toUpperCase();
+                    }
+                } catch (error) { console.log('Could not fetch user from Supabase:', error); }
+            }, 500);
+        })();
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enable admin panel toggling logic for the new button
+            const settingsBtn = document.getElementById('settingsBtn');
+            const adminPanel = document.getElementById('adminPanel');
+            const adminClose = document.getElementById('adminClose');
+            const adminCancelBtn = document.getElementById('adminCancelBtn');
+
+            if(settingsBtn && adminPanel) {
+                settingsBtn.addEventListener('click', () => adminPanel.classList.add('active'));
+            }
+            if(adminClose && adminPanel) {
+                adminClose.addEventListener('click', () => adminPanel.classList.remove('active'));
+            }
+            if(adminCancelBtn && adminPanel) {
+                adminCancelBtn.addEventListener('click', () => adminPanel.classList.remove('active'));
+            }
+
+            // PDF Generation Enhancement
+            setTimeout(function() {
+                const runBtn = document.getElementById('runBtn');
+                const aiResultsDisplay = document.getElementById('aiResultsDisplay');
+                
+                if (runBtn && aiResultsDisplay) {
+                    runBtn.addEventListener('click', function(e) {
+                        const aiResultsContent = aiResultsDisplay.textContent || aiResultsDisplay.innerText;
+                        window.aiResultsForPDF = aiResultsContent;
+                        console.log('AI Results prepared for PDF');
+                    }, true);
+                }
+            }, 1000);
+        });
+        
+        window.getAIResultsForPDF = function() {
+            const aiResultsDisplay = document.getElementById('aiResultsDisplay');
+            if (aiResultsDisplay) {
+                const content = aiResultsDisplay.textContent || aiResultsDisplay.innerText;
+                return content.replace(/^\s+|\s+$/g, '').replace(/\n\s*\n/g, '\n\n');
+            }
+            return '';
+        };
+    </script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/branding.js"></script>
+</body>
+</html>
