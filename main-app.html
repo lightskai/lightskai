@@ -496,10 +496,34 @@
             background-color: #0EA5E9 !important;
         }
         
-        /* Card Headers */
-        .card-header {
+        /* Checkbox Group - Compressed appearance with minimal padding */
+        .checkbox-group { 
+            padding: 8px 16px; 
+            background: white !important;
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 6px !important;
             background: transparent !important;
+            padding: 6px 0 !important;
+        }
+        
+        .checkbox-group label:last-child {
+            margin-bottom: 0 !important;
+        }
+        
+        /* Card Headers - Gray background with light outline and compressed padding */
+        .card-header {
+            background: #F8FAFC !important;
+            border-bottom: 1px solid #E2E8F0 !important;
             border-left: none !important;
+            padding: 12px 16px;
+            font-weight: 600;
+        }
+        
+        /* Selector Groups - Compressed padding */
+        .selector-group {
+            padding: 12px 16px;
         }
         
         /* Page Title with Blue Gradient */
@@ -969,7 +993,7 @@
         
         .dark-theme .checkbox-group label,
         .dark-theme .report-option label {
-            background: rgba(15, 23, 42, 0.6) !important;
+            background: transparent !important;
             border-color: rgba(148, 163, 184, 0.2) !important;
             color: #cbd5e1 !important;
         }
@@ -1041,7 +1065,6 @@
                         <div class="card">
                             <div class="card-header">
                                 Report Option
-                                <div class="info-icon" title="Select which section to include in your report">i</div>
                             </div>
                             <div class="checkbox-group" id="reportOptionsContainer">
                                 <div style="padding: 20px; text-align: center; color: #64748b;">Loading options...</div>
