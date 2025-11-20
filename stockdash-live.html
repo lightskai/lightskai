@@ -407,7 +407,7 @@
         const DOW30_SYMBOLS = [
             'AAPL', 'MSFT', 'JPM', 'V', 'UNH', 'HD', 'PG', 'JNJ', 'DIS', 'MA',
             'NVDA', 'BAC', 'XOM', 'PFE', 'CSCO', 'ADBE', 'CRM', 'NKE', 'MRK',
-            'WMT', 'KO', 'CVX', 'TMO', 'ABBV', 'PEP', 'LLY', 'COST', 'ACN', 'AVGO', 'DHR'
+            'WMT', 'KO', 'CVX', 'TMO', 'ABBV', 'PEP', 'LLY', 'COST', 'ACN', 'MSTR'
         ];
 
         // ==========================================
@@ -441,28 +441,44 @@
         async function fetchMarketData() {
             statusText.textContent = 'Fetching live data from API...';
             
-            const symbolsParam = DOW30_SYMBOLS.join(',');
-            const apiUrl = `${BASE_URL}/quote?symbol=${symbolsParam}&apikey=${API_KEY}`;
+            // Fetch in batches of 5 to avoid API limits
+            const BATCH_SIZE = 5;
+            const allData = [];
             
-            console.log('Fetching directly from API:', apiUrl);
-            
-            const response = await fetch(apiUrl);
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API returned ${response.status}: ${errorText}`);
+            for (let i = 0; i < DOW30_SYMBOLS.length; i += BATCH_SIZE) {
+                const batch = DOW30_SYMBOLS.slice(i, i + BATCH_SIZE);
+                const symbolsParam = batch.join(',');
+                const apiUrl = `${BASE_URL}/quote?symbol=${symbolsParam}&apikey=${API_KEY}`;
+                
+                console.log(`Fetching batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(DOW30_SYMBOLS.length/BATCH_SIZE)}:`, batch.join(','));
+                
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API returned ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    allData.push(...data);
+                }
+                
+                // Small delay between batches to be nice to the API
+                if (i + BATCH_SIZE < DOW30_SYMBOLS.length) {
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
             }
             
-            const data = await response.json();
-            
-            if (!Array.isArray(data) || data.length === 0) {
+            if (allData.length === 0) {
                 throw new Error('API returned no data');
             }
             
-            console.log('✓ Received', data.length, 'stocks');
+            console.log('✓ Received', allData.length, 'stocks');
             statusText.textContent = `✓ Live data loaded at ${new Date().toLocaleTimeString()}`;
             
-            return data;
+            return allData;
         }
 
         function transformData(data) {
