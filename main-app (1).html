@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Skai - Meeting Intelligence Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Blue gradient background matching index.html */
+        body {
+            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 50%, #0EA5E9 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Glassmorphism Effects */
+        .app-container {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06) !important;
+            transition: all 0.3s ease !important;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05) !important;
+            transform: translateY(-2px);
+        }
+        
+        /* Enhanced Button Styles */
+        button {
+            transition: all 0.2s ease !important;
+        }
+        
+        .run-btn,
+        .run-ai-btn,
+        .browse-btn,
+        .auth-btn {
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        .run-btn:not(:disabled):hover,
+        .run-ai-btn:not(:disabled):hover,
+        .browse-btn:hover,
+        .auth-btn:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .run-btn:not(:disabled):active,
+        .run-ai-btn:not(:disabled):active,
+        .browse-btn:active,
+        .auth-btn:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 1px 2px rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        /* Micro-animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .file-info,
+        .ai-results-display,
+        .ai-prompt-display {
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        /* Drag & Drop Enhanced Animation */
+        .upload-area {
+            transition: all 0.3s ease !important;
+        }
+        
+        .upload-area.dragover {
+            transform: scale(1.02) !important;
+            animation: pulse 0.5s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                border-color: #0EA5E9;
+                box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+            }
+            50% { 
+                border-color: #0284C7;
+                box-shadow: 0 0 0 10px rgba(14, 165, 233, 0);
+            }
+        }
+        
+        .upload-area.dragover .upload-icon {
+            animation: bounce 0.5s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Admin Panel Glassmorphism */
+        .admin-panel {
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        /* Admin User Profile Section */
+        .admin-user-profile {
+            display: flex !important;
+            align-items: center !important;
+            gap: 16px !important;
+            padding: 20px !important;
+            margin: 0 20px 20px 20px !important;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(37, 99, 235, 0.05)) !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        .admin-user-avatar {
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #0EA5E9, #2563EB) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .admin-user-initial {
+            color: white !important;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+        }
+        
+        .admin-user-details {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+        
+        .admin-user-email {
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            color: #0EA5E9 !important;
+            margin-bottom: 4px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+        }
+        
+        .admin-user-status {
+            font-size: 13px !important;
+            color: #059669 !important;
+            font-weight: 500 !important;
+        }
+        
+        .admin-user-status::before {
+            content: "●" !important;
+            margin-right: 6px !important;
+            color: #10B981 !important;
+        }
+        
+        /* Navbar Enhancement */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        }
+        
+        /* Critical CSS for admin panel - ensure it works */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 500px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 10000;
+            overflow-y: auto;
+        }
+        
+        .admin-panel.active {
+            right: 0 !important;
+        }
+        
+        .admin-panel-content {
+            padding: 20px;
+        }
+        
+        /* Debug: Make sure panel is visible when active */
+        .admin-panel.active {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* ===================================== */
+        /* ELECTRIC BLUE THEME - Color Overrides */
+        /* ===================================== */
+        
+        /* Navbar/Logo */
+        .logo {
+            background: linear-gradient(135deg, #0EA5E9, #2563EB) !important;
+        }
+        
+        /* Brand Name - Blue Gradient */
+        .brand-name {
+            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            font-weight: 700 !important;
+        }
+        
+        .logo-section {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        
+        /* Primary Buttons */
+        .run-btn,
+        .run-ai-btn,
+        .browse-btn,
+        .auth-btn,
+        .admin-btn-primary,
+        button.admin-btn-primary {
+            background: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2) !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .run-btn:hover,
+        .run-ai-btn:hover,
+        .browse-btn:hover,
+        .auth-btn:hover,
+        .admin-btn-primary:hover {
+            background: #0284C7 !important;
+            border-color: #0284C7 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .run-btn:active,
+        .run-ai-btn:active,
+        .browse-btn:active,
+        .auth-btn:active,
+        .admin-btn-primary:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 1px 2px rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        .run-btn:disabled,
+        .run-ai-btn:disabled {
+            background: #E2E8F0 !important;
+            color: #1E293B !important;
+            cursor: not-allowed !important;
+            opacity: 0.7 !important;
+        }
+        
+        /* ===================================== */
+        /* NAVBAR BUTTONS - Modern Unified Design */
+        /* ===================================== */
+        
+        /* Base Navbar Button Styles */
+        .settings-btn,
+        .help-btn,
+        .logout-btn {
+            padding: 10px !important;
+            border-radius: 8px !important;
+            font-weight: 500 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            border: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 44px !important;
+            background: transparent !important;
+        }
+        
+        /* Settings Button - Large Gear Icon */
+        .settings-btn {
+            font-size: 24px !important;
+            color: #64748b !important;
+            padding: 8px !important;
+        }
+        
+        .settings-btn:hover {
+            color: #0EA5E9 !important;
+            transform: scale(1.1) rotate(30deg) !important;
+        }
+        
+        .settings-btn:active {
+            transform: scale(1) rotate(0deg) !important;
+        }
+        
+        /* Help Button - Matches Info Icon Style */
+        .help-btn {
+            width: 20px !important;
+            height: 20px !important;
+            min-width: 20px !important;
+            border-radius: 50% !important;
+            background: #0EA5E9 !important;
+            color: white !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            font-style: italic !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .help-btn:hover {
+            background: #0284C7 !important;
+            transform: scale(1.1) !important;
+        }
+        
+        .help-btn:active {
+            transform: scale(1) !important;
+        }
+        
+        /* Logout Button - Minimal Text */
+        .logout-btn {
+            background: transparent !important;
+            color: #64748b !important;
+            border: none !important;
+            font-size: 13px !important;
+            padding: 8px 12px !important;
+            font-weight: 500 !important;
+        }
+        
+        .logout-btn:hover {
+            color: #DC2626 !important;
+            background: rgba(220, 38, 38, 0.05) !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        .logout-btn:active {
+            transform: translateY(0) !important;
+        }
+        
+        /* Navbar Layout Enhancement */
+        .nav-right {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        
+        /* Version Badge Enhancement */
+        .version {
+            padding: 4px 10px !important;
+            background: rgba(14, 165, 233, 0.1) !important;
+            color: #0EA5E9 !important;
+            border-radius: 12px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            border: 1px solid rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        /* Admin Footer Version */
+        .admin-footer {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            padding: 20px !important;
+            border-top: 1px solid #e5e7eb !important;
+            margin-top: 20px !important;
+            gap: 12px !important;
+        }
+        
+        .admin-version {
+            font-size: 11px !important;
+            color: #94a3b8 !important;
+            font-weight: 500 !important;
+            text-align: center !important;
+        }
+        
+        /* Admin Actions Spacing */
+        .admin-actions {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+            margin-top: 20px !important;
+        }
+        
+        .admin-actions button {
+            width: 100% !important;
+        }
+        
+        #adminResetBtn {
+            margin-top: 8px !important;
+            margin-bottom: 8px !important;
+        }
+        
+        /* Secondary Buttons (Copy buttons) */
+        .copy-prompt-btn,
+        .copy-results-btn {
+            background: white !important;
+            color: #0EA5E9 !important;
+            border: 2px solid #0EA5E9 !important;
+            box-shadow: 0 1px 3px rgba(14, 165, 233, 0.1) !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .copy-prompt-btn:hover,
+        .copy-results-btn:hover {
+            background: #F0F9FF !important;
+            color: #0284C7 !important;
+            border-color: #0284C7 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 3px 6px rgba(14, 165, 233, 0.2) !important;
+        }
+        
+        .copy-prompt-btn:active,
+        .copy-results-btn:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 1px 2px rgba(14, 165, 233, 0.1) !important;
+        }
+        
+        /* Links */
+        a,
+        .auth-toggle-link,
+        .toggle-link {
+            color: #0EA5E9 !important;
+        }
+        
+        a:hover,
+        .auth-toggle-link:hover,
+        .toggle-link:hover {
+            color: #0284C7 !important;
+        }
+        
+        /* Input Focus */
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #0EA5E9 !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1) !important;
+        }
+        
+        /* Checkboxes & Radio buttons */
+        input[type="checkbox"]:checked,
+        input[type="radio"]:checked {
+            background-color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+            accent-color: #0EA5E9 !important;
+        }
+        
+        /* Force radio button dot/check to be blue */
+        input[type="radio"]:checked::before,
+        input[type="radio"]:checked::after {
+            background-color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Report Option Radio Buttons - Force Blue */
+        .report-option-radio:checked {
+            background-color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+            accent-color: #0EA5E9 !important;
+        }
+        
+        .report-option-radio:checked::before,
+        .report-option-radio:checked::after {
+            background-color: #0EA5E9 !important;
+        }
+        
+        /* Checkbox Group - Clean Padding */
+        .checkbox-group { 
+            padding: 16px 20px; 
+        }
+        
+        /* Card Headers */
+        .card-header {
+            background: transparent !important;
+            border-left: none !important;
+        }
+        
+        /* Page Title with Blue Gradient */
+        .page-title {
+            background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700 !important;
+        }
+        
+        .page-subtitle {
+            color: #0284C7 !important;
+        }
+        
+        /* Step Labels */
+        .step-label {
+            color: #0EA5E9 !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Upload Area Hover */
+        .upload-area:hover {
+            border-color: #0EA5E9 !important;
+            background: #F0F9FF !important;
+        }
+        
+        .upload-area.dragover {
+            border-color: #0EA5E9 !important;
+            background: #DBEAFE !important;
+        }
+        
+        /* File Info */
+        .file-info {
+            background: #F0F9FF !important;
+            border: 1px solid #BAE6FD !important;
+        }
+        
+        /* Admin Panel Accents */
+        .admin-section-icon {
+            color: #0EA5E9 !important;
+        }
+        
+        .admin-section.collapsed .admin-section-header:hover {
+            background: #F0F9FF !important;
+        }
+        
+        /* Success Messages */
+        .admin-success-message {
+            background: #DBEAFE !important;
+            border-left: 4px solid #0EA5E9 !important;
+        }
+        
+        .admin-success-icon {
+            color: #0EA5E9 !important;
+        }
+        
+        /* AI Analysis Complete Messages - Blue instead of Green */
+        .ai-results-display .success,
+        .ai-results-display .complete,
+        .ai-results-display .analysis-complete,
+        .ai-results-display [class*="success"],
+        .ai-results-display [class*="complete"] {
+            background: #DBEAFE !important;
+            border-color: #0EA5E9 !important;
+            color: #0369a1 !important;
+        }
+        
+        .ai-prompt-display .success,
+        .ai-prompt-display .complete,
+        .ai-prompt-display .analysis-complete,
+        .ai-prompt-display [class*="success"],
+        .ai-prompt-display [class*="complete"] {
+            background: #DBEAFE !important;
+            border-color: #0EA5E9 !important;
+            color: #0369a1 !important;
+        }
+        
+        /* Override any green success colors in AI sections */
+        #aiResultsDisplay .success,
+        #aiResultsDisplay .complete,
+        #aiPromptDisplay .success,
+        #aiPromptDisplay .complete {
+            background-color: #DBEAFE !important;
+            color: #0369a1 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Password Strength */
+        .password-strength-bar.password-strength-medium {
+            background: #0EA5E9 !important;
+        }
+        
+        .password-strength-bar.password-strength-strong {
+            background: #059669 !important;
+        }
+        
+        /* Info Icons */
+        .info-icon {
+            background: #0EA5E9 !important;
+            color: white !important;
+        }
+        
+        /* Version Badge */
+        .version {
+            background: #F0F9FF !important;
+            color: #0EA5E9 !important;
+        }
+        
+        /* Selected/Active States */
+        .report-option-radio:checked + label {
+            background: #F0F9FF !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Magic Link Button (if exists) */
+        .magic-link-btn {
+            background: white !important;
+            color: #0EA5E9 !important;
+            border: 2px solid #0EA5E9 !important;
+        }
+        
+        .magic-link-btn:hover {
+            background: #F0F9FF !important;
+        }
+        
+        /* Progress/Loading States */
+        .loading,
+        .progress-bar,
+        .spinner,
+        .processing,
+        .ai-processing,
+        .generating {
+            background: #0EA5E9 !important;
+            color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Processing/Loading Text */
+        .processing-message,
+        .loading-message,
+        .ai-results-empty,
+        .ai-prompt-empty {
+            color: #64748b !important;
+        }
+        
+        /* Any element with 'processing' or 'loading' class text color */
+        [class*="processing"],
+        [class*="loading"],
+        [class*="spinner"] {
+            color: #0EA5E9 !important;
+        }
+        
+        /* Spinner animations */
+        .spinner::before,
+        .spinner::after,
+        .loading::before,
+        .loading::after {
+            border-color: #0EA5E9 transparent transparent transparent !important;
+        }
+        
+        /* Scrollbar (Webkit browsers) */
+        ::-webkit-scrollbar-thumb {
+            background: #0EA5E9 !important;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284C7 !important;
+        }
+        
+        /* Selection Color */
+        ::selection {
+            background: #DBEAFE !important;
+            color: #1E3A8A !important;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Enhanced File Info Display */
+        .file-info {
+            animation: fadeInUp 0.3s ease !important;
+        }
+        
+        /* Upload Icon Animation on Hover */
+        .upload-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1);
+        }
+        
+        /* Card Content Transitions */
+        .card-content {
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .card.collapsed .card-content {
+            opacity: 0;
+        }
+        
+        /* ===================================== */
+        /* PURPLE TO BLUE OVERRIDES - Catch All */
+        /* ===================================== */
+        
+        /* Override any purple colors from external CSS */
+        * {
+            accent-color: #0EA5E9 !important;
+        }
+        
+        /* Force all purple hex codes to blue */
+        [style*="#8B5CF6"],
+        [style*="#7C3AED"],
+        [style*="#A78BFA"],
+        [style*="#C4B5FD"],
+        [style*="rgb(139, 92, 246)"],
+        [style*="rgb(124, 58, 237)"] {
+            color: #0EA5E9 !important;
+            background-color: transparent !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Override external styles.css purple colors */
+        .checkbox-option input:checked,
+        .radio-option input:checked,
+        input[type="checkbox"]:checked,
+        input[type="radio"]:checked,
+        .report-option input:checked,
+        .report-option-radio:checked {
+            background-color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+            accent-color: #0EA5E9 !important;
+        }
+        
+        /* Ensure all spinners, loaders, and progress indicators are blue */
+        .spinner,
+        .loader,
+        .progress,
+        .processing,
+        [class*="spin"],
+        [class*="load"],
+        [class*="progress"] {
+            color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        .spinner *,
+        .loader *,
+        .processing * {
+            color: #0EA5E9 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Override any green success colors globally to blue */
+        .success-message,
+        .success-notification,
+        .complete-message,
+        [style*="background-color: rgb(209, 250, 229)"],
+        [style*="background-color: #d1fae5"],
+        [style*="background: rgb(209, 250, 229)"],
+        [style*="background: #d1fae5"],
+        [style*="background-color: rgb(187, 247, 208)"],
+        [style*="background-color: #bbf7d0"] {
+            background-color: #DBEAFE !important;
+            color: #0369a1 !important;
+            border-color: #0EA5E9 !important;
+        }
+        
+        /* Override green text colors to blue */
+        [style*="color: rgb(5, 150, 105)"],
+        [style*="color: #059669"],
+        [style*="color: rgb(4, 120, 87)"],
+        [style*="color: #047857"],
+        [style*="color: rgb(6, 95, 70)"],
+        [style*="color: #065f46"] {
+            color: #0369a1 !important;
+        }
+        
+        /* ===================================== */
+        /* DARK THEME STYLES */
+        /* ===================================== */
+        
+        body.dark-theme {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+        }
+        
+        .dark-theme .app-container {
+            background: rgba(15, 23, 42, 0.95) !important;
+        }
+        
+        .dark-theme .navbar {
+            background: rgba(15, 23, 42, 0.98) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .card {
+            background: rgba(30, 41, 59, 0.95) !important;
+            border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .card:hover {
+            background: rgba(30, 41, 59, 0.98) !important;
+            border: 1px solid rgba(148, 163, 184, 0.2) !important;
+        }
+        
+        .dark-theme .page-title {
+            background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+        
+        .dark-theme .page-subtitle {
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .card-header {
+            color: #e2e8f0 !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .selector-label,
+        .dark-theme .form-label,
+        .dark-theme label {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .industry-select,
+        .dark-theme .form-input,
+        .dark-theme select,
+        .dark-theme input[type="text"],
+        .dark-theme input[type="email"],
+        .dark-theme input[type="password"],
+        .dark-theme textarea {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-color: rgba(148, 163, 184, 0.2) !important;
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .industry-select:focus,
+        .dark-theme .form-input:focus,
+        .dark-theme select:focus,
+        .dark-theme input:focus,
+        .dark-theme textarea:focus {
+            background: rgba(15, 23, 42, 0.95) !important;
+            border-color: #38bdf8 !important;
+        }
+        
+        .dark-theme .upload-area {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(148, 163, 184, 0.3) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .upload-area:hover {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-color: #38bdf8 !important;
+        }
+        
+        .dark-theme .upload-text,
+        .dark-theme .upload-subtext {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .file-info {
+            background: rgba(14, 165, 233, 0.1) !important;
+            border-color: rgba(14, 165, 233, 0.3) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .file-name,
+        .dark-theme .file-size {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .ai-prompt-display,
+        .dark-theme .ai-results-display {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(148, 163, 184, 0.2) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .ai-prompt-empty,
+        .dark-theme .ai-results-empty {
+            color: #64748b !important;
+        }
+        
+        .dark-theme .admin-panel {
+            background: rgba(15, 23, 42, 0.98) !important;
+            border-left: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .admin-header {
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .admin-title {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .admin-close {
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .admin-close:hover {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .admin-user-profile {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(37, 99, 235, 0.15)) !important;
+            border-color: rgba(14, 165, 233, 0.3) !important;
+        }
+        
+        .dark-theme .admin-section {
+            border: 1px solid rgba(148, 163, 184, 0.1) !important;
+            background: rgba(30, 41, 59, 0.5) !important;
+        }
+        
+        .dark-theme .admin-section-header {
+            background: rgba(15, 23, 42, 0.5) !important;
+        }
+        
+        .dark-theme .admin-section-title,
+        .dark-theme .admin-description {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .admin-footer {
+            border-top-color: rgba(148, 163, 184, 0.1) !important;
+        }
+        
+        .dark-theme .admin-version {
+            color: #64748b !important;
+        }
+        
+        .dark-theme .settings-btn {
+            background: rgba(14, 165, 233, 0.15) !important;
+            border-color: rgba(14, 165, 233, 0.4) !important;
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .settings-btn:hover {
+            background: rgba(14, 165, 233, 0.25) !important;
+            color: #38bdf8 !important;
+        }
+        
+        .dark-theme .help-btn {
+            background: #38bdf8 !important;
+            color: white !important;
+        }
+        
+        .dark-theme .help-btn:hover {
+            background: #60a5fa !important;
+        }
+        
+        .dark-theme .logout-btn {
+            color: #94a3b8 !important;
+        }
+        
+        .dark-theme .logout-btn:hover {
+            color: #fca5a5 !important;
+            background: rgba(220, 38, 38, 0.1) !important;
+        }
+        
+        .dark-theme .checkbox-group label,
+        .dark-theme .report-option label {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(148, 163, 184, 0.2) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dark-theme .report-option-radio:checked + label {
+            background: rgba(14, 165, 233, 0.2) !important;
+            border-color: #38bdf8 !important;
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-theme .error-message {
+            background: rgba(220, 38, 38, 0.2) !important;
+            color: #fca5a5 !important;
+        }
+        
+        .dark-theme .step-label {
+            color: #38bdf8 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth check script - runs immediately -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Check if user is logged in - if not, redirect to login
+        (async function() {
+            const CONFIG = {
+                SUPABASE_URL: 'https://khhrkgevrhtdlwcdxvbs.supabase.co',
+                SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoaHJrZ2V2cmh0ZGx3Y2R4dmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzA5NTIsImV4cCI6MjA3ODQ0Njk1Mn0.wqd6Uds-7pEr0p1MCrZKRzLzqOPS7ziZO8eGNs_G59c'
+            };
+            
+            const { createClient } = supabase;
+            const client = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+            
+            const { data: { session } } = await client.auth.getSession();
+            
+            if (!session) {
+                console.log('Not logged in, redirecting to login page...');
+                window.location.href = 'index.html';
+            } else {
+                console.log('User authenticated:', session.user.email);
+            }
+        })();
+    </script>
+
+    <div class="content-wrapper">
+        <!-- Main Application -->
+        <div class="app-container active" id="appContainer">
+            <div class="navbar">
+                <div class="logo-section">
+                    <div class="logo">LS</div>
+                    <div class="brand-name">Light Skai</div>
+                </div>
+                <div class="nav-right">
+                    <button class="settings-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙️</button>
+                    <button class="help-btn" aria-label="Help & Support" title="Help & Support">i</button>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Meeting Intelligence Platform</h1>
+                    <p class="page-subtitle">Upload your meeting notes or transcriptions to generate a comprehensive report.</p>
+                </div>
+
+                <div class="main-grid">
+                    <div class="sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                Report Option
+                            </div>
+                            <div class="checkbox-group" id="reportOptionsContainer">
+                                <div style="padding: 20px; text-align: center; color: #64748b;">Loading options...</div>
+                            </div>
+                            <div class="error-message" id="optionsError"></div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                Meeting Configuration
+                                <div class="info-icon" title="Select your meeting type, methodology, and industry">i</div>
+                            </div>
+                            
+                            <div class="selector-group">
+                                <label class="selector-label">Meeting Type</label>
+                                <select class="industry-select" id="meetingTypeSelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+
+                            <div class="selector-group">
+                                <label class="selector-label">Methodology</label>
+                                <select class="industry-select" id="methodologySelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+
+                            <div class="selector-group">
+                                <label class="selector-label">Industry</label>
+                                <select class="industry-select" id="industrySelect">
+                                    <option value="">Loading...</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="selectorsError"></div>
+                        </div>
+                    </div>
+
+                    <div class="main-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="step-label">Step 1:</span> Upload File
+                            </div>
+                            <div class="upload-section">
+                                <div class="upload-area" id="uploadArea">
+                                    <div class="upload-icon">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="upload-text">Drag and drop your file here</div>
+                                    <div class="upload-subtext">Supported formats: PDF, TXT, DOCX • Max size: 1GB</div>
+                                    <button class="browse-btn" type="button" onclick="document.getElementById('fileInput').click()">
+                                        Browse Files
+                                    </button>
+                                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt,.docx">
+                                </div>
+                                <div class="file-info" id="fileInfo">
+                                    <div class="file-details">
+                                        <span class="file-name" id="fileName"></span>
+                                        <span class="file-size" id="fileSize"></span>
+                                    </div>
+                                    <button class="remove-file" id="removeFile">×</button>
+                                </div>
+                                
+                                <div class="step-action" id="step1Container" style="display: none; margin-top: 20px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 2:</span>
+                                        <button class="run-ai-btn" id="runAIBtn" style="margin-top: 0; flex: 1;" disabled>
+                                            🤖 Run AI Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-action" style="margin-top: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="step-label">Step 3:</span>
+                                        <button class="run-btn" id="runBtn" disabled style="flex: 1;">Generate Report</button>
+                                    </div>
+                                </div>
+                                <div class="error-message" id="errorMessage"></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                <span>AI Prompt</span>
+                                <div class="card-header-toggle">▼</div>
+                            </div>
+                            
+                            <div class="card-content">
+                                <div class="ai-prompt-display" id="aiPromptDisplay">
+                                    <div class="ai-prompt-empty">
+                                        Select report options above to see the AI prompt
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                    <button class="copy-prompt-btn" id="copyPromptBtn" style="display: none;">
+                                        📋 Copy Prompt
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                <span>AI Results</span>
+                                <div class="card-header-toggle">▼</div>
+                            </div>
+                            
+                            <div class="card-content">
+                                <div class="ai-results-display" id="aiResultsDisplay">
+                                    <div class="ai-results-empty">
+                                        Click "Run AI Analysis" to see results here
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                    <button class="copy-results-btn" id="copyResultsBtn" style="display: none;">
+                                        📋 Copy Results
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings/Admin Panel -->
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-panel-content">
+                <div class="admin-success-message" id="adminSuccessMessage">
+                    <div class="admin-success-content">
+                        <div class="admin-success-text">
+                            <span class="admin-success-icon">✓</span>
+                            <span>Default settings saved successfully!</span>
+                        </div>
+                        <button class="admin-success-close-btn" id="adminSuccessCloseBtn">Close Settings</button>
+                    </div>
+                </div>
+
+                <div class="admin-header">
+                    <h2 class="admin-title">User Settings</h2>
+                    <button class="admin-close" id="adminClose">×</button>
+                </div>
+
+                <!-- User Profile Section -->
+                <div class="admin-user-profile">
+                    <div class="admin-user-avatar">
+                        <span class="admin-user-initial" id="userInitial">U</span>
+                    </div>
+                    <div class="admin-user-details">
+                        <div class="admin-user-email" id="userEmailSettings"></div>
+                        <div class="admin-user-status">Active Account</div>
+                    </div>
+                </div>
+
+                <!-- Change Password Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🔐</div>
+                            <div class="admin-section-title">Change Password</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Update your account password. Make sure to use a strong, unique password.
+                        </p>
+                        <div class="password-input-group">
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-input" id="adminNewPassword" placeholder="Enter new password">
+                                <div class="password-strength">
+                                    <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                </div>
+                                <div class="password-requirements">
+                                    <div class="password-requirement" data-requirement="length">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>At least 8 characters</span>
+                                    </div>
+                                    <div class="password-requirement" data-requirement="uppercase">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>One uppercase letter</span>
+                                    </div>
+                                    <div class="password-requirement" data-requirement="lowercase">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>One lowercase letter</span>
+                                    </div>
+                                    <div class="password-requirement" data-requirement="number">
+                                        <span class="password-requirement-icon">○</span>
+                                        <span>One number</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-input" id="adminConfirmPassword" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                        <button class="admin-btn admin-btn-primary" id="adminChangePasswordBtn">Change Password</button>
+                    </div>
+                </div>
+
+                <!-- Theme Selection Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🎨</div>
+                            <div class="admin-section-title">Theme Preferences</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Choose your preferred color theme for the application.
+                        </p>
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <select class="form-input" id="themeSelect">
+                                <option value="light">Light Mode</option>
+                                <option value="dark">Dark Mode</option>
+                                <option value="auto">Auto (System Preference)</option>
+                            </select>
+                        </div>
+                        <button class="admin-btn admin-btn-primary" id="applyThemeBtn" style="margin-top: 16px;">Apply Theme</button>
+                    </div>
+                </div>
+
+                <!-- Company Branding Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">🏢</div>
+                            <div class="admin-section-title">Company Branding</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Customize the company logo displayed in the navigation bar.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Logo Type</label>
+                            <select class="form-input" id="logoTypeSelect">
+                                <option value="text">Text Logo</option>
+                                <option value="image">Image Logo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="logoTextGroup">
+                            <label class="form-label">Logo Text (2-3 characters recommended)</label>
+                            <input type="text" class="form-input" id="logoTextInput" placeholder="LS" maxlength="4" value="LS">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-input" id="companyNameInput" placeholder="Light Skai" value="Light Skai">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Company Name Color</label>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <input type="color" class="form-input" id="companyNameColorInput" value="#1e293b" style="width: 80px; height: 42px; padding: 4px; cursor: pointer;">
+                                <input type="text" class="form-input" id="companyNameColorText" value="#1e293b" placeholder="#1e293b" maxlength="7" style="flex: 1; font-family: monospace;">
+                            </div>
+                            <small style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">
+                                Choose a color for the company name text in the navigation bar.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Title</label>
+                            <input type="text" class="form-input" id="pageTitleInput" placeholder="Meeting Intelligence Platform" value="Meeting Intelligence Platform">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Title Color</label>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <input type="color" class="form-input" id="pageTitleColorInput" value="#1e293b" style="width: 80px; height: 42px; padding: 4px; cursor: pointer;">
+                                <input type="text" class="form-input" id="pageTitleColorText" value="#1e293b" placeholder="#1e293b" maxlength="7" style="flex: 1; font-family: monospace;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Subtitle</label>
+                            <textarea class="form-input" id="pageSubtitleInput" placeholder="Upload your meeting notes or transcriptions to generate a comprehensive report." rows="2" style="resize: vertical; min-height: 60px;">Upload your meeting notes or transcriptions to generate a comprehensive report.</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Subtitle Color</label>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <input type="color" class="form-input" id="pageSubtitleColorInput" value="#64748b" style="width: 80px; height: 42px; padding: 4px; cursor: pointer;">
+                                <input type="text" class="form-input" id="pageSubtitleColorText" value="#64748b" placeholder="#64748b" maxlength="7" style="flex: 1; font-family: monospace;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="logoImageGroup" style="display: none;">
+                            <label class="form-label">Upload Logo Image</label>
+                            <input type="file" class="form-input" id="logoImageInput" accept="image/png,image/jpeg,image/jpg,image/svg+xml">
+                            <small style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">
+                                Recommended: Square image, max 200KB. Transparent PNG works best.
+                            </small>
+                            <div id="logoPreview" style="margin-top: 12px; display: none;">
+                                <img id="logoPreviewImg" style="max-width: 60px; max-height: 60px; border-radius: 8px; border: 1px solid #e2e8f0;" alt="Logo preview">
+                            </div>
+                        </div>
+
+                        <button class="admin-btn admin-btn-primary" id="applyLogoBtn" style="margin-top: 16px;">Apply Branding</button>
+                        <button class="admin-btn admin-btn-secondary" id="resetLogoBtn" style="margin-top: 16px; margin-left: 8px;">Reset to Default</button>
+                    </div>
+                </div>
+
+                <!-- Default Meeting Configuration Section -->
+                <div class="admin-section collapsed">
+                    <div class="admin-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <div class="admin-section-header-left">
+                            <div class="admin-section-icon">📁</div>
+                            <div class="admin-section-title">Default Meeting Configuration</div>
+                        </div>
+                        <div class="admin-section-toggle">▼</div>
+                    </div>
+                    <div class="admin-section-content">
+                        <p class="admin-description">
+                            Set your default selections for meeting type, methodology, and industry.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Default Meeting Type</label>
+                            <select class="form-input" id="adminMeetingType">
+                                <option value="">Select Meeting Type</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Default Methodology</label>
+                            <select class="form-input" id="adminMethodology">
+                                <option value="">Select Methodology</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Default Industry</label>
+                            <select class="form-input" id="adminIndustry">
+                                <option value="">Select Industry</option>
+                            </select>
+                        </div>
+
+                        <div class="admin-actions">
+                            <button class="admin-btn admin-btn-secondary" id="adminResetBtn">Reset to System Defaults</button>
+                            <button class="admin-btn admin-btn-primary" id="adminSaveBtn">Save as My Defaults</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-footer">
+                    <button class="admin-btn admin-btn-secondary" id="adminCancelBtn">Cancel</button>
+                    <div class="admin-version">Version 2.4.1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    
+    <script>
+        // Configure PDF.js worker
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        }
+        
+        // Update user info in settings panel when email is set
+        // This intercepts when the auth.js sets the user email
+        (function() {
+            // Watch for when userEmail element gets populated
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                        const userEmailElement = document.getElementById('userEmail');
+                        if (userEmailElement && userEmailElement.textContent) {
+                            const email = userEmailElement.textContent.trim();
+                            
+                            // Update settings panel email
+                            const settingsEmail = document.getElementById('userEmailSettings');
+                            if (settingsEmail) {
+                                settingsEmail.textContent = email;
+                            }
+                            
+                            // Update avatar initial
+                            const userInitial = document.getElementById('userInitial');
+                            if (userInitial && email) {
+                                userInitial.textContent = email.charAt(0).toUpperCase();
+                            }
+                            
+                            // Stop observing once we've updated
+                            observer.disconnect();
+                        }
+                    }
+                });
+            });
+            
+            // Start observing when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    const userEmailElement = document.getElementById('userEmail');
+                    if (userEmailElement) {
+                        observer.observe(userEmailElement, {
+                            childList: true,
+                            characterData: true,
+                            subtree: true
+                        });
+                    }
+                });
+            } else {
+                const userEmailElement = document.getElementById('userEmail');
+                if (userEmailElement) {
+                    observer.observe(userEmailElement, {
+                        childList: true,
+                        characterData: true,
+                        subtree: true
+                    });
+                }
+            }
+            
+            // Also try to get from Supabase directly
+            setTimeout(async function() {
+                try {
+                    const { createClient } = supabase;
+                    const client = createClient(
+                        'https://khhrkgevrhtdlwcdxvbs.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoaHJrZ2V2cmh0ZGx3Y2R4dmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzA5NTIsImV4cCI6MjA3ODQ0Njk1Mn0.wqd6Uds-7pEr0p1MCrZKRzLzqOPS7ziZO8eGNs_G59c'
+                    );
+                    
+                    const { data: { session } } = await client.auth.getSession();
+                    
+                    if (session && session.user && session.user.email) {
+                        const email = session.user.email;
+                        
+                        // Update settings panel
+                        const settingsEmail = document.getElementById('userEmailSettings');
+                        if (settingsEmail) {
+                            settingsEmail.textContent = email;
+                        }
+                        
+                        const userInitial = document.getElementById('userInitial');
+                        if (userInitial) {
+                            userInitial.textContent = email.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (error) {
+                    console.log('Could not fetch user from Supabase:', error);
+                }
+            }, 500);
+        })();
+        
+        // Dark Theme Toggle Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeSelect = document.getElementById('themeSelect');
+            const applyThemeBtn = document.getElementById('applyThemeBtn');
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (themeSelect) {
+                themeSelect.value = savedTheme;
+            }
+            applyTheme(savedTheme);
+            
+            // Apply theme button handler
+            if (applyThemeBtn) {
+                applyThemeBtn.addEventListener('click', function() {
+                    const selectedTheme = themeSelect.value;
+                    localStorage.setItem('theme', selectedTheme);
+                    applyTheme(selectedTheme);
+                });
+            }
+            
+            function applyTheme(theme) {
+                const body = document.body;
+                
+                if (theme === 'dark') {
+                    body.classList.add('dark-theme');
+                } else if (theme === 'light') {
+                    body.classList.remove('dark-theme');
+                } else if (theme === 'auto') {
+                    // Auto mode - use system preference
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        body.classList.add('dark-theme');
+                    } else {
+                        body.classList.remove('dark-theme');
+                    }
+                }
+            }
+            
+            // Listen for system theme changes when in auto mode
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                    const currentTheme = localStorage.getItem('theme') || 'light';
+                    if (currentTheme === 'auto') {
+                        applyTheme('auto');
+                    }
+                });
+            }
+        });
+    </script>
+    
+    <!-- Application Scripts -->
+    <script>
+        // PDF Generation Enhancement - Include AI Results
+        // This script ensures AI Results are included when generating the PDF report
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for the external app.js to load and set up the runBtn handler
+            setTimeout(function() {
+                const runBtn = document.getElementById('runBtn');
+                const aiResultsDisplay = document.getElementById('aiResultsDisplay');
+                
+                if (runBtn && aiResultsDisplay) {
+                    // Store the original click handler
+                    const originalHandler = runBtn.onclick;
+                    
+                    // Override the click handler to include AI Results
+                    runBtn.addEventListener('click', function(e) {
+                        // Get AI Results content
+                        const aiResultsContent = aiResultsDisplay.textContent || aiResultsDisplay.innerText;
+                        
+                        // Store in a global variable that the PDF generator can access
+                        window.aiResultsForPDF = aiResultsContent;
+                        
+                        console.log('AI Results prepared for PDF:', aiResultsContent.substring(0, 100) + '...');
+                    }, true); // Use capture phase to run before other handlers
+                    
+                    console.log('PDF Enhancement: AI Results will be included in generated reports');
+                }
+            }, 1000);
+        });
+        
+        // Helper function for external app.js to access AI Results
+        window.getAIResultsForPDF = function() {
+            const aiResultsDisplay = document.getElementById('aiResultsDisplay');
+            if (aiResultsDisplay) {
+                const content = aiResultsDisplay.textContent || aiResultsDisplay.innerText;
+                // Clean up the content
+                return content.replace(/^\s+|\s+$/g, '').replace(/\n\s*\n/g, '\n\n');
+            }
+            return '';
+        };
+    </script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/branding.js"></script>
+</body>
+</html>
