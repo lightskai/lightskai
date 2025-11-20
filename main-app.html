@@ -496,16 +496,24 @@
             background-color: #0EA5E9 !important;
         }
         
-        /* Checkbox Group - Zero padding for compressed appearance */
+        /* Checkbox Group - Minimal spacing with top padding for space below title */
         .checkbox-group { 
-            padding: 0; 
+            padding: 8px 0 0 0 !important; 
             background: white !important;
+        }
+        
+        .dark-theme .checkbox-group {
+            background: rgba(15, 23, 42, 0.5) !important;
         }
         
         .checkbox-group label {
             margin-bottom: 0 !important;
             background: transparent !important;
-            padding: 8px 12px !important;
+            padding: 4px 12px !important;
+        }
+        
+        .dark-theme .checkbox-group label {
+            color: #cbd5e1 !important;
         }
         
         .checkbox-group label:last-child {
@@ -519,6 +527,13 @@
             border-left: none !important;
             padding: 10px 12px;
             font-weight: 600;
+        }
+        
+        /* Dark theme card headers */
+        .dark-theme .card-header {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4) !important;
+            color: #f8fafc !important;
         }
         
         /* Selector Groups - Minimal padding */
@@ -635,8 +650,8 @@
         
         /* Selected/Active States */
         .report-option-radio:checked + label {
-            background: #F0F9FF !important;
-            border-color: #0EA5E9 !important;
+            background: transparent !important;
+            border-color: transparent !important;
         }
         
         /* Magic Link Button (if exists) */
@@ -999,8 +1014,8 @@
         }
         
         .dark-theme .report-option-radio:checked + label {
-            background: rgba(14, 165, 233, 0.2) !important;
-            border-color: #38bdf8 !important;
+            background: transparent !important;
+            border-color: transparent !important;
             color: #e2e8f0 !important;
         }
         
@@ -1064,7 +1079,7 @@
                     <div class="sidebar">
                         <div class="card">
                             <div class="card-header">
-                                Report Option
+                                Report Options
                             </div>
                             <div class="checkbox-group" id="reportOptionsContainer">
                                 <div style="padding: 20px; text-align: center; color: #64748b;">Loading options...</div>
