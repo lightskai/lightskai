@@ -458,13 +458,9 @@
         const API_KEY = 'CsC37moTEOy5wF0yLpwBjDZJorOAaPXD';
         const BASE_URL = 'https://financialmodelingprep.com/api/v3';
         
-        // CORS Proxy options (try multiple if one fails)
-        const CORS_PROXIES = [
-            '', // Try direct first
-            'https://corsproxy.io/?',
-            'https://api.allorigins.win/raw?url='
-        ];
-        let currentProxyIndex = 0;
+        // Use single reliable CORS proxy
+        const USE_PROXY = true;
+        const PROXY_URL = 'https://api.allorigins.win/get?url=';
         
         // Dow 30 symbols
         const DOW30_SYMBOLS = [
@@ -511,65 +507,64 @@
                 const symbolsParam = DOW30_SYMBOLS.join(',');
                 const apiUrl = `${BASE_URL}/quote/${symbolsParam}?apikey=${API_KEY}`;
                 
-                // Try with current proxy
-                const proxy = CORS_PROXIES[currentProxyIndex];
-                const url = proxy ? `${proxy}${encodeURIComponent(apiUrl)}` : apiUrl;
+                // Use proxy to bypass CORS
+                const url = USE_PROXY ? `${PROXY_URL}${encodeURIComponent(apiUrl)}` : apiUrl;
                 
-                console.log('Fetching from:', url);
-                console.log('Using proxy:', proxy || 'direct');
+                console.log('Fetching from:', apiUrl);
+                console.log('Using proxy:', USE_PROXY);
                 
                 const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    method: 'GET'
                 });
                 
                 console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers.get('content-type'));
                 
                 if (!response.ok) {
-                    // If 403, try next proxy
-                    if (response.status === 403 && currentProxyIndex < CORS_PROXIES.length - 1) {
-                        currentProxyIndex++;
-                        console.log('Trying next proxy...');
-                        return await fetchMarketData(); // Retry with next proxy
-                    }
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}. Try a different browser or disable ad blockers.`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                let data = await response.json();
+                const responseData = await response.json();
                 
-                // Handle AllOrigins wrapper
-                if (data.contents) {
-                    data = JSON.parse(data.contents);
+                // AllOrigins wraps the response in a 'contents' field
+                let data;
+                if (responseData.contents) {
+                    data = JSON.parse(responseData.contents);
+                } else if (responseData.status && responseData.status.url) {
+                    // Another AllOrigins format
+                    data = JSON.parse(responseData.contents);
+                } else {
+                    data = responseData;
                 }
                 
                 console.log('Received data:', data);
                 
                 if (!Array.isArray(data) || data.length === 0) {
-                    throw new Error('No data received from API. API key may be invalid or rate limited.');
+                    throw new Error('No data received from API. Check console for details.');
                 }
                 
-                statusText.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                statusText.textContent = `✓ Last updated: ${new Date().toLocaleTimeString()} | ${data.length} stocks loaded`;
                 return data;
                 
             } catch (error) {
-                console.error('Error fetching market data:', error);
-                statusText.innerHTML = `<span style="color: var(--accent-red);">Error: ${error.message}</span>`;
+                console.error('Full error:', error);
+                statusText.innerHTML = `<span style="color: var(--accent-red);">⚠ Error: ${error.message}</span>`;
+                
+                // Remove old error messages
+                const oldError = document.querySelector('.error-message');
+                if (oldError) oldError.remove();
                 
                 // Show helpful message
                 const helpDiv = document.createElement('div');
                 helpDiv.className = 'error-message';
                 helpDiv.innerHTML = `
-                    <strong>Troubleshooting:</strong><br>
-                    • Check browser console for details<br>
-                    • Disable ad blockers/VPN<br>
-                    • Try a different browser<br>
-                    • API key may be rate limited
+                    <strong>Troubleshooting Steps:</strong><br>
+                    1. Check browser console (F12) for detailed errors<br>
+                    2. Upload and use api-diagnostics.html to test connectivity<br>
+                    3. Verify your API key at financialmodelingprep.com<br>
+                    4. Try uploading api-proxy.php for server-side proxy
                 `;
-                if (!document.querySelector('.error-message')) {
-                    statusText.parentElement.appendChild(helpDiv);
-                }
+                statusText.parentElement.appendChild(helpDiv);
                 
                 return null;
             }
@@ -581,14 +576,10 @@
         async function fetchHistoricalData(symbol) {
             try {
                 const apiUrl = `${BASE_URL}/historical-price-full/${symbol}?apikey=${API_KEY}`;
-                const proxy = CORS_PROXIES[currentProxyIndex];
-                const url = proxy ? `${proxy}${encodeURIComponent(apiUrl)}` : apiUrl;
+                const url = USE_PROXY ? `${PROXY_URL}${encodeURIComponent(apiUrl)}` : apiUrl;
                 
                 const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    method: 'GET'
                 });
                 
                 if (!response.ok) {
@@ -596,11 +587,14 @@
                     return null;
                 }
                 
-                let data = await response.json();
+                const responseData = await response.json();
                 
                 // Handle AllOrigins wrapper
-                if (data.contents) {
-                    data = JSON.parse(data.contents);
+                let data;
+                if (responseData.contents) {
+                    data = JSON.parse(responseData.contents);
+                } else {
+                    data = responseData;
                 }
                 
                 if (!data.historical || data.historical.length === 0) {

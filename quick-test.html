@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 { margin-top: 0; }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Quick Stock API Test</h1>
+        <p>Click the button below to test if the API is working. This will fetch Apple (AAPL) stock data.</p>
+        
+        <button onclick="testAPI()">TEST API NOW</button>
+        
+        <div id="result">
+            <div class="info">Ready to test... Click the button above.</div>
+        </div>
+        
+        <hr style="margin: 30px 0; border: 1px solid rgba(255,255,255,0.2);">
+        
+        <h3>What This Tests:</h3>
+        <ul>
+            <li>✓ API key validity</li>
+            <li>✓ CORS proxy functionality</li>
+            <li>✓ Data format correctness</li>
+            <li>✓ Network connectivity</li>
+        </ul>
+        
+        <p style="font-size: 14px; opacity: 0.8;">
+            If this test succeeds, your dashboard will work!<br>
+            If it fails, follow the troubleshooting steps shown below.
+        </p>
+    </div>
+
+    <script>
+        const API_KEY = 'CsC37moTEOy5wF0yLpwBjDZJorOAaPXD';
+        
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            const button = event.target;
+            
+            button.disabled = true;
+            button.textContent = 'TESTING...';
+            
+            resultDiv.innerHTML = '<div class="info">⏳ Fetching data from API...</div>';
+            
+            try {
+                // Test with proxy
+                const apiUrl = `https://financialmodelingprep.com/api/v3/quote/AAPL?apikey=${API_KEY}`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
+                
+                console.log('Testing API with proxy...');
+                console.log('API URL:', apiUrl);
+                console.log('Proxy URL:', proxyUrl);
+                
+                const response = await fetch(proxyUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+                }
+                
+                const wrappedData = await response.json();
+                const data = JSON.parse(wrappedData.contents);
+                
+                console.log('Received data:', data);
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    const stock = data[0];
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h2>✅ SUCCESS!</h2>
+                            <p>API is working perfectly. Your dashboard will work!</p>
+                            <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+                            <h3>Sample Data Received:</h3>
+                            <pre>Symbol: ${stock.symbol}
+Name: ${stock.name}
+Price: $${stock.price}
+Change: ${stock.change > 0 ? '+' : ''}${stock.changesPercentage}%
+Volume: ${stock.volume.toLocaleString()}
+Market Cap: $${(stock.marketCap / 1e9).toFixed(2)}B</pre>
+                            <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+                            <p><strong>✓ Next Step:</strong> Upload and use <code>stockdash.html</code></p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('No data in response');
+                }
+                
+            } catch (error) {
+                console.error('Test failed:', error);
+                
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h2>❌ TEST FAILED</h2>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+                        <h3>Troubleshooting Steps:</h3>
+                        <ol>
+                            <li><strong>Check API Key:</strong> Visit <a href="https://financialmodelingprep.com" target="_blank" style="color: #60a5fa;">financialmodelingprep.com</a></li>
+                            <li><strong>Browser Console:</strong> Press F12 and check for errors</li>
+                            <li><strong>Disable Extensions:</strong> Turn off ad blockers and VPN</li>
+                            <li><strong>Try PHP Proxy:</strong> Upload api-proxy.php to your server</li>
+                            <li><strong>Run Full Diagnostics:</strong> Upload and open api-diagnostics.html</li>
+                        </ol>
+                        <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+                        <h3>Console Output:</h3>
+                        <p style="font-size: 12px;">Check browser console (F12) for detailed error logs</p>
+                    </div>
+                `;
+            } finally {
+                button.disabled = false;
+                button.textContent = 'TEST AGAIN';
+            }
+        }
+    </script>
+</body>
+</html>
