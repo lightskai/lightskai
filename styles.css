@@ -1177,12 +1177,13 @@ body::before {
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-radius: var(--border-radius-lg);
-    padding: var(--space-2xl);
+    padding: 0;
     box-shadow: var(--shadow-md);
     border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all var(--transition-spring);
     position: relative;
     transform: translateY(0);
+    overflow: hidden;
 }
 
 /* Gradient border effect */
@@ -1241,7 +1242,7 @@ body::before {
     color: var(--text-primary);
     background: #F8FAFC;
     border-bottom: 1px solid #E2E8F0;
-    padding: 12px 16px;
+    padding: 10px 12px;
     cursor: pointer;
     user-select: none;
 }
@@ -1258,6 +1259,7 @@ body::before {
 
 .card-content {
     animation: slideDown 0.3s ease;
+    padding: 16px;
 }
 
 /* Card Actions - Hover Reveal */
@@ -1324,8 +1326,8 @@ body::before {
 .checkbox-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 8px 16px;
+    gap: 0;
+    padding: 0;
     background: white;
 }
 
@@ -1337,16 +1339,16 @@ body::before {
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    padding: 6px 0;
+    padding: 8px 12px;
     background: transparent;
-    border-radius: var(--border-radius-sm);
+    border-radius: 0;
     transition: all var(--transition-fast);
-    cursor: move; /* Changed from pointer to indicate draggable */
+    cursor: move;
     position: relative;
 }
 
 .checkbox-item:hover {
-    background: transparent;
+    background: rgba(99, 102, 241, 0.05);
     transform: translateX(2px);
 }
 
@@ -1404,7 +1406,7 @@ body::before {
 }
 
 .selector-group {
-    padding: 12px 16px;
+    padding: 12px;
     border-bottom: 1px solid rgba(226, 232, 240, 0.5);
 }
 
@@ -1455,6 +1457,7 @@ select:focus {
    ======================================== */
 .upload-section {
     position: relative;
+    padding: 16px;
 }
 
 .upload-area {
@@ -2318,10 +2321,6 @@ select:focus {
 
     .page-subtitle {
         font-size: 14px;
-    }
-
-    .card {
-        padding: var(--space-xl);
     }
 
     .upload-area {
