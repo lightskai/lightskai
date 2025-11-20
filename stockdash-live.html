@@ -400,10 +400,7 @@
         // CONFIGURATION - UPDATE THIS!
         // ==========================================
         
-        // Cloudflare Worker proxy URL
-        const WORKER_URL = 'https://stock-api-proxy.george-a1c.workers.dev';
-        
-        // Your paid API key
+        // Your paid API key and endpoint
         const API_KEY = 'CsC37moTEOy5wF0yLpwBjDZJorOAaPXD';
         const BASE_URL = 'https://financialmodelingprep.com/stable';
         
@@ -445,17 +442,15 @@
             statusText.textContent = 'Fetching live data from API...';
             
             const symbolsParam = DOW30_SYMBOLS.join(',');
-            // New stable API uses ?symbol= query parameter, not path parameter
             const apiUrl = `${BASE_URL}/quote?symbol=${symbolsParam}&apikey=${API_KEY}`;
-            const proxyUrl = `${WORKER_URL}?url=${encodeURIComponent(apiUrl)}`;
             
-            console.log('Fetching via Worker:', proxyUrl);
+            console.log('Fetching directly from API:', apiUrl);
             
-            const response = await fetch(proxyUrl);
+            const response = await fetch(apiUrl);
             
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Worker returned ${response.status}: ${errorText}`);
+                throw new Error(`API returned ${response.status}: ${errorText}`);
             }
             
             const data = await response.json();
