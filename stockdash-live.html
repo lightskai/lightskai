@@ -445,7 +445,8 @@
             statusText.textContent = 'Fetching live data from API...';
             
             const symbolsParam = DOW30_SYMBOLS.join(',');
-            const apiUrl = `${BASE_URL}/quote/${symbolsParam}?apikey=${API_KEY}`;
+            // New stable API uses ?symbol= query parameter, not path parameter
+            const apiUrl = `${BASE_URL}/quote?symbol=${symbolsParam}&apikey=${API_KEY}`;
             const proxyUrl = `${WORKER_URL}?url=${encodeURIComponent(apiUrl)}`;
             
             console.log('Fetching via Worker:', proxyUrl);
