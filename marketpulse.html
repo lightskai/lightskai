@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andy's MarketPulse - Real-Time Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0F172A;
+            --bg-card: #1E293B;
+            --bg-hover: #334155;
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --accent-red: #EF4444;
+            --accent-green: #10B981;
+            --accent-blue: #3B82F6;
+            --accent-orange: #F59E0B;
+            --border: #334155;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand span { color: var(--accent-blue); }
+
+        .live-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .controls-panel {
+            grid-row: 1 / -1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-value { color: var(--accent-blue); font-weight: 600; }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+            height: 4px;
+            background: var(--bg-hover);
+            border-radius: 2px;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            margin-top: -6px; 
+        }
+        
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            background: var(--bg-hover);
+            border-radius: 2px;
+        }
+
+        select, .search-input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        .search-input {
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+        
+        .btn-refresh {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-refresh:hover { background: #2563eb; }
+        
+        .btn-refresh:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .table-container {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 10;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover { background: rgba(255,255,255,0.05); }
+        th.active-sort { color: var(--accent-blue); }
+        .sort-icon { margin-left: 4px; }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            font-size: 0.875rem;
+        }
+
+        tr:hover { background: rgba(255,255,255,0.02); }
+
+        .ticker-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--accent-blue);
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .ticker-cell:hover {
+            opacity: 0.7;
+            text-decoration: underline !important;
+        }
+
+        .company-name {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .val-green { color: var(--accent-green); }
+        .val-red { color: var(--accent-red); }
+
+        .iv-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-orange);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .iv-low { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .iv-med { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
+        .iv-high { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+        .range-container {
+            position: relative;
+            width: 100%;
+            height: 6px;
+            background: var(--bg-hover);
+            border-radius: 3px;
+            overflow: visible;
+        }
+
+        .range-track {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-orange) 50%, var(--accent-green) 100%);
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        .range-marker {
+            position: absolute;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid var(--accent-blue);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .status-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-top: 10px;
+        }
+
+        /* Options Styling */
+        .options-row {
+            display: none;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .options-row.show {
+            display: table-row;
+        }
+
+        .options-container {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (max-width: 1200px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .options-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .options-section h4 {
+            margin: 0 0 15px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .call-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        .put-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        .options-table {
+            width: 100%;
+            font-size: 0.8rem;
+        }
+
+        .options-table th {
+            background: var(--bg-dark);
+            padding: 8px;
+            font-size: 0.7rem;
+            text-align: right;
+        }
+
+        .options-table th:first-child {
+            text-align: left;
+        }
+
+        .options-table td {
+            padding: 6px 8px;
+            text-align: right;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.2);
+        }
+
+        .options-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .options-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .strike-atm {
+            background: rgba(59, 130, 246, 0.1);
+            font-weight: 700;
+        }
+
+        .expand-icon {
+            display: inline-block;
+            margin-right: 8px;
+            transition: transform 0.2s;
+            color: var(--accent-blue);
+        }
+
+        .expand-icon.rotated {
+            transform: rotate(90deg);
+        }
+
+        .options-header {
+            background: var(--bg-hover);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .options-header strong {
+            color: var(--text-main);
+        }
+
+        .filter-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tbody tr.expanded {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Mini Strike Table Styling */
+        .strike-table-wrapper {
+            position: relative;
+        }
+
+        .strike-price-header {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .strike-price-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .strike-price-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .eye-icon {
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+        }
+
+        .mini-strike-table {
+            display: none;
+            margin-top: 8px;
+            width: 100%;
+            font-size: 0.7rem;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .mini-strike-table.show {
+            display: table;
+        }
+
+        .mini-strike-table thead {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .mini-strike-table tbody {
+            display: block;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .mini-strike-table tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .mini-strike-table th {
+            background: var(--bg-hover);
+            padding: 4px 6px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border: none;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .mini-strike-table th:first-child {
+            text-align: left;
+        }
+
+        .mini-strike-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.2);
+            text-align: right;
+            font-size: 0.7rem;
+        }
+
+        .mini-strike-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .mini-strike-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .mini-strike-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .mini-strike-table .strike-selected {
+            background: rgba(59, 130, 246, 0.15);
+            font-weight: 700;
+        }
+
+        .mini-strike-table .strike-selected td:first-child {
+            color: var(--accent-blue);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">Andy's <span>MarketPulse</span></div>
+        <div class="live-badge">
+            <div class="live-dot"></div>
+            LIVE
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <aside class="controls-panel">
+            <div class="control-group">
+                <label class="control-label">Market Cap</label>
+                <select id="marketCapSelect">
+                    <option value="all">All Sizes</option>
+                    <option value="large">Large (>100B)</option>
+                    <option value="mid">Mid (10-100B)</option>
+                    <option value="small">Small (<10B)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Timeframe</label>
+                <select id="timeframeSelect">
+                    <option value="1D" selected>1 Day</option>
+                    <option value="5D">5 Days</option>
+                    <option value="1M">1 Month (30 Days)</option>
+                    <option value="3M">3 Months (90 Days)</option>
+                    <option value="6M">6 Months</option>
+                    <option value="1Y">1 Year</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Custom Symbol(s) (optional)</label>
+                <input type="text" id="symbolInput" class="search-input" placeholder="Leave empty for top 30 movers, or enter: AAPL, MSFT..." maxlength="200">
+            </div>
+
+            <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    Strike Distance
+                    <span class="slider-value" id="strikeDistanceValue">±5%</span>
+                </label>
+                <input type="range" id="strikeDistance" min="1" max="50" value="5" step="1">
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">
+                    Range from current price
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    Time to Expiration
+                    <span class="slider-value" id="expirationValue">6 months</span>
+                </label>
+                <input type="range" id="expiration" min="1" max="24" value="6" step="1">
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">
+                    Maximum months out
+                </div>
+            </div>
+
+            <button id="refreshBtn" class="btn-refresh">🔍 Fetch Live Data</button>
+            
+            <div id="progressText" style="font-size: 0.8rem; color: var(--accent-blue); margin-top: 10px; min-height: 20px; font-weight: 500;"></div>
+            
+            <div style="flex: 1;"></div>
+            
+            <div class="status-text" id="statusText">Auto-loading market data...</div>
+        </aside>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">📈 Stock Screener</h2>
+                <span class="status-text">Results: <strong id="resultCount">0</strong></span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-key="symbol">Symbol <span class="sort-icon"></span></th>
+                            <th data-key="price" style="text-align: right;">Live Price <span class="sort-icon"></span></th>
+                            <th data-key="callOption" style="text-align: center;">Call Premium <span class="sort-icon"></span></th>
+                            <th data-key="expiration" style="text-align: center;">Expiration <span class="sort-icon"></span></th>
+                            <th data-key="change" class="active-sort" style="text-align: right;">
+                                <span id="changeColumnHeader">% Change (1 Day)</span> <span class="sort-icon">▲</span>
+                            </th>
+                            <th data-key="iv" style="text-align: center;">Volatility % <span class="sort-icon"></span></th>
+                            <th data-key="range">52 Week Range <span class="sort-icon"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="7" style="text-align:center; padding:40px; color: var(--text-muted);">
+                            <div style="animation: pulse 2s infinite;">⏳ Loading market data...</div>
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION - UPDATE THIS!
+        // ==========================================
+        
+        // Your paid API key and endpoint
+        const API_KEY = 'CsC37moTEOy5wF0yLpwBjDZJorOAaPXD';
+        const BASE_URL = 'https://financialmodelingprep.com/stable';
+
+        // Massive.com API configuration for options data
+        const MASSIVE_API_KEY = 'wkChgRgiN4Zzfy56blZdZ07FUtcpaHrb';
+        const MASSIVE_API_BASE = 'https://api.massive.com';
+
+        // ==========================================
+        // STATE & DOM REFERENCES
+        // ==========================================
+        let marketData = [];
+        let sortState = { key: 'change', direction: 'asc' };
+        let expandedRows = new Set();
+
+        // Options filter state
+        let optionsFilter = {
+            strikeDistance: 5, // percentage
+            expirationMonths: 6
+        };
+
+        const tbody = document.getElementById('tableBody');
+        const marketCapSelect = document.getElementById('marketCapSelect');
+        const timeframeSelect = document.getElementById('timeframeSelect');
+        const symbolInput = document.getElementById('symbolInput');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resultCount = document.getElementById('resultCount');
+        const statusText = document.getElementById('statusText');
+        const progressText = document.getElementById('progressText');
+        const tableHeaders = document.querySelectorAll('th[data-key]');
+        const strikeDistanceSlider = document.getElementById('strikeDistance');
+        const strikeDistanceValue = document.getElementById('strikeDistanceValue');
+        const expirationSlider = document.getElementById('expiration');
+        const expirationValue = document.getElementById('expirationValue');
+        const changeColumnHeader = document.getElementById('changeColumnHeader');
+        
+        // Add filter listeners for controls
+        symbolInput.addEventListener('input', filterAndRender);
+        marketCapSelect.addEventListener('change', filterAndRender);
+        
+        // Add listener for timeframe changes
+        timeframeSelect.addEventListener('change', async () => {
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '⏳ Fetching...';
+            progressText.textContent = `Loading ${getTimeframeLabel(timeframeSelect.value)} data...`;
+            statusText.textContent = ''; // Clear the footer message
+            
+            // Update the column header to reflect the new timeframe
+            updateChangeColumnHeader(timeframeSelect.value);
+            
+            try {
+                await refreshMarketData();
+                progressText.textContent = `✓ Loaded ${marketData.length} stocks (${getTimeframeLabel(timeframeSelect.value)})`;
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+                progressText.textContent = '⚠ Error loading data';
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔍 Fetch Live Data';
+            }
+        });
+
+        // ==========================================
+        // API FUNCTIONS
+        // ==========================================
+
+        async function fetchMarketData() {
+            const inputSymbols = symbolInput.value.toUpperCase().trim();
+            const timeframe = timeframeSelect.value;
+            
+            let apiUrl;
+            if (!inputSymbols) {
+                // Use biggest-losers endpoint for 1 Day, or fetch most actives for longer timeframes
+                if (timeframe === '1D') {
+                    apiUrl = `${BASE_URL}/biggest-losers?apikey=${API_KEY}`;
+                    console.log('Fetching biggest losers of the day...');
+                } else {
+                    // For longer timeframes, fetch most active stocks first
+                    console.log(`Fetching ${getTimeframeLabel(timeframe)} losers...`);
+                    return await fetchHistoricalLosers(timeframe);
+                }
+            } else {
+                // For custom symbols, need to fetch historical data if timeframe is not 1D
+                const symbols = inputSymbols.split(/[,\s]+/).filter(s => s.length > 0);
+                if (symbols.length === 0) {
+                    throw new Error('Please enter valid stock symbol(s)');
+                }
+                
+                if (timeframe !== '1D') {
+                    // Fetch historical data for custom symbols
+                    console.log(`Fetching ${getTimeframeLabel(timeframe)} data for custom symbols:`, symbols.join(', '));
+                    return await fetchHistoricalForSymbols(symbols, timeframe);
+                } else {
+                    // Use batch-quote for custom symbols with 1D timeframe
+                    const symbolsParam = symbols.join(',');
+                    apiUrl = `${BASE_URL}/batch-quote?symbols=${symbolsParam}&apikey=${API_KEY}`;
+                    console.log('Fetching custom symbols:', symbolsParam);
+                }
+            }
+            
+            console.log('API URL:', apiUrl);
+            
+            const response = await fetch(apiUrl);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error:', errorText);
+                throw new Error(`API returned ${response.status}: ${errorText}`);
+            }
+            
+            const allData = await response.json();
+            
+            if (!Array.isArray(allData) || allData.length === 0) {
+                throw new Error(`No data received. Please check your API key and try again.`);
+            }
+            
+            // Take top 30 losers if using biggest-losers endpoint
+            const finalData = !inputSymbols ? allData.slice(0, 30) : allData;
+            
+            console.log(`✓ Successfully loaded ${finalData.length} stocks`);
+            
+            return finalData;
+        }
+
+        async function fetchHistoricalForSymbols(symbols, timeframe) {
+            progressText.textContent = `Analyzing ${getTimeframeLabel(timeframe)} data for ${symbols.length} symbols...`;
+            
+            try {
+                // Calculate date range
+                const toDate = new Date();
+                const fromDate = new Date();
+                const daysMap = { '5D': 7, '1M': 35, '3M': 95, '6M': 185, '1Y': 370 };
+                fromDate.setDate(fromDate.getDate() - (daysMap[timeframe] || 35));
+                
+                const toDateStr = toDate.toISOString().split('T')[0];
+                const fromDateStr = fromDate.toISOString().split('T')[0];
+                
+                console.log(`Date range: ${fromDateStr} to ${toDateStr}`);
+                
+                // Fetch historical data for each symbol
+                const stocksWithChange = [];
+                for (let i = 0; i < symbols.length; i++) {
+                    const symbol = symbols[i];
+                    
+                    try {
+                        // Fetch historical data
+                        const histUrl = `${BASE_URL}/historical-price-eod/light?symbol=${symbol}&from=${fromDateStr}&to=${toDateStr}&apikey=${API_KEY}`;
+                        console.log(`Fetching history for ${symbol}...`);
+                        
+                        const histResponse = await fetch(histUrl);
+                        
+                        if (!histResponse.ok) {
+                            console.warn(`Failed to fetch ${symbol}: ${histResponse.status}`);
+                            continue;
+                        }
+                        
+                        const histData = await histResponse.json();
+                        
+                        // Check if we got valid data
+                        if (!histData || !Array.isArray(histData) || histData.length < 2) {
+                            console.warn(`Insufficient historical data for ${symbol}`);
+                            continue;
+                        }
+                        
+                        // Data is sorted newest to oldest
+                        const newestPrice = histData[0].close || histData[0].price;
+                        const oldestPrice = histData[histData.length - 1].close || histData[histData.length - 1].price;
+                        
+                        if (!newestPrice || !oldestPrice) {
+                            console.warn(`Missing price data for ${symbol}`);
+                            continue;
+                        }
+                        
+                        const percentChange = ((newestPrice - oldestPrice) / oldestPrice) * 100;
+                        
+                        console.log(`${symbol}: ${oldestPrice} -> ${newestPrice} = ${percentChange.toFixed(2)}%`);
+                        
+                        // Fetch current quote to get additional data
+                        const quoteUrl = `${BASE_URL}/quote?symbol=${symbol}&apikey=${API_KEY}`;
+                        const quoteResponse = await fetch(quoteUrl);
+                        
+                        let quoteData = null;
+                        if (quoteResponse.ok) {
+                            const quoteArray = await quoteResponse.json();
+                            quoteData = Array.isArray(quoteArray) ? quoteArray[0] : quoteArray;
+                        }
+                        
+                        // Add calculated change to stock data
+                        stocksWithChange.push({
+                            symbol: symbol,
+                            name: quoteData?.name || symbol,
+                            price: newestPrice,
+                            changesPercentage: percentChange,
+                            volume: quoteData?.volume || 0,
+                            marketCap: quoteData?.marketCap || 0,
+                            yearHigh: quoteData?.yearHigh || newestPrice * 1.2,
+                            yearLow: quoteData?.yearLow || newestPrice * 0.8,
+                            dayHigh: quoteData?.dayHigh || newestPrice,
+                            dayLow: quoteData?.dayLow || newestPrice
+                        });
+                        
+                        // Update progress
+                        progressText.textContent = `Analyzing... ${i + 1}/${symbols.length}`;
+                        
+                    } catch (error) {
+                        console.error(`Error fetching historical data for ${symbol}:`, error);
+                    }
+                    
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+                
+                console.log(`Total symbols analyzed: ${stocksWithChange.length}`);
+                
+                if (stocksWithChange.length === 0) {
+                    throw new Error('No historical data available for selected symbols and timeframe');
+                }
+                
+                console.log(`✓ Found data for ${stocksWithChange.length} symbols over ${getTimeframeLabel(timeframe)}`);
+                
+                return stocksWithChange;
+            } catch (error) {
+                console.error('Error in fetchHistoricalForSymbols:', error);
+                throw error;
+            }
+        }
+
+        async function fetchHistoricalLosers(timeframe) {
+            progressText.textContent = `Analyzing ${getTimeframeLabel(timeframe)} losers...`;
+            
+            // First, get most active stocks to analyze
+            const activesUrl = `${BASE_URL}/most-actives?apikey=${API_KEY}`;
+            console.log('Fetching most active stocks...');
+            
+            try {
+                const activesResponse = await fetch(activesUrl);
+                if (!activesResponse.ok) {
+                    throw new Error(`Failed to fetch active stocks: ${activesResponse.status}`);
+                }
+                
+                const activeStocks = await activesResponse.json();
+                console.log('Active stocks response:', activeStocks);
+                
+                if (!Array.isArray(activeStocks) || activeStocks.length === 0) {
+                    throw new Error('No active stocks data available');
+                }
+                
+                // Take top 30 most active stocks to analyze (reduced for speed)
+                const stocksToAnalyze = activeStocks.slice(0, 30);
+                console.log(`Analyzing ${stocksToAnalyze.length} active stocks over ${getTimeframeLabel(timeframe)}...`);
+                
+                // Calculate date range
+                const toDate = new Date();
+                const fromDate = new Date();
+                const daysMap = { '5D': 7, '1M': 35, '3M': 95, '6M': 185, '1Y': 370 };
+                fromDate.setDate(fromDate.getDate() - (daysMap[timeframe] || 35));
+                
+                const toDateStr = toDate.toISOString().split('T')[0];
+                const fromDateStr = fromDate.toISOString().split('T')[0];
+                
+                console.log(`Date range: ${fromDateStr} to ${toDateStr}`);
+                
+                // Fetch historical data for each stock
+                const stocksWithChange = [];
+                for (let i = 0; i < stocksToAnalyze.length; i++) {
+                    const stock = stocksToAnalyze[i];
+                    
+                    try {
+                        // Fetch historical data - try the light endpoint first
+                        const histUrl = `${BASE_URL}/historical-price-eod/light?symbol=${stock.symbol}&from=${fromDateStr}&to=${toDateStr}&apikey=${API_KEY}`;
+                        console.log(`Fetching history for ${stock.symbol}...`);
+                        
+                        const histResponse = await fetch(histUrl);
+                        
+                        if (!histResponse.ok) {
+                            console.warn(`Failed to fetch ${stock.symbol}: ${histResponse.status}`);
+                            continue;
+                        }
+                        
+                        const histData = await histResponse.json();
+                        console.log(`${stock.symbol} historical data:`, histData);
+                        
+                        // Check if we got valid data
+                        if (!histData || !Array.isArray(histData) || histData.length < 2) {
+                            console.warn(`Insufficient data for ${stock.symbol}`);
+                            continue;
+                        }
+                        
+                        // Data is sorted newest to oldest
+                        const newestPrice = histData[0].close || histData[0].price;
+                        const oldestPrice = histData[histData.length - 1].close || histData[histData.length - 1].price;
+                        
+                        if (!newestPrice || !oldestPrice) {
+                            console.warn(`Missing price data for ${stock.symbol}`);
+                            continue;
+                        }
+                        
+                        const percentChange = ((newestPrice - oldestPrice) / oldestPrice) * 100;
+                        
+                        console.log(`${stock.symbol}: ${oldestPrice} -> ${newestPrice} = ${percentChange.toFixed(2)}%`);
+                        
+                        // Fetch current quote to get yearHigh/yearLow and other data
+                        const quoteUrl = `${BASE_URL}/quote?symbol=${stock.symbol}&apikey=${API_KEY}`;
+                        const quoteResponse = await fetch(quoteUrl);
+                        
+                        let quoteData = null;
+                        if (quoteResponse.ok) {
+                            const quoteArray = await quoteResponse.json();
+                            quoteData = Array.isArray(quoteArray) ? quoteArray[0] : quoteArray;
+                            console.log(`${stock.symbol} quote data:`, quoteData);
+                        }
+                        
+                        // Add calculated change to stock data with proper yearHigh/yearLow
+                        // Prioritize quote data, then original stock data, then fallback to current price
+                        stocksWithChange.push({
+                            symbol: stock.symbol,
+                            name: quoteData?.name || stock.name || stock.symbol,
+                            price: newestPrice,
+                            changesPercentage: percentChange,
+                            volume: quoteData?.volume || stock.volume || 0,
+                            marketCap: quoteData?.marketCap || stock.marketCap || 0,
+                            yearHigh: quoteData?.yearHigh || stock.yearHigh || newestPrice * 1.2,
+                            yearLow: quoteData?.yearLow || stock.yearLow || newestPrice * 0.8,
+                            dayHigh: quoteData?.dayHigh || stock.dayHigh || newestPrice,
+                            dayLow: quoteData?.dayLow || stock.dayLow || newestPrice
+                        });
+                        
+                        // Update progress
+                        if ((i + 1) % 5 === 0) {
+                            progressText.textContent = `Analyzing... ${i + 1}/${stocksToAnalyze.length} (found ${stocksWithChange.length} stocks)`;
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching historical data for ${stock.symbol}:`, error);
+                    }
+                    
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+                
+                console.log(`Total stocks analyzed: ${stocksWithChange.length}`);
+                
+                if (stocksWithChange.length === 0) {
+                    throw new Error('No historical data available for selected timeframe');
+                }
+                
+                // Sort by percentage change (most negative first) and take top 30
+                stocksWithChange.sort((a, b) => a.changesPercentage - b.changesPercentage);
+                const top30Losers = stocksWithChange.slice(0, 30);
+                
+                console.log(`✓ Found top 30 losers over ${getTimeframeLabel(timeframe)}:`, top30Losers.map(s => `${s.symbol} (${s.changesPercentage.toFixed(2)}%)`));
+                
+                return top30Losers;
+            } catch (error) {
+                console.error('Error in fetchHistoricalLosers:', error);
+                throw error;
+            }
+        }
+        
+        function getTimeframeLabel(timeframe) {
+            const labels = {
+                '1D': '1 day',
+                '5D': '5 days', 
+                '1M': '1 month',
+                '3M': '3 months',
+                '6M': '6 months',
+                '1Y': '1 year'
+            };
+            return labels[timeframe] || timeframe;
+        }
+
+        function updateChangeColumnHeader(timeframe) {
+            const labels = {
+                '1D': '% Change (1 Day)',
+                '5D': '% Change (5 Days)', 
+                '1M': '% Change (1 Month)',
+                '3M': '% Change (3 Months)',
+                '6M': '% Change (6 Months)',
+                '1Y': '% Change (1 Year)'
+            };
+            if (changeColumnHeader) {
+                changeColumnHeader.textContent = labels[timeframe] || '% Change';
+            }
+        }
+
+        function transformData(data) {
+            console.log(`Transforming ${data.length} stocks...`);
+            return data.map(stock => {
+                // Calculate volatility as the day range percentage
+                const dayRange = stock.dayHigh && stock.dayLow && stock.price 
+                    ? ((stock.dayHigh - stock.dayLow) / stock.price) * 100 
+                    : 0;
+                
+                // Also consider the 52-week range volatility if available
+                const yearRange = stock.yearHigh && stock.yearLow && stock.yearHigh !== stock.yearLow
+                    ? ((stock.yearHigh - stock.yearLow) / stock.price) * 100
+                    : 0;
+                
+                // Use the larger of the two as volatility metric
+                const volatility = Math.max(dayRange, yearRange * 0.1); // Scale year range by 10%
+                
+                // Handle different field names for percentage change
+                const percentChange = stock.changesPercentage || stock.change || stock.changePercent || 0;
+                
+                // Debug logging for first stock
+                if (data.indexOf(stock) === 0) {
+                    console.log('First stock raw data:', stock);
+                    console.log('Extracted percentChange:', percentChange);
+                }
+                
+                return {
+                    symbol: stock.symbol,
+                    name: stock.name || stock.symbol,
+                    price: stock.price || 0,
+                    atmStrike: calculateATMStrike(stock.price || 0),
+                    callPrice: null, // Will be populated async
+                    expiration: null, // Will be populated async
+                    change: percentChange,
+                    volume: stock.volume || 0,
+                    marketCap: stock.marketCap || 0,
+                    yearHigh: stock.yearHigh || stock.price * 1.2,
+                    yearLow: stock.yearLow || stock.price * 0.8,
+                    dayHigh: stock.dayHigh || stock.price,
+                    dayLow: stock.dayLow || stock.price,
+                    iv: volatility,
+                    timeframes: {}
+                };
+            });
+        }
+
+        async function refreshMarketData() {
+            try {
+                const apiData = await fetchMarketData();
+                marketData = transformData(apiData);
+                
+                // Fetch call option data for each stock
+                progressText.textContent = 'Loading options data from Polygon.io...';
+                console.log('\n🔍 === FETCHING REAL OPTIONS DATA FROM POLYGON.IO ===');
+                console.log(`Fetching options for ${marketData.length} stocks with settings:`, optionsFilter);
+                
+                // Fetch options in batches to avoid overwhelming the API
+                const batchSize = 5;
+                for (let i = 0; i < marketData.length; i += batchSize) {
+                    const batch = marketData.slice(i, i + batchSize);
+                    
+                    // Use Promise.allSettled to continue even if some fail
+                    const results = await Promise.allSettled(batch.map(async (stock) => {
+                        try {
+                            const optionData = await fetchCallOptionForDisplay(stock.symbol, stock.price);
+                            stock.callPrice = optionData.callPrice;
+                            stock.expiration = optionData.expiration;
+                            stock.optionStrike = optionData.strike;
+                            stock.strikeRange = optionData.strikeRange || [];
+                        } catch (error) {
+                            console.error(`Failed to fetch options for ${stock.symbol}:`, error);
+                            stock.callPrice = null;
+                            stock.expiration = null;
+                            stock.optionStrike = null;
+                            stock.strikeRange = [];
+                        }
+                    }));
+                    
+                    // Update progress
+                    const loaded = Math.min(i + batchSize, marketData.length);
+                    progressText.textContent = `Loading options... ${loaded}/${marketData.length}`;
+                    console.log(`Progress: ${loaded}/${marketData.length} stocks processed`);
+                }
+                
+                // Count how many stocks got options data
+                const stocksWithOptions = marketData.filter(s => s.callPrice !== null).length;
+                const stocksWithoutOptions = marketData.length - stocksWithOptions;
+                
+                console.log('\n📊 === OPTIONS DATA LOADED ===');
+                console.log(`✓ Loaded real options for ${stocksWithOptions} stocks`);
+                if (stocksWithoutOptions > 0) {
+                    console.log(`⚠ No options available for ${stocksWithoutOptions} stocks`);
+                }
+                console.log('============================\n');
+                
+                progressText.textContent = `✓ Loaded ${marketData.length} stocks`;
+                await filterAndRender();
+            } catch (error) {
+                console.error('❌ CRITICAL ERROR in refreshMarketData:', error);
+                console.error('Stack:', error.stack);
+                
+                progressText.textContent = '⚠ Error loading data';
+                statusText.innerHTML = `<span style="color: var(--accent-red);">⚠ ${error.message}</span>`;
+                
+                const oldError = document.querySelector('.error-message');
+                if (oldError) oldError.remove();
+                
+                const helpDiv = document.createElement('div');
+                helpDiv.className = 'error-message';
+                helpDiv.innerHTML = `
+                    <strong>Error Loading Data:</strong><br>
+                    ${error.message}<br><br>
+                    Check browser console (F12) for details<br>
+                    Verify your API key at financialmodelingprep.com
+                `;
+                
+                statusText.parentElement.appendChild(helpDiv);
+                
+                // Still try to render what we have
+                if (marketData.length > 0) {
+                    await filterAndRender();
+                }
+            }
+        }
+
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+
+        function formatMarketCap(cap) {
+            if (!cap) return 'N/A';
+            if (cap >= 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
+            if (cap >= 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
+            if (cap >= 1e6) return `$${(cap / 1e6).toFixed(1)}M`;
+            return `$${cap.toFixed(0)}`;
+        }
+
+        // Calculate ATM (At-The-Money) strike price
+        // Options strikes follow standard increments based on stock price
+        function calculateATMStrike(price) {
+            if (!price || price <= 0) return 0;
+            
+            let increment;
+            if (price < 25) {
+                increment = 2.5;
+            } else if (price < 200) {
+                increment = 5;
+            } else {
+                increment = 10;
+            }
+            
+            // Round to nearest increment
+            return Math.round(price / increment) * increment;
+        }
+
+        // ==========================================
+        // OPTIONS API FUNCTIONS
+        // ==========================================
+
+        // ==========================================
+        // OPTIONS API FUNCTIONS  
+        // ==========================================
+        // Using Polygon.io (Massive.com) API for real options data
+
+        async function fetchCallOptionForDisplay(symbol, price) {
+            try {
+                console.log(`\n=== Fetching call option for ${symbol} ===`);
+                console.log(`Price: $${price}, Strike Distance: ±${optionsFilter.strikeDistance}%, Expiration: ${optionsFilter.expirationMonths} months`);
+                
+                // Calculate target strike based on strike distance filter
+                const strikeOffset = (price * optionsFilter.strikeDistance) / 100;
+                const targetStrike = calculateATMStrike(price);
+                
+                console.log(`Target Strike: $${targetStrike}, Range: $${(targetStrike - strikeOffset).toFixed(2)} - $${(targetStrike + strikeOffset).toFixed(2)}`);
+                
+                // Calculate date range for expiration filter - request a window around target
+                const today = new Date();
+                const targetExpiration = new Date(today);
+                targetExpiration.setMonth(targetExpiration.getMonth() + optionsFilter.expirationMonths);
+                
+                // Request ±3 months around target to ensure we get the closest expirations
+                const minExpiration = new Date(targetExpiration);
+                minExpiration.setMonth(minExpiration.getMonth() - 3);
+                
+                const maxExpiration = new Date(targetExpiration);
+                maxExpiration.setMonth(maxExpiration.getMonth() + 3);
+                
+                // Make sure minExpiration isn't in the past
+                if (minExpiration < today) {
+                    minExpiration.setTime(today.getTime());
+                }
+                
+                const todayStr = today.toISOString().split('T')[0];
+                const minExpirationStr = minExpiration.toISOString().split('T')[0];
+                const maxExpirationStr = maxExpiration.toISOString().split('T')[0];
+                
+                console.log(`📅 Fetching options in window: ${minExpirationStr} to ${maxExpirationStr}`);
+                console.log(`   (targeting expiration closest to: ${targetExpiration.toISOString().split('T')[0]})`);
+
+                // Fetch options chain from Polygon API with high limit to get all available contracts
+                const url = `${MASSIVE_API_BASE}/v3/snapshot/options/${symbol}?apiKey=${MASSIVE_API_KEY}&expiration_date.gte=${minExpirationStr}&expiration_date.lte=${maxExpirationStr}&limit=250`;
+                
+                console.log(`🌐 API URL: ${url.replace(MASSIVE_API_KEY, 'API_KEY_HIDDEN')}`);
+                
+                console.log(`Fetching from Polygon.io...`);
+                
+                const response = await fetch(url);
+                
+                console.log(`Response Status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`❌ API ERROR for ${symbol}:`, response.status, errorText);
+                    return { callPrice: null, expiration: null, strike: null };
+                }
+                
+                const data = await response.json();
+                
+                console.log(`✓ Received ${data.results?.length || 0} options contracts for ${symbol}`);
+                
+                if (!data || !data.results || data.results.length === 0) {
+                    console.warn(`⚠ No options results for ${symbol}`);
+                    return { callPrice: null, expiration: null, strike: null };
+                }
+                
+                // Find the expiration date closest to our target (already defined above)
+                console.log(`🎯 Target expiration: ${targetExpiration.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})} (${optionsFilter.expirationMonths} months from today)`);
+                
+                // Get all unique expiration dates
+                const uniqueExpirations = [...new Set(data.results.map(c => c.details?.expiration_date).filter(d => d))];
+                
+                // Find the expiration closest to target
+                let closestExpiration = null;
+                let minDiff = Infinity;
+                
+                uniqueExpirations.forEach(expDate => {
+                    const exp = new Date(expDate);
+                    const diff = Math.abs(exp - targetExpiration);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closestExpiration = expDate;
+                    }
+                });
+                
+                if (!closestExpiration) {
+                    console.warn(`⚠ No expiration dates found for ${symbol}`);
+                    return { callPrice: null, expiration: null, strike: null };
+                }
+                
+                const closestExpDate = new Date(closestExpiration);
+                const daysFromTarget = Math.round((closestExpDate - targetExpiration) / (1000 * 60 * 60 * 24));
+                console.log(`📅 Selected expiration: ${closestExpDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})} (${Math.abs(daysFromTarget)} days ${daysFromTarget >= 0 ? 'after' : 'before'} target)`);
+                
+                // Filter for CALL options from this specific expiration AND within strike range
+                const minStrike = targetStrike - strikeOffset;
+                const maxStrike = targetStrike + strikeOffset;
+                
+                const callOptions = data.results.filter(contract => {
+                    const strike = contract.details?.strike_price;
+                    const contractType = contract.details?.contract_type;
+                    const expDate = contract.details?.expiration_date;
+                    return contractType === 'call' && 
+                           expDate === closestExpiration &&  // ONLY this specific expiration
+                           strike >= minStrike && 
+                           strike <= maxStrike;
+                });
+
+                console.log(`Found ${callOptions.length} call options for expiration ${closestExpiration} in strike range $${minStrike.toFixed(2)}-$${maxStrike.toFixed(2)}`);
+
+                if (callOptions.length === 0) {
+                    // Diagnostic: Show what WAS available
+                    const allCallsThisExp = data.results
+                        .filter(c => c.details?.contract_type === 'call' && c.details?.expiration_date === closestExpiration)
+                        .map(c => c.details?.strike_price)
+                        .filter(s => s);
+                    
+                    if (allCallsThisExp.length === 0) {
+                        console.warn(`⚠ No CALL options found for ${symbol} at expiration ${closestExpiration}`);
+                    } else {
+                        const strikeRange = {
+                            min: Math.min(...allCallsThisExp),
+                            max: Math.max(...allCallsThisExp)
+                        };
+                        console.warn(`⚠ No call options in requested strike range for ${symbol} at this expiration`);
+                        console.warn(`  Requested: $${minStrike.toFixed(2)} - $${maxStrike.toFixed(2)}`);
+                        console.warn(`  Available: $${strikeRange.min} - $${strikeRange.max}`);
+                        console.warn(`  Suggestion: Increase Strike Distance slider`);
+                    }
+                    
+                    return { callPrice: null, expiration: null, strike: null };
+                }
+
+                // Find the call option with strike closest to target (all have same expiration now)
+                let bestMatch = null;
+                let minStrikeDiff = Infinity;
+                
+                callOptions.forEach(contract => {
+                    const strike = contract.details?.strike_price;
+                    if (!strike) return;
+                    
+                    const strikeDiff = Math.abs(strike - targetStrike);
+                    if (strikeDiff < minStrikeDiff) {
+                        minStrikeDiff = strikeDiff;
+                        bestMatch = contract;
+                    }
+                });
+
+                if (!bestMatch) {
+                    console.warn(`⚠ No best match found for ${symbol}`);
+                    return { callPrice: null, expiration: null, strike: null };
+                }
+
+                // Get the mid price (average of bid/ask)
+                const bid = bestMatch.last_quote?.bid || 0;
+                const ask = bestMatch.last_quote?.ask || 0;
+                let optionPrice = (bid + ask) / 2;
+                
+                // If bid/ask are both zero (illiquid), try last trade price
+                if (optionPrice === 0) {
+                    const lastPrice = bestMatch.last_trade?.price || 
+                                    bestMatch.day?.close || 
+                                    bestMatch.day?.open || 0;
+                    if (lastPrice > 0) {
+                        optionPrice = lastPrice;
+                        console.log(`Using last trade price for ${symbol}: $${lastPrice.toFixed(2)}`);
+                    } else {
+                        // Calculate intrinsic value as minimum
+                        const strike = bestMatch.details?.strike_price || 0;
+                        const intrinsicValue = Math.max(0, price - strike);
+                        if (intrinsicValue > 0) {
+                            optionPrice = intrinsicValue;
+                            console.log(`Using intrinsic value for ${symbol}: $${intrinsicValue.toFixed(2)}`);
+                        } else {
+                            // Show $0.01 minimum to indicate contract exists but is worthless
+                            optionPrice = 0.01;
+                            console.log(`Using minimum $0.01 for ${symbol} (out of the money)`);
+                        }
+                    }
+                }
+                
+                // Format expiration date
+                const expDate = bestMatch.details?.expiration_date;
+                const formattedExp = expDate ? new Date(expDate).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                }) : null;
+
+                // Get 2 strikes above and 2 below the selected strike
+                const selectedStrike = bestMatch.details?.strike_price;
+                
+                // Log the full structure of the first contract to understand the API response
+                if (callOptions.length > 0) {
+                    console.log(`📊 Full contract structure for ${symbol}:`, JSON.stringify(callOptions[0], null, 2));
+                }
+                
+                const allStrikes = callOptions
+                    .map(c => {
+                        const lastClose = c.day?.close || 0;
+                        const volume = c.day?.volume || 0;
+                        const openInterest = c.open_interest || 0;
+                        const iv = c.implied_volatility ? (c.implied_volatility * 100).toFixed(1) : 'N/A';
+                        
+                        // Log data extraction
+                        console.log(`Strike ${c.details?.strike_price}: close=$${lastClose}, vol=${volume}, OI=${openInterest}, IV=${iv}%`);
+                        
+                        return {
+                            strike: c.details?.strike_price,
+                            lastClose: lastClose,
+                            volume: volume,
+                            openInterest: openInterest,
+                            iv: iv,
+                            contract: c
+                        };
+                    })
+                    .filter(c => c.strike)
+                    .sort((a, b) => a.strike - b.strike);
+                
+                // Use ALL strikes within the strike distance range (already filtered in callOptions)
+                const strikeRange = allStrikes;
+                
+                // Find and mark the selected strike
+                const selectedIndex = allStrikes.findIndex(c => c.strike === selectedStrike);
+                strikeRange.forEach((s, idx) => {
+                    s.isSelected = (idx === selectedIndex);
+                });
+
+                console.log(`✓ Selected call option for ${symbol}:`, {
+                    strike: bestMatch.details?.strike_price,
+                    targetStrike: targetStrike,
+                    expiration: formattedExp,
+                    requestedMonths: optionsFilter.expirationMonths,
+                    lastClose: bestMatch.day?.close,
+                    finalPrice: optionPrice.toFixed(2),
+                    volume: bestMatch.day?.volume,
+                    openInterest: bestMatch.open_interest,
+                    strikeRange: strikeRange.length,
+                    strikeDistancePercent: optionsFilter.strikeDistance,
+                    strikeDetails: strikeRange.map(s => ({ 
+                        strike: s.strike, 
+                        lastClose: s.lastClose,
+                        vol: s.volume,
+                        oi: s.openInterest,
+                        iv: s.iv 
+                    }))
+                });
+
+                return { 
+                    callPrice: optionPrice,
+                    expiration: formattedExp,
+                    strike: bestMatch.details?.strike_price,
+                    strikeRange: strikeRange  // Array of 5 strikes with details
+                };
+                
+            } catch (error) {
+                console.error(`❌ ERROR fetching call option for ${symbol}:`, error);
+                return { callPrice: null, expiration: null, strike: null };
+            }
+        }
+
+        async function fetchOptionsChain(symbol) {
+            try {
+                // Calculate date range for expiration filter
+                const today = new Date();
+                const maxExpiration = new Date(today);
+                maxExpiration.setMonth(maxExpiration.getMonth() + optionsFilter.expirationMonths);
+                
+                const todayStr = today.toISOString().split('T')[0];
+                const maxExpirationStr = maxExpiration.toISOString().split('T')[0];
+
+                // Fetch options chain from Massive API with higher limit
+                const url = `${MASSIVE_API_BASE}/v3/snapshot/options/${symbol}?apiKey=${MASSIVE_API_KEY}&expiration_date.gte=${todayStr}&expiration_date.lte=${maxExpirationStr}&limit=250`;
+                
+                console.log(`Fetching full options chain for ${symbol}:`, url);
+                
+                const response = await fetch(url);
+                
+                console.log(`Options chain API response for ${symbol}:`, response.status, response.statusText);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`Options chain API error for ${symbol}:`, response.status, errorText);
+                    throw new Error(`API error: ${response.status} - ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                console.log(`Options chain data for ${symbol}:`, data);
+                
+                if (!data || !data.results || data.results.length === 0) {
+                    throw new Error('No options data available');
+                }
+
+                return data;
+                
+            } catch (error) {
+                console.error(`Error fetching options chain for ${symbol}:`, error);
+                return null;
+            }
+        }
+
+        async function generateOptionsChain(stock) {
+            const optionsData = await fetchOptionsChain(stock.symbol);
+            
+            if (!optionsData || !optionsData.results) {
+                return { 
+                    calls: [], 
+                    puts: [], 
+                    expiration: 'N/A', 
+                    atmStrike: stock.price,
+                    error: 'Options data unavailable'
+                };
+            }
+
+            // Calculate strike range based on filter
+            const strikeRange = (stock.price * optionsFilter.strikeDistance) / 100;
+            const minStrike = stock.price - strikeRange;
+            const maxStrike = stock.price + strikeRange;
+
+            // Filter and separate calls and puts
+            const calls = [];
+            const puts = [];
+            let nearestExpiration = null;
+            let atmStrike = null;
+            let minDiff = Infinity;
+
+            optionsData.results.forEach(contract => {
+                const strike = contract.details?.strike_price;
+                const contractType = contract.details?.contract_type;
+                
+                if (!strike || !contractType) return;
+                
+                // Filter by strike distance
+                if (strike < minStrike || strike > maxStrike) return;
+
+                // Find ATM strike
+                const diff = Math.abs(strike - stock.price);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    atmStrike = strike;
+                }
+
+                // Get expiration
+                if (!nearestExpiration && contract.details?.expiration_date) {
+                    const expDate = new Date(contract.details.expiration_date);
+                    nearestExpiration = expDate.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric' 
+                    });
+                }
+
+                const optionData = {
+                    strike: strike,
+                    lastClose: contract.day?.close || 0,
+                    volume: contract.day?.volume || 0,
+                    openInterest: contract.open_interest || 0,
+                    iv: contract.implied_volatility ? (contract.implied_volatility * 100).toFixed(1) : 'N/A',
+                    isATM: false
+                };
+
+                if (contractType === 'call') {
+                    calls.push(optionData);
+                } else if (contractType === 'put') {
+                    puts.push(optionData);
+                }
+            });
+
+            // Sort by strike price
+            calls.sort((a, b) => a.strike - b.strike);
+            puts.sort((a, b) => a.strike - b.strike);
+
+            // Mark ATM contracts
+            calls.forEach(c => { if (c.strike === atmStrike) c.isATM = true; });
+            puts.forEach(p => { if (p.strike === atmStrike) p.isATM = true; });
+
+            console.log(`📊 Options for ${stock.symbol}: ${calls.length} calls, ${puts.length} puts`);
+
+            return { 
+                calls, 
+                puts, 
+                expiration: nearestExpiration || 'Various', 
+                atmStrike: atmStrike || stock.price 
+            };
+        }
+
+        async function createOptionsRow(stock, rowIndex) {
+            const options = await generateOptionsChain(stock);
+            
+            console.log(`📊 Creating options row for ${stock.symbol}:`, {
+                calls: options.calls?.length || 0,
+                puts: options.puts?.length || 0,
+                expiration: options.expiration
+            });
+            
+            if (options.error) {
+                return `
+                    <tr class="options-row" id="options-${rowIndex}">
+                        <td colspan="7">
+                            <div class="options-container">
+                                <div class="options-header">
+                                    <strong>${stock.symbol}</strong> Options Chain - ${options.error}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            const html = `
+                <tr class="options-row" id="options-${rowIndex}">
+                    <td colspan="7">
+                        <div class="options-container">
+                            <div class="options-header">
+                                <strong>${stock.symbol}</strong> Options Chain
+                                <span class="filter-badge">Exp: ${options.expiration}</span>
+                                <span class="filter-badge">±${optionsFilter.strikeDistance}% strikes</span>
+                            </div>
+                            <div class="options-grid">
+                                <div class="options-section">
+                                    <h4><span class="call-badge">CALLS</span> ${options.calls.length} contracts</h4>
+                                    ${options.calls.length > 0 ? `
+                                        <table class="options-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Strike</th>
+                                                    <th>Last</th>
+                                                    <th>Vol</th>
+                                                    <th>OI</th>
+                                                    <th>IV</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${options.calls.map(call => `
+                                                    <tr class="${call.isATM ? 'strike-atm' : ''}">
+                                                        <td>$${call.strike.toFixed(2)}</td>
+                                                        <td>$${Number(call.lastClose).toFixed(2)}</td>
+                                                        <td>${call.volume.toLocaleString()}</td>
+                                                        <td>${call.openInterest.toLocaleString()}</td>
+                                                        <td>${call.iv}%</td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    ` : '<div style="text-align:center;padding:20px;color:#94A3B8;">No call contracts in range</div>'}
+                                </div>
+                                <div class="options-section">
+                                    <h4><span class="put-badge">PUTS</span> ${options.puts.length} contracts</h4>
+                                    ${options.puts.length > 0 ? `
+                                        <table class="options-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Strike</th>
+                                                    <th>Last</th>
+                                                    <th>Vol</th>
+                                                    <th>OI</th>
+                                                    <th>IV</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${options.puts.map(put => `
+                                                    <tr class="${put.isATM ? 'strike-atm' : ''}">
+                                                        <td>$${put.strike.toFixed(2)}</td>
+                                                        <td>$${Number(put.lastClose).toFixed(2)}</td>
+                                                        <td>${put.volume.toLocaleString()}</td>
+                                                        <td>${put.openInterest.toLocaleString()}</td>
+                                                        <td>${put.iv}%</td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    ` : '<div style="text-align:center;padding:20px;color:#94A3B8;">No put contracts in range</div>'}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            
+            console.log(`✅ Generated HTML for ${stock.symbol} (includes ${options.puts.length} puts)`);
+            
+            return html;
+        }
+
+        async function toggleOptionsRow(index, stock) {
+            const optionsRow = document.getElementById(`options-${index}`);
+            const mainRow = tbody.querySelector(`tr[data-index="${index}"]`);
+            const expandIcon = mainRow?.querySelector('.expand-icon');
+            
+            if (!optionsRow || !mainRow) return;
+            
+            if (expandedRows.has(index)) {
+                expandedRows.delete(index);
+                optionsRow.classList.remove('show');
+                mainRow.classList.remove('expanded');
+                if (expandIcon) expandIcon.classList.remove('rotated');
+            } else {
+                expandedRows.add(index);
+                optionsRow.classList.add('show');
+                mainRow.classList.add('expanded');
+                if (expandIcon) expandIcon.classList.add('rotated');
+                
+                // Show loading state
+                optionsRow.innerHTML = `
+                    <td colspan="7" style="text-align:center; padding:40px;">
+                        <div style="color: var(--accent-blue);">⏳ Loading options data...</div>
+                    </td>
+                `;
+                
+                // Fetch and display options data
+                const optionsHTML = await createOptionsRow(stock, index);
+                
+                // createOptionsRow returns a full <tr>...</tr>, but optionsRow is already a <tr>
+                // We need to extract just the <td>...</td> content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(optionsHTML, 'text/html');
+                const td = doc.querySelector('td');
+                
+                if (td) {
+                    optionsRow.innerHTML = td.outerHTML;
+                } else {
+                    // Fallback: try regex
+                    const tdMatch = optionsHTML.match(/<td[^>]*>[\s\S]*<\/td>/);
+                    optionsRow.innerHTML = tdMatch ? tdMatch[0] : optionsHTML;
+                }
+            }
+        }
+
+        function toggleStrikeTable(index) {
+            const strikeTable = document.getElementById(`strike-table-${index}`);
+            if (strikeTable) {
+                strikeTable.classList.toggle('show');
+            }
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('scatterChart').getContext('2d');
+            scatterChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Stocks',
+                        data: [],
+                        backgroundColor: function(context) {
+                            const value = context.raw?.x || 0;
+                            return value >= 0 ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+                        },
+                        borderColor: function(context) {
+                            const value = context.raw?.x || 0;
+                            return value >= 0 ? 'rgba(16, 185, 129, 1)' : 'rgba(239, 68, 68, 1)';
+                        },
+                        pointRadius: 6,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false, 
+                    scales: {
+                        x: { 
+                            title: { display: true, text: '% Change', color: '#94A3B8' }, 
+                            grid: { color: '#1E293B' },
+                            ticks: { color: '#94A3B8' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Daily Volatility %', color: '#94A3B8' }, 
+                            beginAtZero: true, 
+                            grid: { color: '#334155' },
+                            ticks: { color: '#94A3B8' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (!context.raw) return '';
+                                    return `${context.raw.symbol}: ${context.raw.x.toFixed(2)}% (Vol: ${context.raw.y.toFixed(2)}%)`;
+                                }
+                            }
+                        },
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function renderTable(data) {
+            tbody.innerHTML = '';
+            
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">No stocks match filters</td></tr>`;
+                return;
+            }
+
+            data.forEach((stock, index) => {
+                const rangeTotal = stock.yearHigh - stock.yearLow;
+                const safeRange = rangeTotal === 0 ? 1 : rangeTotal;
+                const position = ((stock.price - stock.yearLow) / safeRange) * 100;
+                const clampedPos = Math.max(0, Math.min(100, position));
+
+                let ivClass = 'iv-low';
+                if(stock.iv > 1.5) ivClass = 'iv-med';
+                if(stock.iv > 3.0) ivClass = 'iv-high';
+                
+                const changeColor = stock.change >= 0 ? 'val-green' : 'val-red';
+                const sign = stock.change > 0 ? '+' : '';
+                const isExpanded = expandedRows.has(index);
+
+                // Format call option price display - show price with eye icon and expandable table
+                let callPriceDisplay;
+                if (stock.callPrice && stock.strikeRange && stock.strikeRange.length > 0) {
+                    callPriceDisplay = `
+                        <div class="strike-table-wrapper">
+                            <div class="strike-price-header" data-index="${index}">
+                                <span class="strike-price-value">$${stock.callPrice.toFixed(2)}</span>
+                                <span class="eye-icon">👁️</span>
+                            </div>
+                            <table class="mini-strike-table" id="strike-table-${index}">
+                                <thead>
+                                    <tr>
+                                        <th>Strike</th>
+                                        <th>Last</th>
+                                        <th>Vol</th>
+                                        <th>OI</th>
+                                        <th>IV</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${stock.strikeRange.map(s => `
+                                        <tr class="${s.isSelected ? 'strike-selected' : ''}">
+                                            <td>$${s.strike.toFixed(2)}</td>
+                                            <td>${s.lastClose > 0 ? '$' + s.lastClose.toFixed(2) : '<span style="color: var(--text-muted);">N/A</span>'}</td>
+                                            <td>${s.volume > 0 ? s.volume.toLocaleString() : '<span style="color: var(--text-muted);">0</span>'}</td>
+                                            <td>${s.openInterest > 0 ? s.openInterest.toLocaleString() : '<span style="color: var(--text-muted);">0</span>'}</td>
+                                            <td>${s.iv !== 'N/A' ? s.iv + '%' : '<span style="color: var(--text-muted);">N/A</span>'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    callPriceDisplay = '<span style="color: var(--text-muted);">N/A</span>';
+                }
+                
+                // Format expiration display
+                const expirationDisplay = stock.expiration 
+                    ? stock.expiration
+                    : '<span style="color: var(--text-muted);">N/A</span>';
+
+                const tr = document.createElement('tr');
+                tr.dataset.index = index;
+                tr.innerHTML = `
+                    <td>
+                        <span class="expand-icon ${isExpanded ? 'rotated' : ''}">▶</span>
+                        <a href="https://optionstrat.com/build/long-call/${stock.symbol}" target="_blank" rel="noopener noreferrer" class="ticker-cell" style="display: inline; text-decoration: none; color: var(--accent-blue);">${stock.symbol}</a>
+                        <span class="company-name">${stock.name}</span>
+                    </td>
+                    <td style="text-align: right;">$${stock.price.toFixed(2)}</td>
+                    <td style="text-align: center;">${callPriceDisplay}</td>
+                    <td style="text-align: center; font-size: 0.85rem;">${expirationDisplay}</td>
+                    <td style="text-align: right;" class="${changeColor}">${sign}${stock.change.toFixed(2)}%</td>
+                    <td style="text-align: center;">
+                        <span class="iv-badge ${ivClass}">${stock.iv.toFixed(2)}%</span>
+                    </td>
+                    <td>
+                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#94A3B8; margin-bottom:2px;">
+                            <span>L: ${stock.yearLow.toFixed(0)}</span>
+                            <span>${formatMarketCap(stock.marketCap)}</span>
+                            <span>H: ${stock.yearHigh.toFixed(0)}</span>
+                        </div>
+                        <div class="range-container">
+                            <div class="range-track"></div>
+                            <div class="range-marker" style="left: ${clampedPos}%"></div>
+                        </div>
+                    </td>
+                `;
+                
+                tr.addEventListener('click', () => toggleOptionsRow(index, stock));
+                if (isExpanded) tr.classList.add('expanded');
+                tbody.appendChild(tr);
+
+                // Attach ticker link click handler to prevent row expansion
+                const tickerLink = tr.querySelector('.ticker-cell');
+                if (tickerLink) {
+                    tickerLink.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Allow default action (navigation to calculator)
+                    });
+                }
+
+                // Attach eye icon click handler with proper event stopping
+                const eyeIcon = tr.querySelector('.strike-price-header');
+                if (eyeIcon) {
+                    eyeIcon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        toggleStrikeTable(index);
+                    });
+                }
+
+                // Add options row
+                const optionsRow = document.createElement('tr');
+                optionsRow.className = 'options-row';
+                optionsRow.id = `options-${index}`;
+                if (isExpanded) optionsRow.classList.add('show');
+                optionsRow.innerHTML = '<td colspan="7"></td>';
+                tbody.appendChild(optionsRow);
+            });
+        }
+
+        function filterAndRender() {
+            // Don't filter if no data loaded yet
+            if (marketData.length === 0) return;
+            
+            const filterTerm = symbolInput.value.toUpperCase().trim();
+            const capType = marketCapSelect.value;
+
+            let filtered = [...marketData];
+
+            // Apply symbol filter - handle comma-separated symbols
+            if (filterTerm.length > 0) {
+                // Split by comma, space, or both and filter out empty strings
+                const searchSymbols = filterTerm
+                    .split(/[,\s]+/)
+                    .filter(s => s.length > 0);
+                
+                if (searchSymbols.length > 0) {
+                    filtered = filtered.filter(stock => 
+                        searchSymbols.some(searchTerm => 
+                            stock.symbol.includes(searchTerm)
+                        )
+                    );
+                }
+            }
+
+            // Apply market cap filter
+            filtered = filtered.filter(stock => {
+                let meetsCap = true;
+                if(stock.marketCap) {
+                    const capB = stock.marketCap / 1000000000;
+                    if(capType === 'large') meetsCap = capB > 100;
+                    if(capType === 'mid') meetsCap = capB >= 10 && capB <= 100;
+                    if(capType === 'small') meetsCap = capB < 10;
+                }
+
+                return meetsCap;
+            });
+
+            filtered.sort((a, b) => {
+                let valA = a[sortState.key];
+                let valB = b[sortState.key];
+
+                if (sortState.key === 'range') {
+                    const rA = (a.yearHigh - a.yearLow) || 1;
+                    valA = (a.price - a.yearLow) / rA;
+                    const rB = (b.yearHigh - b.yearLow) || 1;
+                    valB = (b.price - b.yearLow) / rB;
+                }
+
+                if (valA < valB) return sortState.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return sortState.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            resultCount.textContent = filtered.length;
+            renderTable(filtered);
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+
+        tableHeaders.forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.key;
+                if (sortState.key === key) {
+                    sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortState.key = key;
+                    sortState.direction = key === 'change' ? 'asc' : 'desc';
+                }
+                tableHeaders.forEach(h => {
+                    h.classList.remove('active-sort');
+                    h.querySelector('.sort-icon').textContent = '';
+                });
+                th.classList.add('active-sort');
+                th.querySelector('.sort-icon').textContent = sortState.direction === 'asc' ? '▲' : '▼';
+                filterAndRender();
+            });
+        });
+
+        refreshBtn.addEventListener('click', async () => {
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '⏳ Fetching...';
+            progressText.textContent = 'Fetching data...';
+            statusText.textContent = ''; // Clear the footer message
+            expandedRows.clear(); // Clear expanded rows on refresh
+            
+            // Update column header to reflect current timeframe
+            updateChangeColumnHeader(timeframeSelect.value);
+            
+            try {
+                await refreshMarketData();
+                progressText.textContent = `✓ Loaded ${marketData.length} stocks`;
+            } catch (error) {
+                progressText.textContent = '⚠ Error loading data';
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔍 Fetch Live Data';
+            }
+        });
+
+        // Options filter sliders
+        // Debounce timer for sliders to avoid excessive API calls
+        let sliderDebounceTimer = null;
+
+        strikeDistanceSlider.addEventListener('input', async (e) => {
+            const value = parseInt(e.target.value);
+            optionsFilter.strikeDistance = value;
+            strikeDistanceValue.textContent = `±${value}%`;
+            
+            // Clear existing timer
+            if (sliderDebounceTimer) {
+                clearTimeout(sliderDebounceTimer);
+            }
+            
+            // Update text immediately but debounce the API call
+            strikeDistanceValue.style.color = 'var(--accent-yellow)';
+            strikeDistanceValue.style.fontWeight = 'bold';
+            
+            // Wait 500ms after user stops dragging before refetching
+            sliderDebounceTimer = setTimeout(async () => {
+                // Refetch call options with new strike distance
+                if (marketData.length > 0) {
+                    progressText.textContent = '🔄 Updating call options with new strike range...';
+                    console.log(`\n🔄 Strike Distance changed to ±${value}% - Refetching options...`);
+                    
+                    const batchSize = 5;
+                    for (let i = 0; i < marketData.length; i += batchSize) {
+                        const batch = marketData.slice(i, i + batchSize);
+                        await Promise.all(batch.map(async (stock) => {
+                            const optionData = await fetchCallOptionForDisplay(stock.symbol, stock.price);
+                            stock.callPrice = optionData.callPrice;
+                            stock.expiration = optionData.expiration;
+                            stock.optionStrike = optionData.strike;
+                            stock.strikeRange = optionData.strikeRange || [];
+                        }));
+                        
+                        const loaded = Math.min(i + batchSize, marketData.length);
+                        progressText.textContent = `🔄 Updating options... ${loaded}/${marketData.length}`;
+                    }
+                    
+                    progressText.textContent = `✓ Updated options with ±${value}% strike range`;
+                    strikeDistanceValue.style.color = 'var(--accent-green)';
+                    setTimeout(() => {
+                        strikeDistanceValue.style.color = '';
+                        strikeDistanceValue.style.fontWeight = '';
+                    }, 1000);
+                    
+                    console.log(`✓ Options updated with ±${value}% strike range`);
+                    filterAndRender();
+                }
+            }, 500);
+        });
+
+        expirationSlider.addEventListener('input', async (e) => {
+            const value = parseInt(e.target.value);
+            optionsFilter.expirationMonths = value;
+            expirationValue.textContent = `${value} month${value > 1 ? 's' : ''}`;
+            
+            // Clear existing timer
+            if (sliderDebounceTimer) {
+                clearTimeout(sliderDebounceTimer);
+            }
+            
+            // Update text immediately but debounce the API call
+            expirationValue.style.color = 'var(--accent-yellow)';
+            expirationValue.style.fontWeight = 'bold';
+            
+            // Wait 500ms after user stops dragging before refetching
+            sliderDebounceTimer = setTimeout(async () => {
+                // Refetch call options with new expiration filter
+                if (marketData.length > 0) {
+                    // Calculate the target date range for display
+                    const today = new Date();
+                    const targetDate = new Date(today);
+                    targetDate.setMonth(targetDate.getMonth() + value);
+                    
+                    progressText.textContent = `🔄 Updating options for ${value} month${value > 1 ? 's' : ''} expiration (through ${targetDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })})...`;
+                    console.log(`\n🔄 ==========================================`);
+                    console.log(`🔄 SLIDER CHANGED TO ${value} MONTHS`);
+                    console.log(`🔄 Target date: ${targetDate.toLocaleDateString('en-US')}`);
+                    console.log(`🔄 Will find the single expiration CLOSEST to this date`);
+                    console.log(`🔄 ==========================================\n`);
+                    
+                    // Log current state BEFORE update
+                    console.log(`📊 BEFORE UPDATE - First 3 stocks:`);
+                    marketData.slice(0, 3).forEach(s => {
+                        console.log(`  ${s.symbol}: ${s.expiration} | $${s.callPrice?.toFixed(2) || 'N/A'}`);
+                    });
+                    
+                    const batchSize = 5;
+                    let updatedCount = 0;
+                    let changedExpirations = [];
+                    
+                    for (let i = 0; i < marketData.length; i += batchSize) {
+                        const batch = marketData.slice(i, i + batchSize);
+                        await Promise.all(batch.map(async (stock) => {
+                            const oldExpiration = stock.expiration;
+                            const oldPrice = stock.callPrice;
+                            
+                            const optionData = await fetchCallOptionForDisplay(stock.symbol, stock.price);
+                            
+                            stock.callPrice = optionData.callPrice;
+                            stock.expiration = optionData.expiration;
+                            stock.optionStrike = optionData.strike;
+                            stock.strikeRange = optionData.strikeRange || [];
+                            
+                            // Log if expiration changed
+                            if (oldExpiration !== optionData.expiration) {
+                                console.log(`✏️  ${stock.symbol}: ${oldExpiration} → ${optionData.expiration} (price: $${oldPrice?.toFixed(2)} → $${optionData.callPrice?.toFixed(2)})`);
+                                updatedCount++;
+                                changedExpirations.push({
+                                    symbol: stock.symbol,
+                                    old: oldExpiration,
+                                    new: optionData.expiration
+                                });
+                            }
+                        }));
+                        
+                        const loaded = Math.min(i + batchSize, marketData.length);
+                        progressText.textContent = `🔄 Updating expirations... ${loaded}/${marketData.length}`;
+                    }
+                    
+                    console.log(`\n📊 AFTER UPDATE - First 3 stocks:`);
+                    marketData.slice(0, 3).forEach(s => {
+                        console.log(`  ${s.symbol}: ${s.expiration} | $${s.callPrice?.toFixed(2) || 'N/A'}`);
+                    });
+                    
+                    console.log(`\n✅ SUMMARY: Updated ${updatedCount} expirations out of ${marketData.length} stocks`);
+                    if (updatedCount === 0) {
+                        console.warn(`⚠️  WARNING: NO EXPIRATIONS CHANGED! This might indicate:`);
+                        console.warn(`   - API returned same expirations`);
+                        console.warn(`   - No options available for ${value} months out`);
+                        console.warn(`   - API filtering not working correctly`);
+                    }
+                    
+                    progressText.textContent = `✓ Updated to ${value} month${value > 1 ? 's' : ''} expiration (${updatedCount} changed)`;
+                    expirationValue.style.color = 'var(--accent-green)';
+                    setTimeout(() => {
+                        expirationValue.style.color = '';
+                        expirationValue.style.fontWeight = '';
+                    }, 1000);
+                    
+                    // Force complete table re-render
+                    console.log(`🔄 Calling filterAndRender() to refresh table...`);
+                    filterAndRender();
+                    console.log(`✅ filterAndRender() completed\n`);
+                }
+            }, 500);
+        });
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        
+        // Auto-load data on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            const timeframe = timeframeSelect.value;
+            
+            // Set initial column header based on default timeframe
+            updateChangeColumnHeader(timeframe);
+            
+            console.log(`Auto-loading top 30 biggest losers (${getTimeframeLabel(timeframe)})...`);
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '⏳ Loading...';
+            progressText.textContent = 'Loading top 30 losers...';
+            
+            try {
+                await refreshMarketData();
+                
+                // Data is already the top losers from the API
+                if (marketData.length > 0) {
+                    const loserSymbols = marketData.map(s => s.symbol).join(', ');
+                    console.log(`Top 30 losers (${getTimeframeLabel(timeframe)}):`, loserSymbols);
+                    statusText.innerHTML = `✓ Showing top 30 losers (${getTimeframeLabel(timeframe)}): <strong style="color: var(--accent-red);">${loserSymbols}</strong>`;
+                    progressText.textContent = `✓ Loaded ${marketData.length} stocks`;
+                }
+            } catch (error) {
+                console.error('Auto-load error:', error);
+                progressText.textContent = '⚠ Error loading data';
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔍 Fetch Live Data';
+            }
+        });
+
+    </script>
+</body>
+</html>
