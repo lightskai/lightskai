@@ -1647,21 +1647,29 @@
                                                 <tr>
                                                     <th>Strike</th>
                                                     <th>Last</th>
+                                                    <th>Total</th>
+                                                    <th>50%</th>
                                                     <th>Vol</th>
                                                     <th>OI</th>
                                                     <th>IV</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                ${options.calls.map(call => `
+                                                ${options.calls.map(call => {
+                                                    const total = call.strike + call.lastClose;
+                                                    const fiftyPercentHigh = stock.yearHigh * 0.5;
+                                                    return `
                                                     <tr class="${call.isATM ? 'strike-atm' : ''}">
                                                         <td>$${call.strike.toFixed(2)}</td>
                                                         <td>$${Number(call.lastClose).toFixed(2)}</td>
+                                                        <td>$${total.toFixed(2)}</td>
+                                                        <td>$${fiftyPercentHigh.toFixed(2)}</td>
                                                         <td>${call.volume.toLocaleString()}</td>
                                                         <td>${call.openInterest.toLocaleString()}</td>
                                                         <td>${call.iv}%</td>
                                                     </tr>
-                                                `).join('')}
+                                                    `;
+                                                }).join('')}
                                             </tbody>
                                         </table>
                                     ` : '<div style="text-align:center;padding:20px;color:#94A3B8;">No call contracts in range</div>'}
@@ -1674,21 +1682,29 @@
                                                 <tr>
                                                     <th>Strike</th>
                                                     <th>Last</th>
+                                                    <th>Total</th>
+                                                    <th>50%</th>
                                                     <th>Vol</th>
                                                     <th>OI</th>
                                                     <th>IV</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                ${options.puts.map(put => `
+                                                ${options.puts.map(put => {
+                                                    const total = put.strike + put.lastClose;
+                                                    const fiftyPercentHigh = stock.yearHigh * 0.5;
+                                                    return `
                                                     <tr class="${put.isATM ? 'strike-atm' : ''}">
                                                         <td>$${put.strike.toFixed(2)}</td>
                                                         <td>$${Number(put.lastClose).toFixed(2)}</td>
+                                                        <td>$${total.toFixed(2)}</td>
+                                                        <td>$${fiftyPercentHigh.toFixed(2)}</td>
                                                         <td>${put.volume.toLocaleString()}</td>
                                                         <td>${put.openInterest.toLocaleString()}</td>
                                                         <td>${put.iv}%</td>
                                                     </tr>
-                                                `).join('')}
+                                                    `;
+                                                }).join('')}
                                             </tbody>
                                         </table>
                                     ` : '<div style="text-align:center;padding:20px;color:#94A3B8;">No put contracts in range</div>'}
@@ -1832,6 +1848,7 @@
                 // Format call option price display - show price with eye icon and expandable table
                 let callPriceDisplay;
                 if (stock.callPrice && stock.strikeRange && stock.strikeRange.length > 0) {
+                    const fiftyPercentHigh = stock.yearHigh * 0.5;
                     callPriceDisplay = `
                         <div class="strike-table-wrapper">
                             <div class="strike-price-header" data-index="${index}">
@@ -1843,21 +1860,28 @@
                                     <tr>
                                         <th>Strike</th>
                                         <th>Last</th>
+                                        <th>Total</th>
+                                        <th>50%</th>
                                         <th>Vol</th>
                                         <th>OI</th>
                                         <th>IV</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${stock.strikeRange.map(s => `
+                                    ${stock.strikeRange.map(s => {
+                                        const total = s.strike + (s.lastClose > 0 ? s.lastClose : 0);
+                                        return `
                                         <tr class="${s.isSelected ? 'strike-selected' : ''}">
                                             <td>$${s.strike.toFixed(2)}</td>
                                             <td>${s.lastClose > 0 ? '$' + s.lastClose.toFixed(2) : '<span style="color: var(--text-muted);">N/A</span>'}</td>
+                                            <td>${s.lastClose > 0 ? '$' + total.toFixed(2) : '<span style="color: var(--text-muted);">N/A</span>'}</td>
+                                            <td>$${fiftyPercentHigh.toFixed(2)}</td>
                                             <td>${s.volume > 0 ? s.volume.toLocaleString() : '<span style="color: var(--text-muted);">0</span>'}</td>
                                             <td>${s.openInterest > 0 ? s.openInterest.toLocaleString() : '<span style="color: var(--text-muted);">0</span>'}</td>
                                             <td>${s.iv !== 'N/A' ? s.iv + '%' : '<span style="color: var(--text-muted);">N/A</span>'}</td>
                                         </tr>
-                                    `).join('')}
+                                        `;
+                                    }).join('')}
                                 </tbody>
                             </table>
                         </div>
